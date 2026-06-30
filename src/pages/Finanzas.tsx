@@ -1,0 +1,500 @@
+import React, { useEffect, useState } from 'react';
+import { api, type Factura, type Compra, type FinanzasResumen, type TransaccionCaja } from '../api';
+import { 
+  DollarSign, 
+  TrendingUp, 
+  TrendingDown, 
+  Clock, 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  PlusCircle, 
+  FileText,
+  Calendar
+} from 'lucide-react';
+
+export default function Finanzas() {
+  const [resumen, setResumen] = useState<FinanzasResumen | null>(null);
+  const [cxcList, setCxcList] = useState<Factura[]>([]);
+  const [cxpList, setCxpList] = useState<Compra[]>([]);
+  const [transacciones, setTransacciones] = useState<TransaccionCaja[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'caja' | 'cxc' | 'cxp' | 'historial'>('caja');
+
+  // Modal de Abono
+  const [showAbonoModal, setShowAbonoModal] = useState(false);
+  const [abonoTarget, setAbonoTarget] = useState<{
+    tipo: 'cxc' | 'cxp';
+    id: number;
+    docNum: string;
+    total: number;
+    pending: number;
+  } | null>(null);
+  const [abonoMonto, setAbonoMonto] = useState<number>(0);
+  const [abonoMetodo, setAbonoMetodo] = useState('EFECTIVO');
+  const [abonoNotas, setAbonoNotas] = useState('');
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setLoading(true);
+    try {
+      const [resumenRes, cxcRes, cxpRes, txRes] = await Promise.all([
+        api.getFinanzasResumen(),
+        api.getFinanzasCxC(),
+        api.getFinanzasCxP(),
+        api.getFinanzasTransacciones()
+      ]);
+      setResumen(resumenRes);
+      setCxcList(cxcRes);
+      setCxpList(cxpRes);
+      setTransacciones(txRes);
+    } catch (err) {
+      console.error("Error al cargar finanzas:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleOpenAbonoModal = (tipo: 'cxc' | 'cxp', id: number, docNum: string, total: number, paid: number) => {
+    const pending = total - (paid || 0);
+    setAbonoTarget({ tipo, id, docNum, total, pending });
+    setAbonoMonto(pending);
+    setAbonoMetodo('EFECTIVO');
+    setAbonoNotas('');
+    setShowAbonoModal(true);
+  };
+
+  const handleSaveAbono = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!abonoTarget) return;
+
+    if (abonoMonto <= 0) {
+      alert("El monto del abono debe ser mayor a 0.");
+      return;
+    }
+    if (abonoMonto > abonoTarget.pending) {
+      alert("El monto del abono no puede exceder el saldo pendiente.");
+      return;
+    }
+
+    try {
+      const payload = {
+        monto: abonoMonto,
+        metodoPago: abonoMetodo,
+        notas: abonoNotas
+      };
+
+      if (abonoTarget.tipo === 'cxc') {
+        await api.registrarAbonoCxC(abonoTarget.id, payload);
+      } else {
+        await api.registrarAbonoCxP(abonoTarget.id, payload);
+      }
+
+      setShowAbonoModal(false);
+      setAbonoTarget(null);
+      await loadData();
+      alert("¡Abono registrado con éxito!");
+    } catch (err) {
+      alert("Error al registrar abono: " + (err as Error).message);
+    }
+  };
+
+  if (loading && !resumen) {
+    return <div className="loading-app">Cargando Módulo Financiero...</div>;
+  }
+
+  return (
+    <div>
+      <div className="content-header">
+        <div className="page-title">
+          <h1>Finanzas & Tesorería ERP</h1>
+          <p>Supervisa el flujo de caja neto, gestiona las cuentas por cobrar a clientes y las cuentas por pagar a tus proveedores.</p>
+        </div>
+      </div>
+
+      {/* Tarjetas KPI Financieros */}
+      {resumen && (
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon-wrapper income">
+              <TrendingUp size={24} />
+            </div>
+            <div className="stat-info">
+              <h3>Ingresos Reales</h3>
+              <p className="stat-number text-success">${resumen.totalIngresos.toLocaleString('es-CL')}</p>
+              <span className="stat-meta">Ventas contado + abonos cobrados</span>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon-wrapper expense">
+              <TrendingDown size={24} />
+            </div>
+            <div className="stat-info">
+              <h3>Egresos Reales</h3>
+              <p className="stat-number text-danger">${resumen.totalEgresos.toLocaleString('es-CL')}</p>
+              <span className="stat-meta">Compras contado + abonos pagados</span>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon-wrapper stat-icon-wrapper-primary">
+              <DollarSign size={24} />
+            </div>
+            <div className="stat-info">
+              <h3>Caja / Saldo Neto</h3>
+              <p className={`stat-number ${resumen.saldoNeto >= 0 ? 'text-primary' : 'text-danger'}`}>
+                ${resumen.saldoNeto.toLocaleString('es-CL')}
+              </p>
+              <span className="stat-meta">Diferencia de flujo real</span>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon-wrapper stat-icon-wrapper-warning">
+              <Clock size={24} />
+            </div>
+            <div className="stat-info">
+              <h3>Pendientes (CxC / CxP)</h3>
+              <p className="stat-number text-warning">
+                ${(resumen.outstandingCxC - resumen.outstandingCxP).toLocaleString('es-CL')}
+              </p>
+              <span className="stat-meta">CxC: ${resumen.outstandingCxC.toLocaleString('es-CL')} | CxP: ${resumen.outstandingCxP.toLocaleString('es-CL')}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pestañas de Submódulo */}
+      <div className="data-card mt-32 tabs-container-flat">
+        <div className="tabs-header-border">
+          <button 
+            className={`btn ${activeTab === 'caja' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveTab('caja')}
+          >
+            Flujo de Caja Real
+          </button>
+          <button 
+            className={`btn ${activeTab === 'cxc' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveTab('cxc')}
+          >
+            Cuentas por Cobrar (Clientes) {cxcList.filter(f => f.estado === 'CREDITO_PENDIENTE').length > 0 && `(${cxcList.filter(f => f.estado === 'CREDITO_PENDIENTE').length})`}
+          </button>
+          <button 
+            className={`btn ${activeTab === 'cxp' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveTab('cxp')}
+          >
+            Cuentas por Pagar (Proveedores) {cxpList.filter(c => c.estado === 'CREDITO_PENDIENTE').length > 0 && `(${cxpList.filter(c => c.estado === 'CREDITO_PENDIENTE').length})`}
+          </button>
+          <button 
+            className={`btn ${activeTab === 'historial' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => setActiveTab('historial')}
+          >
+            Historial de Movimientos Caja
+          </button>
+        </div>
+      </div>
+
+      {/* CONTENIDO DE PESTAÑAS */}
+      <div className="data-card mt-20 p-24">
+        {activeTab === 'caja' && (
+          <div>
+            <h2 className="mb-16 flex-center-gap-8"><TrendingUp size={20} className="text-primary" /> Distribución de Flujo de Caja</h2>
+            <p className="text-secondary mb-20">Este desglose muestra los flujos reales de dinero en efectivo, transferencias y tarjetas (contado directo y abonos de créditos).</p>
+            
+            <div className="grid-2-cols-gap-16">
+              <div className="data-card p-16-mb-20 m-0">
+                <h3 className="mb-12-fs-16 flex-center-gap-8 text-success"><ArrowUpRight size={18} /> Entradas de Caja</h3>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Concepto</th>
+                      <th className="text-right">Monto</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transacciones.filter(t => t.tipo === 'INGRESO').slice(0, 10).map((t, idx) => (
+                      <tr key={idx}>
+                        <td>{t.concepto}</td>
+                        <td className="font-semibold text-success text-right">${t.monto.toLocaleString('es-CL')}</td>
+                      </tr>
+                    ))}
+                    {transacciones.filter(t => t.tipo === 'INGRESO').length === 0 && (
+                      <tr>
+                        <td colSpan={2} className="table-empty-row-p-16">No hay registros de ingresos.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="data-card p-16-mb-20 m-0">
+                <h3 className="mb-12-fs-16 flex-center-gap-8 text-danger"><ArrowDownRight size={18} /> Salidas de Caja</h3>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Concepto</th>
+                      <th className="text-right">Monto</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transacciones.filter(t => t.tipo === 'EGRESO').slice(0, 10).map((t, idx) => (
+                      <tr key={idx}>
+                        <td>{t.concepto}</td>
+                        <td className="font-semibold text-danger text-right">${t.monto.toLocaleString('es-CL')}</td>
+                      </tr>
+                    ))}
+                    {transacciones.filter(t => t.tipo === 'EGRESO').length === 0 && (
+                      <tr>
+                        <td colSpan={2} className="table-empty-row-p-16">No hay registros de egresos.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'cxc' && (
+          <div>
+            <h2 className="mb-16 flex-center-gap-8"><Clock size={20} className="text-warning" /> Cuentas por Cobrar (Clientes)</h2>
+            <p className="text-secondary mb-20">Controla las facturas y ventas emitidas a crédito. Registra abonos cuando los clientes realicen transferencias o entreguen efectivo.</p>
+            
+            <div className="table-responsive">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Nº Factura</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Total Factura</th>
+                    <th>Cobrado</th>
+                    <th>Pendiente</th>
+                    <th>Estado</th>
+                    <th className="text-right">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cxcList.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="table-empty-row">No hay cuentas por cobrar pendientes.</td>
+                    </tr>
+                  ) : (
+                    cxcList.map((f) => {
+                      const pendiente = f.total - (f.montoPagado || 0);
+                      return (
+                        <tr key={f.id}>
+                          <td className="font-bold">{f.numeroFactura}</td>
+                          <td>{new Date(f.fechaEmision).toLocaleDateString()}</td>
+                          <td>{f.cliente?.nombre}</td>
+                          <td className="font-semibold">${f.total.toLocaleString('es-CL')}</td>
+                          <td className="text-success">${(f.montoPagado || 0).toLocaleString('es-CL')}</td>
+                          <td className="font-bold text-danger">${pendiente.toLocaleString('es-CL')}</td>
+                          <td>
+                            <span className={`badge ${f.estado === 'EMITIDA' ? 'badge-success' : 'badge-warning'}`}>
+                              {f.estado === 'EMITIDA' ? 'SALDADA' : 'PENDIENTE'}
+                            </span>
+                          </td>
+                          <td className="text-right">
+                            {pendiente > 0 ? (
+                              <button 
+                                className="btn btn-primary btn-table-action-sm inline-flex-gap-8"
+                                onClick={() => handleOpenAbonoModal('cxc', f.id!, f.numeroFactura, f.total, f.montoPagado)}
+                              >
+                                <PlusCircle size={14} /> Registrar Abono
+                              </button>
+                            ) : '-'}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'cxp' && (
+          <div>
+            <h2 className="mb-16 flex-center-gap-8"><Clock size={20} className="text-warning" /> Cuentas por Pagar (Proveedores)</h2>
+            <p className="text-secondary mb-20">Controla las compras de mercadería que has realizado a crédito. Registra tus pagos para llevar al día tus cuentas.</p>
+            
+            <div className="table-responsive">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Nº Documento</th>
+                    <th>Fecha Compra</th>
+                    <th>Proveedor</th>
+                    <th>Total Compra</th>
+                    <th>Pagado</th>
+                    <th>Pendiente</th>
+                    <th>Estado</th>
+                    <th className="text-right">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cxpList.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="table-empty-row">No hay cuentas por pagar pendientes.</td>
+                    </tr>
+                  ) : (
+                    cxpList.map((c) => {
+                      const pendiente = c.total - (c.montoPagado || 0);
+                      return (
+                        <tr key={c.id}>
+                          <td className="font-bold">{c.numeroDocumento}</td>
+                          <td>{new Date(c.fechaCompra).toLocaleDateString()}</td>
+                          <td>{c.proveedor?.nombre}</td>
+                          <td className="font-semibold">${c.total.toLocaleString('es-CL')}</td>
+                          <td className="text-success">${(c.montoPagado || 0).toLocaleString('es-CL')}</td>
+                          <td className="font-bold text-danger">${pendiente.toLocaleString('es-CL')}</td>
+                          <td>
+                            <span className={`badge ${c.estado === 'COMPRADA' ? 'badge-success' : 'badge-warning'}`}>
+                              {c.estado === 'COMPRADA' ? 'SALDADO' : 'PENDIENTE'}
+                            </span>
+                          </td>
+                          <td className="text-right">
+                            {pendiente > 0 ? (
+                              <button 
+                                className="btn btn-primary btn-table-action-sm inline-flex-gap-8"
+                                onClick={() => handleOpenAbonoModal('cxp', c.id!, c.numeroDocumento, c.total, c.montoPagado)}
+                              >
+                                <PlusCircle size={14} /> Registrar Pago
+                              </button>
+                            ) : '-'}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'historial' && (
+          <div>
+            <h2 className="mb-16 flex-center-gap-8"><FileText size={20} className="text-cyan" /> Libro Auxiliar de Caja</h2>
+            <p className="text-secondary mb-20">Línea de tiempo histórica unificada que detalla todos los flujos monetarios reales que han entrado o salido del sistema.</p>
+            
+            <div className="table-responsive">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Concepto</th>
+                    <th>Método Pago</th>
+                    <th>Observación</th>
+                    <th className="text-right">Monto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transacciones.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="table-empty-row">No hay movimientos registrados.</td>
+                    </tr>
+                  ) : (
+                    transacciones.map((tx, idx) => (
+                      <tr key={idx}>
+                        <td className="text-sm">
+                          <span className="inline-flex-gap-8 text-secondary">
+                            <Calendar size={13} />
+                            {new Date(tx.fecha).toLocaleString()}
+                          </span>
+                        </td>
+                        <td>
+                          <span className={`badge ${tx.tipo === 'INGRESO' ? 'badge-success' : 'badge-danger'}`}>
+                            {tx.tipo}
+                          </span>
+                        </td>
+                        <td className="font-semibold">{tx.concepto}</td>
+                        <td>
+                          <span className="badge badge-secondary">{tx.metodoPago}</span>
+                        </td>
+                        <td className="text-sm-secondary">{tx.notas || '-'}</td>
+                        <td className={`font-bold text-right ${tx.tipo === 'INGRESO' ? 'text-success' : 'text-danger'}`}>
+                          {tx.tipo === 'INGRESO' ? '+' : '-'}${tx.monto.toLocaleString('es-CL')}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* MODAL: Registrar Abono / Pago */}
+      {showAbonoModal && abonoTarget && (
+        <div className="modal-overlay">
+          <div className="modal-content modal-content-md">
+            <div className="flex-between-center mb-20">
+              <h2>Registrar Pago / Abono</h2>
+              <button className="btn btn-secondary" onClick={() => setShowAbonoModal(false)}>Cerrar</button>
+            </div>
+
+            <p className="movement-modal-subtitle">
+              Documento: <strong>{abonoTarget.docNum}</strong> | Saldo Pendiente: <strong className="text-danger">${abonoTarget.pending.toLocaleString('es-CL')}</strong>
+            </p>
+
+            <form onSubmit={handleSaveAbono}>
+              <div className="form-group">
+                <label htmlFor="abono-monto-input">Monto del Abono ($) *</label>
+                <input 
+                  id="abono-monto-input"
+                  type="number"
+                  required
+                  min="1"
+                  max={abonoTarget.pending}
+                  step="1"
+                  value={abonoMonto}
+                  onChange={(e) => setAbonoMonto(Number(e.target.value))}
+                  className="form-control"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="abono-metodo-select">Método de Pago *</label>
+                <select 
+                  id="abono-metodo-select"
+                  value={abonoMetodo}
+                  onChange={(e) => setAbonoMetodo(e.target.value)}
+                  className="form-control"
+                >
+                  <option value="EFECTIVO">Efectivo</option>
+                  <option value="TARJETA">Tarjeta de Crédito / Débito</option>
+                  <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="abono-notas-input">Notas / Referencia (Opcional)</label>
+                <textarea 
+                  id="abono-notas-input"
+                  value={abonoNotas}
+                  onChange={(e) => setAbonoNotas(e.target.value)}
+                  className="form-control"
+                  rows={2}
+                  placeholder="Ej: Transferencia Banco Estado Nº 39182"
+                />
+              </div>
+
+              <div className="flex-end-gap-12 mt-24">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowAbonoModal(false)}>Cancelar</button>
+                <button type="submit" className="btn btn-primary">Registrar Movimiento</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
