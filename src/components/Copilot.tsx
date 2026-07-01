@@ -68,6 +68,7 @@ export function Copilot() {
           aiResponse = 'Interesante. Como soy un asistente IA en desarrollo, mis capacidades completas aún se están integrando, pero pronto podré cruzar toda la data de Datrah Systems para darte proyecciones exactas sobre esto.';
         }
       } catch (error) {
+        console.error('Copilot fetch error:', error);
         aiResponse = 'Lo siento, tuve un problema al conectarme con la base de datos de Datrah Systems. Por favor, intenta de nuevo.';
       }
 
@@ -89,8 +90,8 @@ export function Copilot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="btn btn-primary rounded-full shadow-xl flex-center-gap-8 relative group"
-          style={{ width: '60px', height: '60px', padding: 0 }}
+          className="btn btn-primary rounded-full shadow-xl flex-center-gap-8 relative group copilot-btn"
+          title="Abrir Copilot"
         >
           <div className="absolute -top-2 -right-2 bg-danger rounded-full w-4 h-4 animate-ping"></div>
           <div className="absolute -top-2 -right-2 bg-danger rounded-full w-4 h-4 border-2 border-primary"></div>
@@ -100,26 +101,25 @@ export function Copilot() {
 
       {/* Ventana de chat */}
       {isOpen && (
-        <div className="bg-secondary rounded-xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300"
-             style={{ width: '380px', height: '550px', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="bg-secondary rounded-xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 copilot-window">
           {/* Header */}
-          <div className="p-16 flex items-center justify-between" style={{ backgroundColor: 'var(--bg-lighter)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="p-16 flex items-center justify-between copilot-header">
             <div className="flex items-center gap-12">
               <div className="bg-primary p-8 rounded-lg">
                 <Bot size={24} className="text-white" />
               </div>
               <div>
-                <h3 className="m-0 font-bold" style={{ fontSize: '1.1rem' }}>Datrah Copilot <span className="text-xs px-8 py-2 rounded-full bg-primary/20 text-primary font-bold ml-4 border border-primary/30">AI</span></h3>
-                <p className="m-0 text-muted" style={{ fontSize: '0.8rem' }}>Inteligencia Financiera</p>
+                <h3 className="m-0 font-bold copilot-title">Datrah Copilot <span className="text-xs px-8 py-2 rounded-full bg-primary/20 text-primary font-bold ml-4 border border-primary/30">AI</span></h3>
+                <p className="m-0 text-muted copilot-subtitle">Inteligencia Financiera</p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-muted hover:text-white transition-colors">
+            <button onClick={() => setIsOpen(false)} className="text-muted hover:text-white transition-colors" title="Cerrar">
               <X size={20} />
             </button>
           </div>
 
           {/* Cuerpo del chat */}
-          <div className="flex-1 overflow-y-auto p-16" style={{ backgroundColor: 'var(--bg-dark)' }}>
+          <div className="flex-1 overflow-y-auto p-16 copilot-body">
             <div className="flex flex-col gap-16">
               {messages.map(msg => (
                 <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -130,7 +130,7 @@ export function Copilot() {
                         <span className="text-xs font-bold text-primary">Copilot</span>
                       </div>
                     )}
-                    <p className="m-0" style={{ fontSize: '0.95rem', lineHeight: '1.4' }}>
+                    <p className="m-0 copilot-msg-text">
                       {/* Bold parsing for basic markdown support */}
                       {msg.text.split('**').map((chunk, i) => (
                         i % 2 === 1 ? <strong key={i}>{chunk}</strong> : chunk
@@ -146,9 +146,9 @@ export function Copilot() {
                 <div className="flex justify-start">
                   <div className="bg-secondary border border-white/5 rounded-2xl rounded-tl-sm p-12 max-w-[85%]">
                     <div className="flex gap-4">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-0"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-150"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-300"></div>
                     </div>
                   </div>
                 </div>
@@ -158,13 +158,12 @@ export function Copilot() {
           </div>
 
           {/* Input */}
-          <div className="p-16 bg-secondary" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="p-16 bg-secondary copilot-footer">
             <div className="relative flex items-center">
               <input
                 type="text"
                 placeholder="Pregúntale a Datrah AI..."
-                className="form-control w-full pr-48"
-                style={{ borderRadius: '24px', backgroundColor: 'var(--bg-dark)' }}
+                className="form-control w-full pr-48 copilot-input"
                 value={inputValue}
                 onChange={e => setInputValue(e.target.value)}
                 onKeyDown={e => {
@@ -175,6 +174,7 @@ export function Copilot() {
                 onClick={handleSend}
                 disabled={!inputValue.trim()}
                 className="absolute right-8 p-8 rounded-full bg-primary text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+                title="Enviar mensaje"
               >
                 <Send size={16} />
               </button>

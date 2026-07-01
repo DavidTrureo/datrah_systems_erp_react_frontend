@@ -136,6 +136,7 @@ export interface LoginResponse {
   nombre?: string;
   rol?: 'ADMIN' | 'BODEGA' | 'VENTAS' | 'FINANZAS' | 'GERENCIA';
   authenticated: boolean;
+  token?: string;
 }
 
 export interface LogActividad {
@@ -157,8 +158,9 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     const currentUserRaw = localStorage.getItem('currentUser');
     if (currentUserRaw) {
       const currentUser = JSON.parse(currentUserRaw);
-      if (currentUser.id) headers['X-User-Id'] = currentUser.id.toString();
-      if (currentUser.username) headers['X-User-Username'] = currentUser.username;
+      if (currentUser.token) {
+        headers['Authorization'] = `Bearer ${currentUser.token}`;
+      }
     }
   } catch (e) {
     console.error('Error reading currentUser from localStorage', e);
@@ -291,6 +293,46 @@ export const api = {
   }) => 
     request<Factura>('/facturas', { method: 'POST', body: JSON.stringify(data) }),
   anularFactura: (id: number) => request<Factura>(`/facturas/${id}/anular`, { method: 'POST' }),
+  descargarFacturaPdf: async (id: number) => {
+    const headers: Record<string, string> = {};
+    const currentUserRaw = localStorage.getItem('currentUser');
+    if (currentUserRaw) {
+      const currentUser = JSON.parse(currentUserRaw);
+      if (currentUser.token) {
+        headers['Authorization'] = `Bearer ${currentUser.token}`;
+      }
+    }
+    const response = await fetch(`${API_BASE_URL}/facturas/${id}/pdf`, { headers });
+    if (!response.ok) throw new Error('Error al descargar PDF');
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `factura_${id}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  },
+  descargarVentasExcel: async () => {
+    const headers: Record<string, string> = {};
+    const currentUserRaw = localStorage.getItem('currentUser');
+    if (currentUserRaw) {
+      const currentUser = JSON.parse(currentUserRaw);
+      if (currentUser.token) {
+        headers['Authorization'] = `Bearer ${currentUser.token}`;
+      }
+    }
+    const response = await fetch(`${API_BASE_URL}/facturas/excel`, { headers });
+    if (!response.ok) throw new Error('Error al descargar Excel');
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ventas.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  },
 
   // Reportes
   getVentasPorDia: () => request<{ fecha: string; total: number }[]>('/reportes/ventas-dia'),

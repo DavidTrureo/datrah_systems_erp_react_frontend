@@ -229,7 +229,7 @@ export default function Contabilidad() {
         <div className="mt-20">
           <div className="stats-grid mb-24">
             <div className="stat-card">
-              <div className="stat-icon-wrapper" style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#fff' }}>
+              <div className="stat-icon-wrapper">
                 <FileText size={24} />
               </div>
               <div className="stat-info">
@@ -290,7 +290,7 @@ export default function Contabilidad() {
                                   <div className="font-bold text-primary">{comp.tipo}-{comp.numeroComprobante}</div>
                                   {comp.estado === 'ANULADO' && <span className="badge badge-danger mt-4 block">ANULADO</span>}
                                   {comp.estado !== 'ANULADO' && (
-                                    <button onClick={() => handleAnular(comp.id!)} className="btn-link text-danger mt-4 block" style={{ fontSize: '12px' }}>Anular</button>
+                                    <button onClick={() => handleAnular(comp.id!)} className="btn-link text-danger mt-4 block">Anular</button>
                                   )}
                                 </td>
                                 <td rowSpan={comp.detalles.length} className="text-secondary">{comp.glosa}</td>
@@ -300,7 +300,7 @@ export default function Contabilidad() {
                               <div className={det.haber! > 0 ? 'pl-24 text-secondary' : 'font-semibold'}>
                                 {det.cuenta.codigo} - {det.cuenta.nombre}
                               </div>
-                              {det.glosaLinea && <div className="text-secondary" style={{ fontSize: '12px' }}>{det.glosaLinea}</div>}
+                              {det.glosaLinea && <div className="text-secondary">{det.glosaLinea}</div>}
                             </td>
                             <td className="text-right font-mono">
                               {det.debe! > 0 ? `$${Number(det.debe).toLocaleString('es-CL')}` : ''}
@@ -324,7 +324,7 @@ export default function Contabilidad() {
         <div className="data-card mt-20 p-24">
           <div className="flex-between mb-16">
             <h2>Plan de Cuentas (Chile)</h2>
-            <div className="search-bar" style={{ width: '300px' }}>
+            <div className="search-bar">
               <Search size={18} />
               <input type="text" placeholder="Buscar cuenta..." />
             </div>
@@ -364,7 +364,7 @@ export default function Contabilidad() {
       )}
 
       {activeTab === 'nuevo' && (
-        <div className="data-card mt-20 p-24" style={{ maxWidth: '900px', margin: '20px auto' }}>
+        <div className="data-card mt-20 p-24">
           <h2 className="mb-20 border-b pb-12 border-gray-800">Crear Comprobante Manual</h2>
           <form onSubmit={handleSaveComprobante} className="form-container">
             <div className="grid-2-cols-gap-16">
@@ -405,11 +405,11 @@ export default function Contabilidad() {
               />
             </div>
 
-            <div className="data-card p-16 mt-24" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
+            <div className="data-card p-16 mt-24">
               <h3 className="mb-16">Agregar Línea de Detalle</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '3fr 2fr 1.5fr 1.5fr 40px', gap: '12px', alignItems: 'end' }}>
+              <div>
                 <div className="form-group m-0">
-                  <label style={{ fontSize: '12px' }}>Cuenta Contable</label>
+                  <label>Cuenta Contable</label>
                   <select 
                     className="form-control"
                     value={detalleForm.cuenta?.id || ''}
@@ -425,19 +425,19 @@ export default function Contabilidad() {
                   </select>
                 </div>
                 <div className="form-group m-0">
-                  <label style={{ fontSize: '12px' }}>Glosa Línea (Opcional)</label>
+                  <label>Glosa Línea (Opcional)</label>
                   <input type="text" className="form-control" value={detalleForm.glosaLinea} onChange={e => setDetalleForm({...detalleForm, glosaLinea: e.target.value})} placeholder="Detalle..." />
                 </div>
                 <div className="form-group m-0">
-                  <label style={{ fontSize: '12px' }}>Debe ($)</label>
+                  <label>Debe ($)</label>
                   <input type="number" min="0" className="form-control" value={detalleForm.debe} onChange={e => setDetalleForm({...detalleForm, debe: Number(e.target.value)})} />
                 </div>
                 <div className="form-group m-0">
-                  <label style={{ fontSize: '12px' }}>Haber ($)</label>
+                  <label>Haber ($)</label>
                   <input type="number" min="0" className="form-control" value={detalleForm.haber} onChange={e => setDetalleForm({...detalleForm, haber: Number(e.target.value)})} />
                 </div>
                 <div className="pb-4">
-                  <button type="button" onClick={handleAddDetalle} className="btn" style={{ backgroundColor: 'var(--bg-lighter)', color: 'var(--text-primary)', padding: '10px' }}>
+                  <button type="button" onClick={handleAddDetalle} className="btn">
                     <PlusCircle size={18} />
                   </button>
                 </div>
@@ -474,7 +474,7 @@ export default function Contabilidad() {
                   )}
                 </tbody>
                 <tfoot>
-                  <tr style={{ backgroundColor: 'rgba(255,255,255,0.05)', fontWeight: 'bold' }}>
+                  <tr>
                     <td colSpan={2} className="text-right p-16">TOTALES:</td>
                     <td className={`text-right font-mono p-16 ${nuevoComp.detalles?.reduce((a,b)=>a+(b.debe||0),0) !== nuevoComp.detalles?.reduce((a,b)=>a+(b.haber||0),0) ? 'text-danger' : 'text-success'}`}>
                       ${nuevoComp.detalles?.reduce((a,b)=>a+(b.debe||0),0).toLocaleString('es-CL')}
@@ -488,7 +488,7 @@ export default function Contabilidad() {
               </table>
             </div>
 
-            <div className="form-actions mt-24 flex" style={{ justifyContent: 'flex-end', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px' }}>
+            <div className="form-actions mt-24 flex">
               <button type="submit" className="btn btn-primary flex-center-gap-8">
                 <CheckCircle size={18} /> Registrar Comprobante
               </button>
@@ -502,7 +502,7 @@ export default function Contabilidad() {
         <div className="data-card mt-20 p-24">
           <div className="flex-between mb-16">
             <h2>Libro Mayor</h2>
-            <div className="form-group m-0" style={{ width: '300px' }}>
+            <div className="form-group m-0">
               <select 
                 className="form-control"
                 value={selectedCuentaMayor}
@@ -571,7 +571,7 @@ export default function Contabilidad() {
                 ))}
               </tbody>
               <tfoot>
-                <tr className="font-bold text-lg" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                <tr className="font-bold text-lg">
                   <td className="p-12">TOTAL ACTIVOS</td>
                   <td className="text-right font-mono text-success p-12">${balance.totalActivos.toLocaleString('es-CL')}</td>
                 </tr>
@@ -591,7 +591,7 @@ export default function Contabilidad() {
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="font-bold" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                  <tr className="font-bold">
                     <td className="p-12">TOTAL PASIVOS</td>
                     <td className="text-right font-mono text-danger p-12">${balance.totalPasivos.toLocaleString('es-CL')}</td>
                   </tr>
@@ -610,14 +610,14 @@ export default function Contabilidad() {
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="font-bold" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                  <tr className="font-bold">
                     <td className="p-12">TOTAL PATRIMONIO</td>
                     <td className="text-right font-mono text-warning p-12">${balance.totalPatrimonio.toLocaleString('es-CL')}</td>
                   </tr>
                 </tfoot>
               </table>
             </div>
-            <div className="data-card p-16 mt-24 text-center" style={{ backgroundColor: balance.totalActivos === (balance.totalPasivos + balance.totalPatrimonio) ? 'rgba(46, 204, 113, 0.1)' : 'rgba(231, 76, 60, 0.1)' }}>
+            <div className="data-card p-16 mt-24 text-center">
               <h3 className="text-secondary mb-4">Total Pasivo + Patrimonio</h3>
               <p className={`text-2xl font-mono font-bold ${balance.totalActivos === (balance.totalPasivos + balance.totalPatrimonio) ? 'text-success' : 'text-danger'}`}>
                 ${(balance.totalPasivos + balance.totalPatrimonio).toLocaleString('es-CL')}
@@ -633,7 +633,7 @@ export default function Contabilidad() {
       )}
 
       {activeTab === 'resultados' && resultados && (
-        <div className="data-card mt-20 p-24" style={{ maxWidth: '800px', margin: '20px auto' }}>
+        <div className="data-card mt-20 p-24">
           <h2 className="mb-24 text-center border-b border-gray-800 pb-16">Estado de Resultados</h2>
           
           <h3 className="text-success mb-12">Ingresos (Ganancias)</h3>
@@ -647,7 +647,7 @@ export default function Contabilidad() {
               ))}
             </tbody>
             <tfoot>
-              <tr className="font-bold" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              <tr className="font-bold">
                 <td className="p-12">TOTAL INGRESOS</td>
                 <td className="text-right font-mono text-success p-12">${resultados.totalIngresos.toLocaleString('es-CL')}</td>
               </tr>
@@ -665,14 +665,14 @@ export default function Contabilidad() {
               ))}
             </tbody>
             <tfoot>
-              <tr className="font-bold" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+              <tr className="font-bold">
                 <td className="p-12">TOTAL EGRESOS</td>
                 <td className="text-right font-mono text-danger p-12">${resultados.totalEgresos.toLocaleString('es-CL')}</td>
               </tr>
             </tfoot>
           </table>
 
-          <div className="p-24 rounded-lg text-center" style={{ backgroundColor: resultados.utilidadNeta >= 0 ? 'rgba(46, 204, 113, 0.15)' : 'rgba(231, 76, 60, 0.15)' }}>
+          <div className="p-24 rounded-lg text-center">
             <h3 className={resultados.utilidadNeta >= 0 ? 'text-success' : 'text-danger'}>
               {resultados.utilidadNeta >= 0 ? 'Utilidad Neta (Ganancia)' : 'Pérdida Neta'}
             </h3>

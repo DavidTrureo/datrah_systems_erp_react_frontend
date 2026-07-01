@@ -112,16 +112,15 @@ export default function Proveedores() {
       </div>
 
       {/* Buscador */}
-      <div className="data-card" style={{ marginBottom: '24px', padding: '16px' }}>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <Search style={{ color: 'var(--text-secondary)' }} size={20} />
+      <div className="data-card">
+        <div>
+          <Search size={20} />
           <input 
             type="text" 
             placeholder="Buscar por RUT/RFC/NIT o nombre del proveedor..." 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
             className="form-control"
-            style={{ flex: 1, border: 'none', background: 'transparent', padding: '8px' }}
           />
         </div>
       </div>
@@ -137,33 +136,33 @@ export default function Proveedores() {
                 <th>Email</th>
                 <th>Teléfono</th>
                 <th>Dirección</th>
-                <th style={{ textAlign: 'right' }}>Acciones</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '24px' }}>Cargando proveedores...</td>
+                  <td colSpan={6}>Cargando proveedores...</td>
                 </tr>
               ) : filteredProveedores.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-secondary)' }}>No se encontraron proveedores</td>
+                  <td colSpan={6}>No se encontraron proveedores</td>
                 </tr>
               ) : (
                 filteredProveedores.map((p) => (
                   <tr key={p.id}>
-                    <td style={{ fontFamily: 'monospace', fontWeight: '500' }}>{p.documentoIdentidad}</td>
-                    <td style={{ fontWeight: '600' }}>{p.nombre}</td>
+                    <td>{p.documentoIdentidad}</td>
+                    <td>{p.nombre}</td>
                     <td>{p.email || '-'}</td>
                     <td>{p.telefono || '-'}</td>
-                    <td style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{p.direccion || '-'}</td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', gap: '8px' }}>
-                        <button className="btn btn-secondary" style={{ padding: '6px', borderRadius: '8px' }} onClick={() => handleOpenModal(p)}>
+                    <td>{p.direccion || '-'}</td>
+                    <td>
+                      <div>
+                        <button className="btn btn-secondary" onClick={() => handleOpenModal(p)}>
                           <Edit3 size={16} />
                         </button>
-                        <button className="btn btn-secondary" style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)' }} onClick={() => handleDeleteProveedor(p.id!)}>
-                          <Trash2 size={16} style={{ color: 'var(--danger)' }} />
+                        <button className="btn btn-secondary" onClick={() => handleDeleteProveedor(p.id!)}>
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -180,7 +179,7 @@ export default function Proveedores() {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>{selectedProveedor ? 'Editar Proveedor' : 'Nuevo Proveedor'}</h2>
-            <form onSubmit={handleSaveProveedor} style={{ marginTop: '20px' }}>
+            <form onSubmit={handleSaveProveedor}>
               <div className="form-group">
                 <label>Nombre del Proveedor *</label>
                 <input 
@@ -233,7 +232,7 @@ export default function Proveedores() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
+              <div>
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
                 <button type="submit" className="btn btn-primary">Guardar Proveedor</button>
               </div>

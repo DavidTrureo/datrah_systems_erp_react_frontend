@@ -213,7 +213,7 @@ export default function Inventario() {
       {/* Buscador */}
       <div className="data-card mb-24-p-16">
         <div className="flex-center-gap-16">
-          <Search style={{ color: 'var(--text-secondary)' }} size={20} />
+          <Search size={20} />
           <input 
             type="text" 
             placeholder="Buscar por código de barras o nombre..." 

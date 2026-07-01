@@ -523,6 +523,15 @@ export default function Facturacion() {
           <h2 className="flex-center-gap-8">
             <FileText size={20} className="text-cyan" /> Historial de Facturas Emitidas
           </h2>
+          <button className="btn btn-primary btn-sm flex-center-gap-4" onClick={async () => {
+            try {
+              await api.descargarVentasExcel();
+            } catch (err) {
+              alert("Error al descargar Excel: " + (err as Error).message);
+            }
+          }}>
+            Exportar Excel
+          </button>
         </div>
         <div className="table-responsive">
           <table className="data-table">
@@ -565,8 +574,17 @@ export default function Facturacion() {
                     </td>
                     <td className="text-right">
                       <div className="inline-flex-gap-8">
-                        <button className="btn btn-secondary btn-sm" onClick={() => handleOpenPrintModal(f)}>
-                          <Printer size={14} className="mr-4" /> Imprimir
+                        <button className="btn btn-secondary btn-sm" title="Descargar Factura PDF" onClick={async () => {
+                          try {
+                            await api.descargarFacturaPdf(f.id!);
+                          } catch (err) {
+                            alert("Error al descargar PDF: " + (err as Error).message);
+                          }
+                        }}>
+                          PDF
+                        </button>
+                        <button className="btn btn-secondary btn-sm" title="Imprimir Ticket POS" onClick={() => handleOpenPrintModal(f)}>
+                          <Printer size={14} className="mr-4" /> Ticket
                         </button>
                         {f.estado === 'EMITIDA' ? (
                           <button className="btn btn-secondary btn-danger-outline" onClick={() => handleAnularFactura(f.id!)}>

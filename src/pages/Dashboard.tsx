@@ -109,7 +109,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex-center" style={{ height: '80vh', flexDirection: 'column', gap: '20px' }}>
+      <div className="flex-center h-[80vh] flex-col gap-[20px]">
         <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
         <p className="text-muted font-mono animate-pulse">Inicializando Datrah Command Center...</p>
       </div>
@@ -121,7 +121,7 @@ export default function Dashboard() {
   return (
     <div>
       {/* Live Ticker superior */}
-      <div className="w-full bg-darker overflow-hidden flex items-center border-b border-white/5 mb-24 h-10" style={{ position: 'relative', marginTop: '-32px', marginLeft: '-32px', width: 'calc(100% + 64px)' }}>
+      <div className="w-full bg-darker overflow-hidden flex items-center border-b border-white/5 mb-24 h-10 relative -mt-32 -ml-32 w-[calc(100%+64px)]">
         <div className="bg-primary h-full px-16 flex items-center gap-8 font-bold text-xs uppercase tracking-wider text-white z-10 relative shadow-[5px_0_15px_rgba(0,0,0,0.5)]">
           <Activity size={14} className="animate-pulse" /> LIVE
         </div>
@@ -150,7 +150,7 @@ export default function Dashboard() {
 
       <div className="content-header mb-32">
         <div className="page-title">
-          <h1 className="flex items-center gap-12 font-bold" style={{ fontSize: '2.5rem' }}>
+          <h1 className="flex items-center gap-12 font-bold text-[2.5rem]">
             <Zap className="text-primary animate-pulse" size={32} /> Command Center
           </h1>
           <p className="text-muted font-mono mt-8">Datrah Systems ERP • Visión global operativa</p>
@@ -158,7 +158,7 @@ export default function Dashboard() {
       </div>
 
       {stats.alertasStock > 0 && (
-        <div className="dashboard-alert-banner mb-32" style={{ borderLeft: '4px solid var(--danger)', backgroundColor: 'rgba(231, 76, 60, 0.1)', padding: '16px', borderRadius: '0 8px 8px 0' }}>
+        <div className="dashboard-alert-banner mb-32 border-l-4 border-danger bg-[rgba(231,76,60,0.1)] p-16 rounded-r-lg">
           <div className="flex gap-16 items-center">
             <AlertTriangle size={32} className="text-danger animate-pulse" />
             <div className="flex-1">
@@ -241,7 +241,7 @@ export default function Dashboard() {
       {/* Área de Gráficos */}
       <div className="dashboard-charts-grid mb-32">
         {/* Proyector de Flujo de Efectivo (Novedad) */}
-        <div className="data-card data-card-padded" style={{ gridColumn: '1 / -1' }}>
+        <div className="data-card data-card-padded">
           <div className="flex justify-between items-center mb-24">
             <h3 className="m-0 flex items-center gap-8 font-bold text-lg">
               <TrendingUp size={20} className="text-success" /> Proyección de Flujo de Efectivo (30 Días)
@@ -250,7 +250,7 @@ export default function Dashboard() {
               Datrah Forecaster AI
             </span>
           </div>
-          <div className="chart-container" style={{ height: '350px' }}>
+          <div className="chart-container">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={forecastData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <defs>

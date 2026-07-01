@@ -32,41 +32,16 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      backgroundColor: 'var(--bg-app)',
-      padding: '20px'
-    }}>
-      <div className="modal-content" style={{
-        maxWidth: '400px',
-        width: '100%',
-        backgroundColor: 'var(--bg-sidebar)',
-        border: '1px solid var(--border-color)',
-        borderRadius: 'var(--radius-lg)',
-        boxShadow: '0 24px 48px rgba(0, 0, 0, 0.4)'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <img src="/logo.png" alt="Datrah Systems" style={{ margin: '0 auto 24px auto', width: '220px', height: 'auto', borderRadius: '24px', boxShadow: '0 12px 32px rgba(0,0,0,0.6)' }} />
-          <h1 style={{ fontSize: '24px', fontWeight: '700', letterSpacing: '-0.5px' }}>Iniciar Sesión</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '6px' }}>Ingresa a Datrah Systems</p>
+    <div>
+      <div className="modal-content">
+        <div>
+          <img src="/logo.png" alt="Datrah Systems" />
+          <h1>Iniciar Sesión</h1>
+          <p>Ingresa a Datrah Systems</p>
         </div>
 
         {error && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            backgroundColor: 'var(--danger-glow)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
-            color: 'var(--danger)',
-            padding: '12px 16px',
-            borderRadius: 'var(--radius-md)',
-            marginBottom: '20px',
-            fontSize: '14px'
-          }}>
+          <div>
             <AlertCircle size={18} />
             <span>{error}</span>
           </div>
@@ -74,7 +49,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <label>
               <User size={14} /> Usuario
             </label>
             <input 
@@ -87,8 +62,8 @@ export default function Login({ onLoginSuccess }: LoginProps) {
             />
           </div>
 
-          <div className="form-group" style={{ marginBottom: '28px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div className="form-group">
+            <label>
               <Lock size={14} /> Contraseña
             </label>
             <input 
@@ -104,8 +79,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           <button 
             type="submit" 
             disabled={loading}
-            className="btn btn-primary" 
-            style={{ width: '100%', padding: '14px', justifyContent: 'center', fontSize: '15px' }}
+            className="btn btn-primary"
           >
             {loading ? 'Validando...' : 'Entrar'}
           </button>

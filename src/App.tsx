@@ -131,8 +131,8 @@ export default function App() {
     <div className="app-container">
       {/* Sidebar de Navegación */}
       <aside className="sidebar">
-        <div className="logo-container" style={{ justifyContent: 'center', padding: '24px 12px' }}>
-          <img src="/logo.png" alt="Datrah Systems" style={{ width: '160px', height: 'auto', borderRadius: '16px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)' }} />
+        <div className="logo-container app-logo-container">
+          <img src="/logo.png" alt="Datrah Systems" className="app-logo" />
         </div>
 
         {/* Info del usuario logueado */}
@@ -246,7 +246,7 @@ export default function App() {
         {/* Header Superior de Alertas de Stock */}
         <div className="header-alerts-container">
           <div className="bell-notification-trigger" onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}>
-            <Bell size={20} style={{ color: bajoStock.length > 0 ? 'var(--danger)' : 'var(--text-secondary)' }} />
+            <Bell size={20} />
             {bajoStock.length > 0 && (
               <span className="notification-badge">
                 {bajoStock.length}

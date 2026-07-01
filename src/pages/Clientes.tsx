@@ -112,16 +112,15 @@ export default function Clientes() {
       </div>
 
       {/* Buscador */}
-      <div className="data-card" style={{ marginBottom: '24px', padding: '16px' }}>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <Search style={{ color: 'var(--text-secondary)' }} size={20} />
+      <div className="data-card">
+        <div>
+          <Search size={20} />
           <input 
             type="text" 
             placeholder="Buscar por RUT/RFC/DNI o nombre de cliente..." 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
             className="form-control"
-            style={{ flex: 1, border: 'none', background: 'transparent', padding: '8px' }}
           />
         </div>
       </div>
@@ -137,33 +136,33 @@ export default function Clientes() {
                 <th>Email</th>
                 <th>Teléfono</th>
                 <th>Dirección</th>
-                <th style={{ textAlign: 'right' }}>Acciones</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '24px' }}>Cargando clientes...</td>
+                  <td colSpan={6}>Cargando clientes...</td>
                 </tr>
               ) : filteredClientes.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-secondary)' }}>No se encontraron clientes</td>
+                  <td colSpan={6}>No se encontraron clientes</td>
                 </tr>
               ) : (
                 filteredClientes.map((c) => (
                   <tr key={c.id}>
-                    <td style={{ fontFamily: 'monospace', fontWeight: '500' }}>{c.documentoIdentidad}</td>
-                    <td style={{ fontWeight: '600' }}>{c.nombre}</td>
+                    <td>{c.documentoIdentidad}</td>
+                    <td>{c.nombre}</td>
                     <td>{c.email || '-'}</td>
                     <td>{c.telefono || '-'}</td>
-                    <td style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{c.direccion || '-'}</td>
-                    <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', gap: '8px' }}>
-                        <button className="btn btn-secondary" style={{ padding: '6px', borderRadius: '8px' }} onClick={() => handleOpenModal(c)}>
+                    <td>{c.direccion || '-'}</td>
+                    <td>
+                      <div>
+                        <button className="btn btn-secondary" onClick={() => handleOpenModal(c)}>
                           <Edit3 size={16} />
                         </button>
-                        <button className="btn btn-secondary" style={{ padding: '6px', borderRadius: '8px', border: '1px solid rgba(239, 68, 68, 0.2)' }} onClick={() => handleDeleteCliente(c.id!)}>
-                          <Trash2 size={16} style={{ color: 'var(--danger)' }} />
+                        <button className="btn btn-secondary" onClick={() => handleDeleteCliente(c.id!)}>
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -180,7 +179,7 @@ export default function Clientes() {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>{selectedCliente ? 'Editar Cliente' : 'Nuevo Cliente'}</h2>
-            <form onSubmit={handleSaveCliente} style={{ marginTop: '20px' }}>
+            <form onSubmit={handleSaveCliente}>
               <div className="form-group">
                 <label>Nombre del Cliente *</label>
                 <input 
@@ -233,7 +232,7 @@ export default function Clientes() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '24px' }}>
+              <div>
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
                 <button type="submit" className="btn btn-primary">Guardar Cliente</button>
               </div>
