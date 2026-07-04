@@ -198,9 +198,7 @@ export default function Contabilidad() {
             Plan de Cuentas
           </button>
           <button
-            onClick={() => setActiveTab('nuevo')}
-            className={`btn flex-center-gap-8 ${activeTab === 'nuevo' ? 'btn-success text-white' : 'btn-secondary text-success'}`}
-            className={`tab-btn ${activeTab === 'nuevo' ? 'bg-success text-white border-success' : 'border-success text-success'}`}
+            className={`btn flex-center-gap-8 tab-btn ${activeTab === 'nuevo' ? 'btn-success text-white bg-success border-success' : 'btn-secondary text-success border-success'}`}
           >
             <PlusCircle size={18} /> Nuevo Comprobante
           </button>
