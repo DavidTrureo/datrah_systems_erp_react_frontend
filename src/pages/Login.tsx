@@ -88,3 +88,4 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     </div>
   );
 }
+// Trigger IDE refresh

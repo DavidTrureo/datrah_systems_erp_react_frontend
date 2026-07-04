@@ -371,6 +371,7 @@ export default function Contabilidad() {
               <div className="form-group">
                 <label>Tipo de Comprobante</label>
                 <select 
+                  title="Tipo de Comprobante"
                   className="form-control"
                   value={nuevoComp.tipo}
                   onChange={e => setNuevoComp({...nuevoComp, tipo: e.target.value})}
@@ -385,6 +386,8 @@ export default function Contabilidad() {
                 <label>Fecha</label>
                 <input 
                   type="date" 
+                  title="Fecha"
+                  placeholder="Fecha"
                   className="form-control"
                   value={nuevoComp.fecha}
                   onChange={e => setNuevoComp({...nuevoComp, fecha: e.target.value})}
@@ -411,6 +414,7 @@ export default function Contabilidad() {
                 <div className="form-group m-0">
                   <label>Cuenta Contable</label>
                   <select 
+                    title="Cuenta Contable"
                     className="form-control"
                     value={detalleForm.cuenta?.id || ''}
                     onChange={e => {
@@ -426,15 +430,15 @@ export default function Contabilidad() {
                 </div>
                 <div className="form-group m-0">
                   <label>Glosa Línea (Opcional)</label>
-                  <input type="text" className="form-control" value={detalleForm.glosaLinea} onChange={e => setDetalleForm({...detalleForm, glosaLinea: e.target.value})} placeholder="Detalle..." />
+                  <input type="text" title="Glosa" className="form-control" value={detalleForm.glosaLinea} onChange={e => setDetalleForm({...detalleForm, glosaLinea: e.target.value})} placeholder="Detalle..." />
                 </div>
                 <div className="form-group m-0">
                   <label>Debe ($)</label>
-                  <input type="number" min="0" className="form-control" value={detalleForm.debe} onChange={e => setDetalleForm({...detalleForm, debe: Number(e.target.value)})} />
+                  <input type="number" title="Debe" placeholder="Debe" min="0" className="form-control" value={detalleForm.debe} onChange={e => setDetalleForm({...detalleForm, debe: Number(e.target.value)})} />
                 </div>
                 <div className="form-group m-0">
                   <label>Haber ($)</label>
-                  <input type="number" min="0" className="form-control" value={detalleForm.haber} onChange={e => setDetalleForm({...detalleForm, haber: Number(e.target.value)})} />
+                  <input type="number" title="Haber" placeholder="Haber" min="0" className="form-control" value={detalleForm.haber} onChange={e => setDetalleForm({...detalleForm, haber: Number(e.target.value)})} />
                 </div>
                 <div className="pb-4">
                   <button type="button" onClick={handleAddDetalle} className="btn">
@@ -504,6 +508,7 @@ export default function Contabilidad() {
             <h2>Libro Mayor</h2>
             <div className="form-group m-0">
               <select 
+                title="Cuenta Mayor"
                 className="form-control"
                 value={selectedCuentaMayor}
                 onChange={e => {

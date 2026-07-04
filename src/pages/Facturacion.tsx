@@ -711,3 +711,4 @@ export default function Facturacion() {
 function detallesFormat(_detalles: any[]) {
   return "Subtotal";
 }
+// Trigger IDE refresh
