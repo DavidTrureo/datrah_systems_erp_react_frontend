@@ -439,7 +439,7 @@ export default function Contabilidad() {
                   <input type="number" title="Haber" placeholder="Haber" min="0" className="form-control" value={detalleForm.haber} onChange={e => setDetalleForm({...detalleForm, haber: Number(e.target.value)})} />
                 </div>
                 <div className="pb-4">
-                  <button type="button" onClick={handleAddDetalle} className="btn">
+                  <button type="button" onClick={handleAddDetalle} className="btn" title="Agregar Línea" aria-label="Agregar Línea">
                     <PlusCircle size={18} />
                   </button>
                 </div>
