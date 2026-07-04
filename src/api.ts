@@ -57,6 +57,32 @@ export interface Factura {
   detalles: DetalleFactura[];
 }
 
+export interface Cotizacion {
+  id: number;
+  numeroCotizacion: string;
+  fechaEmision: string;
+  validezDias: number;
+  cliente: Cliente | null;
+  subtotal: number;
+  impuestoPorcentaje: number;
+  impuestoValor: number;
+  descuento: number;
+  descuentoGlobal: number;
+  total: number;
+  estado: string;
+  notas: string | null;
+  detalles: DetalleCotizacion[];
+}
+
+export interface DetalleCotizacion {
+  id: number;
+  producto: Producto;
+  cantidad: number;
+  precioUnitario: number;
+  descuento: number;
+  subtotal: number;
+}
+
 export interface Kardex {
   id?: number;
   producto: Producto;
@@ -275,24 +301,14 @@ export const api = {
 
   // Facturas
   getFacturas: () => request<Factura[]>('/facturas'),
-  getFactura: (id: number) => request<Factura>(`/facturas/${id}`),
-  crearFactura: (data: { 
-    clienteId: number; 
-    metodoPago: string; 
-    impuestoPorcentaje?: number; 
-    notas?: string; 
-    descuentoGlobalTipo?: string; 
-    descuentoGlobalValor?: number;
-    detalles: { 
-      productoId: number; 
-      cantidad: number; 
-      descuento?: number; 
-      tipoDescuento?: string; 
-      valorDescuento?: number; 
-    }[] 
-  }) => 
-    request<Factura>('/facturas', { method: 'POST', body: JSON.stringify(data) }),
-  anularFactura: (id: number) => request<Factura>(`/facturas/${id}/anular`, { method: 'POST' }),
+  crearFactura: (data: any) => request<Factura>('/facturas', { method: 'POST', body: JSON.stringify(data) }),
+  anularFactura: (id: number) => request<void>(`/facturas/${id}/anular`, { method: 'POST' }),
+  
+  // Cotizaciones
+  getCotizaciones: () => request<Cotizacion[]>('/cotizaciones'),
+  crearCotizacion: (data: any) => request<Cotizacion>('/cotizaciones', { method: 'POST', body: JSON.stringify(data) }),
+  cambiarEstadoCotizacion: (id: number, estado: string) => request<void>(`/cotizaciones/${id}/estado?estado=${estado}`, { method: 'PUT' }),
+
   descargarFacturaPdf: async (id: number) => {
     const headers: Record<string, string> = {};
     const currentUserRaw = localStorage.getItem('currentUser');

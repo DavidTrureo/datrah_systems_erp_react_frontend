@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Send, Bot, Sparkles, AlertCircle } from 'lucide-react';
+import { X, Send, Sparkles, AlertCircle } from 'lucide-react';
 import { api } from '../api';
 
 interface Message {
@@ -22,6 +22,43 @@ export function Copilot() {
     }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const copilotRef = useRef<HTMLDivElement>(null);
+
+  // Drag and drop state
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const initialMouse = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (copilotRef.current) {
+      copilotRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
+    }
+  }, [position]);
+  const initialPos = useRef({ x: 0, y: 0 });
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    // Only allow dragging from the header
+    if (!(e.target as HTMLElement).closest('.copilot-header')) return;
+    setIsDragging(true);
+    initialMouse.current = { x: e.clientX, y: e.clientY };
+    initialPos.current = { ...position };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    const dx = e.clientX - initialMouse.current.x;
+    const dy = e.clientY - initialMouse.current.y;
+    setPosition({
+      x: initialPos.current.x + dx,
+      y: initialPos.current.y + dy
+    });
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+  };
 
   // Auto-scroll to bottom
   const scrollToBottom = () => {
@@ -85,36 +122,48 @@ export function Copilot() {
   };
 
   return (
-    <div className="fixed bottom-24 right-24 z-50">
+    <div 
+      ref={copilotRef}
+      className="fixed bottom-24 right-24 z-50 transition-transform duration-200"
+    >
       {/* Botón flotante */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="btn btn-primary rounded-full shadow-xl flex-center-gap-8 relative group copilot-btn"
+          className="copilot-btn flex-center-gap-8 relative group"
           title="Abrir Copilot"
         >
-          <div className="absolute -top-2 -right-2 bg-danger rounded-full w-4 h-4 animate-ping"></div>
-          <div className="absolute -top-2 -right-2 bg-danger rounded-full w-4 h-4 border-2 border-primary"></div>
-          <Sparkles size={28} className="text-white group-hover:scale-110 transition-transform" />
+          <div className="absolute top-0 right-0 bg-danger rounded-full w-3 h-3 animate-ping"></div>
+          <div className="absolute top-0 right-0 bg-danger rounded-full w-3 h-3 border-2 border-primary"></div>
+          <Sparkles size={24} className="text-white group-hover:scale-110 transition-transform" />
         </button>
       )}
 
       {/* Ventana de chat */}
       {isOpen && (
-        <div className="bg-secondary rounded-xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 copilot-window">
+        <div 
+          className="copilot-window shadow-2xl flex flex-col"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+        >
           {/* Header */}
-          <div className="p-16 flex items-center justify-between copilot-header">
+          <div className="p-16 flex items-center justify-between copilot-header cursor-move select-none">
             <div className="flex items-center gap-12">
-              <div className="bg-primary p-8 rounded-lg">
-                <Bot size={24} className="text-white" />
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#4f46e5] flex items-center justify-center shadow-lg shadow-primary/30">
+                <Sparkles size={20} className="text-white" />
               </div>
               <div>
-                <h3 className="m-0 font-bold copilot-title">Datrah Copilot <span className="text-xs px-8 py-2 rounded-full bg-primary/20 text-primary font-bold ml-4 border border-primary/30">AI</span></h3>
-                <p className="m-0 text-muted copilot-subtitle">Inteligencia Financiera</p>
+                <h3 className="m-0 text-white font-semibold text-[16px] tracking-wide flex items-center gap-8">
+                  Copilot
+                  <span className="text-[10px] uppercase tracking-wider px-6 py-2 rounded-full bg-white/10 text-white/80 border border-white/20">Beta</span>
+                </h3>
+                <p className="m-0 text-muted text-[12px] mt-2">Inteligencia Financiera</p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-muted hover:text-white transition-colors" title="Cerrar">
-              <X size={20} />
+            <button onClick={() => setIsOpen(false)} className="bg-transparent border-none p-8 hover:bg-white/10 rounded-full text-muted hover:text-white transition-colors flex items-center justify-center" title="Cerrar">
+              <X size={18} />
             </button>
           </div>
 
@@ -123,11 +172,11 @@ export function Copilot() {
             <div className="flex flex-col gap-16">
               {messages.map(msg => (
                 <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] rounded-2xl p-12 shadow-sm ${msg.sender === 'user' ? 'bg-primary text-white rounded-tr-sm' : 'bg-secondary border border-white/5 rounded-tl-sm'}`}>
+                  <div className={`max-w-[85%] rounded-2xl p-12 shadow-sm backdrop-blur-md ${msg.sender === 'user' ? 'bg-gradient-to-r from-primary to-[#4f46e5] text-white rounded-tr-sm' : 'bg-white/5 border border-white/10 text-white/90 rounded-tl-sm'}`}>
                     {msg.sender === 'ai' && (
-                      <div className="flex items-center gap-8 mb-4">
-                        <Sparkles size={14} className="text-primary" />
-                        <span className="text-xs font-bold text-primary">Copilot</span>
+                      <div className="flex items-center gap-6 mb-8">
+                        <Sparkles size={12} className="text-primary" />
+                        <span className="text-[11px] font-medium text-primary uppercase tracking-wider">Copilot</span>
                       </div>
                     )}
                     <p className="m-0 copilot-msg-text">
@@ -136,7 +185,7 @@ export function Copilot() {
                         i % 2 === 1 ? <strong key={i}>{chunk}</strong> : chunk
                       ))}
                     </p>
-                    <div className={`text-right mt-4 text-[10px] ${msg.sender === 'user' ? 'text-white/70' : 'text-muted'}`}>
+                    <div className={`text-right mt-4 text-[10px] ${msg.sender === 'user' ? 'text-white/70' : 'text-white/40'}`}>
                       {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
@@ -144,9 +193,9 @@ export function Copilot() {
               ))}
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="bg-secondary border border-white/5 rounded-2xl rounded-tl-sm p-12 max-w-[85%]">
+                  <div className="bg-white/5 border border-white/10 text-white/90 rounded-2xl rounded-tl-sm p-12 max-w-[85%] shadow-sm backdrop-blur-md">
                     <div className="flex gap-4">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-0"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
                       <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-150"></div>
                       <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-300"></div>
                     </div>
@@ -158,12 +207,12 @@ export function Copilot() {
           </div>
 
           {/* Input */}
-          <div className="p-16 bg-secondary copilot-footer">
-            <div className="relative flex items-center">
+          <div className="p-16 copilot-footer">
+            <div className="relative flex items-center bg-white/5 border border-white/10 rounded-full px-4 focus-within:border-primary/50 focus-within:bg-white/10 transition-all shadow-inner">
               <input
                 type="text"
-                placeholder="Pregúntale a Datrah AI..."
-                className="form-control w-full pr-48 copilot-input"
+                placeholder="Pregúntale a Copilot..."
+                className="bg-transparent border-none text-white text-[14px] w-full copilot-input outline-none placeholder:text-muted"
                 value={inputValue}
                 onChange={e => setInputValue(e.target.value)}
                 onKeyDown={e => {
@@ -173,14 +222,14 @@ export function Copilot() {
               <button 
                 onClick={handleSend}
                 disabled={!inputValue.trim()}
-                className="absolute right-8 p-8 rounded-full bg-primary text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-colors"
+                className="absolute right-6 w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white disabled:opacity-30 disabled:bg-white/10 transition-all border-none"
                 title="Enviar mensaje"
               >
-                <Send size={16} />
+                <Send size={14} className={inputValue.trim() ? "ml-[-2px]" : ""} />
               </button>
             </div>
-            <div className="text-center mt-8">
-              <span className="text-[10px] text-muted flex items-center justify-center gap-4">
+            <div className="text-center mt-12">
+              <span className="text-[10px] text-white/40 flex items-center justify-center gap-4">
                 <AlertCircle size={10} /> Copilot puede cometer errores. Verifica la info.
               </span>
             </div>

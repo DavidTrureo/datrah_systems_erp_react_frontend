@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api, type Usuario, type LogActividad } from '../api';
+import { Edit2, UserX, UserCheck } from 'lucide-react';
 
 const Administracion: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'usuarios' | 'bitacora'>('usuarios');
@@ -116,7 +117,7 @@ const Administracion: React.FC = () => {
   const toggleUsuarioActivo = async (u: Usuario) => {
     if (!u.id) return;
     try {
-      await api.actualizarUsuario(u.id, { activo: !u.activo });
+      await api.actualizarUsuario(u.id, { ...u, activo: !u.activo });
       fetchUsuarios();
     } catch (error) {
       console.error('Error cambiando estado de usuario:', error);
@@ -132,19 +133,21 @@ const Administracion: React.FC = () => {
         </div>
       </div>
 
-      <div className="tabs flex gap-16 mb-24 border-b border-[var(--border-color)]">
-        <button
-          className={`tab-btn ${activeTab === 'usuarios' ? 'active' : ''}`}
-          onClick={() => setActiveTab('usuarios')}
-        >
-          Gestión de Usuarios
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'bitacora' ? 'active' : ''}`}
-          onClick={() => setActiveTab('bitacora')}
-        >
-          Bitácora de Auditoría
-        </button>
+      <div className="data-card mt-32 tabs-container-flat mb-24">
+        <div className="tabs-header-border">
+          <button
+            onClick={() => setActiveTab('usuarios')}
+            className={`btn ${activeTab === 'usuarios' ? 'btn-primary' : 'btn-secondary'}`}
+          >
+            Gestión de Usuarios
+          </button>
+          <button
+            onClick={() => setActiveTab('bitacora')}
+            className={`btn ${activeTab === 'bitacora' ? 'btn-primary' : 'btn-secondary'}`}
+          >
+            Bitácora de Auditoría
+          </button>
+        </div>
       </div>
 
       {activeTab === 'usuarios' && (
@@ -239,7 +242,7 @@ const Administracion: React.FC = () => {
                     </label>
                   </div>
                 )}
-                <div>
+                <div className="flex justify-end gap-16 mt-24">
                   {editingUsuario && (
                     <button
                       type="button"
@@ -294,18 +297,20 @@ const Administracion: React.FC = () => {
                             {u.activo ? 'Activo' : 'Inactivo'}
                           </span>
                         </td>
-                        <td>
+                        <td className="flex items-center gap-8">
                           <button
                             onClick={() => handleEditUsuario(u)}
-                            className="btn btn-secondary"
+                            className="btn btn-secondary btn-icon-sm p-8"
+                            title="Editar Usuario"
                           >
-                            Editar
+                            <Edit2 size={16} className="text-primary" />
                           </button>
                           <button
                             onClick={() => toggleUsuarioActivo(u)}
-                            className="btn btn-secondary"
+                            className="btn btn-secondary btn-icon-sm p-8"
+                            title={u.activo ? 'Desactivar Usuario' : 'Activar Usuario'}
                           >
-                            {u.activo ? 'Desactivar' : 'Activar'}
+                            {u.activo ? <UserX size={16} className="text-danger" /> : <UserCheck size={16} className="text-success" />}
                           </button>
                         </td>
                       </tr>

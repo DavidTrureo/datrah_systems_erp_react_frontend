@@ -112,15 +112,15 @@ export default function Proveedores() {
       </div>
 
       {/* Buscador */}
-      <div className="data-card">
-        <div>
-          <Search size={20} />
+      <div className="data-card p-16 mb-24">
+        <div className="relative">
+          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
           <input 
             type="text" 
-            placeholder="Buscar por RUT/RFC/NIT o nombre del proveedor..." 
+            placeholder="Buscar por RUT/RFC/DNI o razón social..." 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
-            className="form-control"
+            className="form-control !pl-12 w-full"
           />
         </div>
       </div>
@@ -157,12 +157,12 @@ export default function Proveedores() {
                     <td>{p.telefono || '-'}</td>
                     <td>{p.direccion || '-'}</td>
                     <td>
-                      <div>
-                        <button className="btn btn-secondary" onClick={() => handleOpenModal(p)}>
-                          <Edit3 size={16} />
+                      <div className="flex items-center gap-2">
+                        <button className="btn btn-secondary" onClick={() => handleOpenModal(p)} title="Editar" aria-label="Editar">
+                          <Edit3 size={18} />
                         </button>
-                        <button className="btn btn-secondary" onClick={() => handleDeleteProveedor(p.id!)}>
-                          <Trash2 size={16} />
+                        <button className="btn btn-secondary" onClick={() => handleDeleteProveedor(p.id!)} title="Eliminar" aria-label="Eliminar">
+                          <Trash2 size={18} />
                         </button>
                       </div>
                     </td>
@@ -181,10 +181,13 @@ export default function Proveedores() {
             <h2>{selectedProveedor ? 'Editar Proveedor' : 'Nuevo Proveedor'}</h2>
             <form onSubmit={handleSaveProveedor}>
               <div className="form-group">
-                <label>Nombre del Proveedor *</label>
+                <label htmlFor="nombre">Nombre del Proveedor *</label>
                 <input 
+                  id="nombre"
                   type="text" 
                   required 
+                  title="Nombre del Proveedor"
+                  placeholder="Ej. Empresa SA"
                   value={formData.nombre} 
                   onChange={(e) => setFormData({ ...formData, nombre: e.target.value })} 
                   className="form-control"
@@ -192,10 +195,13 @@ export default function Proveedores() {
               </div>
 
               <div className="form-group">
-                <label>Documento de Identidad (RFC / RUT / NIT) *</label>
+                <label htmlFor="documentoIdentidad">Documento de Identidad (RFC / RUT / DNI) *</label>
                 <input 
+                  id="documentoIdentidad"
                   type="text" 
                   required 
+                  title="Documento de Identidad"
+                  placeholder="Ej. 12345678-9"
                   value={formData.documentoIdentidad} 
                   onChange={(e) => setFormData({ ...formData, documentoIdentidad: e.target.value })} 
                   className="form-control"
@@ -203,9 +209,12 @@ export default function Proveedores() {
               </div>
 
               <div className="form-group">
-                <label>Correo Electrónico</label>
+                <label htmlFor="email">Correo Electrónico</label>
                 <input 
+                  id="email"
                   type="email" 
+                  title="Correo Electrónico"
+                  placeholder="contacto@empresa.com"
                   value={formData.email} 
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })} 
                   className="form-control"
@@ -213,9 +222,12 @@ export default function Proveedores() {
               </div>
 
               <div className="form-group">
-                <label>Teléfono de Contacto</label>
+                <label htmlFor="telefono">Teléfono de Contacto</label>
                 <input 
+                  id="telefono"
                   type="text" 
+                  title="Teléfono"
+                  placeholder="+1 234 567 890"
                   value={formData.telefono} 
                   onChange={(e) => setFormData({ ...formData, telefono: e.target.value })} 
                   className="form-control"
@@ -223,8 +235,11 @@ export default function Proveedores() {
               </div>
 
               <div className="form-group">
-                <label>Dirección</label>
+                <label htmlFor="direccion">Dirección</label>
                 <textarea 
+                  id="direccion"
+                  title="Dirección"
+                  placeholder="Dirección completa..."
                   value={formData.direccion} 
                   onChange={(e) => setFormData({ ...formData, direccion: e.target.value })} 
                   className="form-control"
@@ -232,7 +247,7 @@ export default function Proveedores() {
                 />
               </div>
 
-              <div>
+              <div className="flex justify-end gap-16 mt-24">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
                 <button type="submit" className="btn btn-primary">Guardar Proveedor</button>
               </div>

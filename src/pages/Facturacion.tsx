@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api, type Cliente, type Producto, type Factura } from '../api';
 import { Plus, Trash2, ShoppingCart, User, CreditCard, Ban, FileText, Printer, Percent } from 'lucide-react';
+import { generarTicketPDF } from '../utils/pdfGenerator';
 
 interface CartItem {
   producto: Producto;
@@ -33,13 +34,9 @@ export default function Facturacion() {
   const [globalDiscountType, setGlobalDiscountType] = useState<string>('NINGUNO');
   const [globalDiscountVal, setGlobalDiscountVal] = useState<number>(0);
 
-  // Print Invoice States
-  const [showPrintModal, setShowPrintModal] = useState(false);
-  const [invoiceToPrint, setInvoiceToPrint] = useState<Factura | null>(null);
-
+  // Print Invoice Handler
   const handleOpenPrintModal = (fac: Factura) => {
-    setInvoiceToPrint(fac);
-    setShowPrintModal(true);
+    generarTicketPDF(fac);
   };
 
   useEffect(() => {
@@ -126,7 +123,6 @@ export default function Facturacion() {
     setCart(updatedCart);
   };
 
-  // Calcular totales temporales
   // Calcular totales temporales
   const subtotal = cart.reduce((sum, item) => {
     return sum + (item.cantidad * item.producto.precioVenta - item.descuento);
@@ -603,112 +599,7 @@ export default function Facturacion() {
         </div>
       </div>
 
-      {/* MODAL DE IMPRESIÓN DE FACTURA (TICKET/A4) */}
-      {showPrintModal && invoiceToPrint && (
-        <div className="modal-overlay print-modal-overlay">
-          <div className="modal-content print-modal-content">
-            
-            {/* Header del Ticket */}
-            <div className="ticket-header">
-              <h2 className="ticket-title">DATRAH SYSTEMS</h2>
-              <p className="ticket-subtitle">Distribución & Facturación de Stock Profesional</p>
-              <p className="ticket-meta-line">Av. de las Américas 1234, Santiago</p>
-              <p className="ticket-meta-line">Teléfono: +56 2 2222 3333</p>
-            </div>
 
-            {/* Datos de la Factura */}
-            <div className="ticket-metadata-grid">
-              <div>
-                <strong>Nº Factura:</strong> {invoiceToPrint.numeroFactura}<br />
-                <strong>Fecha:</strong> {new Date(invoiceToPrint.fechaEmision).toLocaleString()}<br />
-                <strong>Estado:</strong> <span className={invoiceToPrint.estado === 'EMITIDA' ? 'status-green' : 'status-red'}>{invoiceToPrint.estado}</span>
-              </div>
-              <div className="text-right">
-                <strong>Cliente:</strong> {invoiceToPrint.cliente?.nombre}<br />
-                <strong>Doc. Identidad:</strong> {invoiceToPrint.cliente?.documentoIdentidad}<br />
-                <strong>Método Pago:</strong> {invoiceToPrint.metodoPago}
-              </div>
-            </div>
-
-            {/* Listado de items */}
-            <table className="ticket-table">
-              <thead>
-                <tr className="border-b-padded">
-                  <th className="ticket-table-th-left">Descripción</th>
-                  <th className="ticket-table-th-center">Cant.</th>
-                  <th className="ticket-table-th-right">Precio Unit.</th>
-                  <th className="ticket-table-th-right-danger">Descuento</th>
-                  <th className="ticket-table-th-right-bold">${detallesFormat(invoiceToPrint.detalles)}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoiceToPrint.detalles?.map((det) => (
-                  <tr key={det.id} className="ticket-table-tr-dashed">
-                    <td className="ticket-table-td-left">{det.producto?.nombre}</td>
-                    <td className="ticket-table-td-center">{det.cantidad}</td>
-                    <td className="ticket-table-td-right">${det.precioUnitario.toFixed(0)}</td>
-                    <td className="ticket-table-td-right-danger">-${det.descuento.toFixed(0)}</td>
-                    <td className="ticket-table-td-right-bold">${det.subtotal.toFixed(0)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {/* Desglose de totales */}
-            <div className="ticket-totales-container">
-              <div>Subtotal Neto: <strong className="ml-12">${invoiceToPrint.subtotal.toLocaleString('es-CL')}</strong></div>
-              {invoiceToPrint.descuentoGlobal && invoiceToPrint.descuentoGlobal > 0 ? (
-                <>
-                  <div>Desc. Global: <strong className="ml-12-red">-${invoiceToPrint.descuentoGlobal.toLocaleString('es-CL')}</strong></div>
-                  <div>Base Afecta: <strong className="ml-12">${(invoiceToPrint.subtotal - invoiceToPrint.descuentoGlobal).toLocaleString('es-CL')}</strong></div>
-                </>
-              ) : null}
-              <div>IVA ({invoiceToPrint.impuestoPorcentaje}%): <strong className="ml-12">${invoiceToPrint.impuestoValor.toLocaleString('es-CL')}</strong></div>
-              {invoiceToPrint.metodoPago === 'EFECTIVO' && (() => {
-                const exactTotal = (invoiceToPrint.subtotal - (invoiceToPrint.descuentoGlobal || 0)) + invoiceToPrint.impuestoValor;
-                const rDiff = invoiceToPrint.total - exactTotal;
-                if (rDiff !== 0) {
-                  return (
-                    <div>Redondeo Ley: <strong className="ml-12">{rDiff > 0 ? `+$${rDiff}` : `-$${Math.abs(rDiff)}`}</strong></div>
-                  );
-                }
-                return null;
-              })()}
-              <div className="ticket-total-row">Total Cobrado: <span className="ml-12">${invoiceToPrint.total.toLocaleString('es-CL')}</span></div>
-            </div>
-
-            {/* Notas */}
-            {invoiceToPrint.notas && (
-              <div className="ticket-notes-box">
-                <strong>Observaciones:</strong> {invoiceToPrint.notas}
-              </div>
-            )}
-
-            {/* Mensaje de pie */}
-            <div className="ticket-footer">
-              ¡Gracias por preferir nuestros servicios!<br />
-              <strong>Datrah Systems - Software ERP Profesional</strong>
-            </div>
-
-            {/* Botones de acción no imprimibles */}
-            <div className="no-print flex-end-gap-12-mt-30">
-              <button className="btn btn-secondary btn-close-ticket" onClick={() => setShowPrintModal(false)}>
-                Cerrar Vista
-              </button>
-              <button className="btn btn-primary" onClick={() => window.print()}>
-                Imprimir Documento (PDF)
-              </button>
-            </div>
-
-          </div>
-        </div>
-      )}
     </div>
   );
 }
-
-// Helper para evitar error de JSX en th
-function detallesFormat(_detalles: any[]) {
-  return "Subtotal";
-}
-// Trigger IDE refresh

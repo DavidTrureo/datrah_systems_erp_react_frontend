@@ -115,53 +115,72 @@ export default function Finanzas() {
       </div>
 
       {/* Tarjetas KPI Financieros */}
+      {/* Tarjetas KPI Financieros */}
       {resumen && (
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon-wrapper income">
-              <TrendingUp size={24} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24 mb-32">
+          <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-success/20 rounded-full blur-xl group-hover:bg-success/30 transition-all"></div>
+            <div className="flex justify-between items-start mb-16 relative z-10">
+              <span className="text-muted font-medium uppercase tracking-wider text-xs">Ingresos Reales</span>
+              <div className="p-8 bg-success/10 rounded-lg text-success">
+                <TrendingUp size={20} />
+              </div>
             </div>
-            <div className="stat-info">
-              <h3>Ingresos Reales</h3>
-              <p className="stat-number text-success">${resumen.totalIngresos.toLocaleString('es-CL')}</p>
-              <span className="stat-meta">Ventas contado + abonos cobrados</span>
+            <div className="text-3xl font-mono font-bold text-white relative z-10">
+              ${resumen.totalIngresos.toLocaleString('es-CL')}
             </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-icon-wrapper expense">
-              <TrendingDown size={24} />
-            </div>
-            <div className="stat-info">
-              <h3>Egresos Reales</h3>
-              <p className="stat-number text-danger">${resumen.totalEgresos.toLocaleString('es-CL')}</p>
-              <span className="stat-meta">Compras contado + abonos pagados</span>
+            <div className="text-xs text-muted mt-8 relative z-10">
+              Ventas contado + abonos cobrados
             </div>
           </div>
 
-          <div className="stat-card">
-            <div className="stat-icon-wrapper stat-icon-wrapper-primary">
-              <DollarSign size={24} />
+          <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-danger/20 rounded-full blur-xl group-hover:bg-danger/30 transition-all"></div>
+            <div className="flex justify-between items-start mb-16 relative z-10">
+              <span className="text-muted font-medium uppercase tracking-wider text-xs">Egresos Reales</span>
+              <div className="p-8 bg-danger/10 rounded-lg text-danger">
+                <TrendingDown size={20} />
+              </div>
             </div>
-            <div className="stat-info">
-              <h3>Caja / Saldo Neto</h3>
-              <p className={`stat-number ${resumen.saldoNeto >= 0 ? 'text-primary' : 'text-danger'}`}>
+            <div className="text-3xl font-mono font-bold text-white relative z-10">
+              ${resumen.totalEgresos.toLocaleString('es-CL')}
+            </div>
+            <div className="text-xs text-muted mt-8 relative z-10">
+              Compras contado + abonos pagados
+            </div>
+          </div>
+
+          <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/20 rounded-full blur-xl group-hover:bg-primary/30 transition-all"></div>
+            <div className="flex justify-between items-start mb-16 relative z-10">
+              <span className="text-muted font-medium uppercase tracking-wider text-xs">Caja / Saldo Neto</span>
+              <div className="p-8 bg-primary/10 rounded-lg text-primary">
+                <DollarSign size={20} />
+              </div>
+            </div>
+            <div className="text-3xl font-mono font-bold text-white relative z-10">
+              <span className={resumen.saldoNeto >= 0 ? 'text-primary' : 'text-danger'}>
                 ${resumen.saldoNeto.toLocaleString('es-CL')}
-              </p>
-              <span className="stat-meta">Diferencia de flujo real</span>
+              </span>
+            </div>
+            <div className="text-xs text-muted mt-8 relative z-10">
+              Diferencia de flujo real
             </div>
           </div>
 
-          <div className="stat-card">
-            <div className="stat-icon-wrapper stat-icon-wrapper-warning">
-              <Clock size={24} />
+          <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
+            <div className="absolute -right-4 -top-4 w-24 h-24 bg-warning/20 rounded-full blur-xl group-hover:bg-warning/30 transition-all"></div>
+            <div className="flex justify-between items-start mb-16 relative z-10">
+              <span className="text-muted font-medium uppercase tracking-wider text-xs">Pendientes (CxC/CxP)</span>
+              <div className="p-8 bg-warning/10 rounded-lg text-warning">
+                <Clock size={20} />
+              </div>
             </div>
-            <div className="stat-info">
-              <h3>Pendientes (CxC / CxP)</h3>
-              <p className="stat-number text-warning">
-                ${(resumen.outstandingCxC - resumen.outstandingCxP).toLocaleString('es-CL')}
-              </p>
-              <span className="stat-meta">CxC: ${resumen.outstandingCxC.toLocaleString('es-CL')} | CxP: ${resumen.outstandingCxP.toLocaleString('es-CL')}</span>
+            <div className="text-3xl font-mono font-bold text-white relative z-10">
+              <span className="text-warning">${(resumen.outstandingCxC - resumen.outstandingCxP).toLocaleString('es-CL')}</span>
+            </div>
+            <div className="text-xs text-muted mt-8 relative z-10">
+              CxC: ${resumen.outstandingCxC.toLocaleString('es-CL')} | CxP: ${resumen.outstandingCxP.toLocaleString('es-CL')}
             </div>
           </div>
         </div>
@@ -487,7 +506,7 @@ export default function Finanzas() {
                 />
               </div>
 
-              <div className="flex-end-gap-12 mt-24">
+              <div className="flex justify-end gap-16 mt-24">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowAbonoModal(false)}>Cancelar</button>
                 <button type="submit" className="btn btn-primary">Registrar Movimiento</button>
               </div>

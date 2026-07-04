@@ -11,10 +11,11 @@ import { LayoutDashboard, ShoppingCart, Package, Users, Truck, LogOut, Bell, Dol
 import Finanzas from './pages/Finanzas';
 import Administracion from './pages/Administracion';
 import Contabilidad from './pages/Contabilidad';
-import { Book } from 'lucide-react';
+import { Book, FileText } from 'lucide-react';
 import { Copilot } from './components/Copilot';
+import Cotizaciones from './pages/Cotizaciones';
 
-type ViewType = 'dashboard' | 'facturacion' | 'inventario' | 'clientes' | 'compras' | 'proveedores' | 'finanzas' | 'administracion' | 'contabilidad';
+type ViewType = 'dashboard' | 'facturacion' | 'cotizaciones' | 'inventario' | 'clientes' | 'compras' | 'proveedores' | 'finanzas' | 'administracion' | 'contabilidad';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<LoginResponse | null>(null);
@@ -110,6 +111,8 @@ export default function App() {
         return canViewInventario ? <Inventario /> : <Dashboard />;
       case 'facturacion':
         return canViewFacturacion ? <Facturacion /> : <Dashboard />;
+      case 'cotizaciones':
+        return canViewFacturacion ? <Cotizaciones /> : <Dashboard />;
       case 'clientes':
         return canViewClientes ? <Clientes /> : <Dashboard />;
       case 'proveedores':
@@ -132,7 +135,7 @@ export default function App() {
       {/* Sidebar de Navegación */}
       <aside className="sidebar">
         <div className="logo-container app-logo-container">
-          <img src="/logo.png" alt="Datrah Systems" className="app-logo" />
+          <img src="/logo.png" alt="Datrah Systems" className="w-40 h-auto mx-auto object-contain" />
         </div>
 
         {/* Info del usuario logueado */}
@@ -154,12 +157,20 @@ export default function App() {
             </li>
             
             {canViewFacturacion && (
-              <li className={`nav-item ${activeView === 'facturacion' ? 'active' : ''}`}>
-                <a href="#facturacion" onClick={() => setActiveView('facturacion')}>
-                  <ShoppingCart size={20} />
-                  <span>Facturación (POS)</span>
-                </a>
-              </li>
+              <>
+                <li className={`nav-item ${activeView === 'facturacion' ? 'active' : ''}`}>
+                  <a href="#facturacion" onClick={() => setActiveView('facturacion')}>
+                    <ShoppingCart size={20} />
+                    <span>Facturación (POS)</span>
+                  </a>
+                </li>
+                <li className={`nav-item ${activeView === 'cotizaciones' ? 'active' : ''}`}>
+                  <a href="#cotizaciones" onClick={() => setActiveView('cotizaciones')}>
+                    <FileText size={20} />
+                    <span>Cotizaciones</span>
+                  </a>
+                </li>
+              </>
             )}
 
             {canViewClientes && (

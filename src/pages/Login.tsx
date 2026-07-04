@@ -32,24 +32,24 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   };
 
   return (
-    <div>
-      <div className="modal-content">
-        <div>
-          <img src="/logo.png" alt="Datrah Systems" />
-          <h1>Iniciar Sesión</h1>
-          <p>Ingresa a Datrah Systems</p>
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="modal-content !max-w-md w-full relative z-10 flex flex-col gap-6">
+        <div className="text-center flex flex-col items-center">
+          <img src="/logo.png" alt="Datrah Systems" className="w-48 mb-6 drop-shadow-2xl" />
+          <h1 className="text-2xl font-bold mb-2">Iniciar Sesión</h1>
+          <p className="text-white/60">Ingresa a Datrah Systems</p>
         </div>
 
         {error && (
-          <div>
-            <AlertCircle size={18} />
-            <span>{error}</span>
+          <div className="bg-red-500/10 border-l-4 border-red-500 p-4 rounded-r-lg flex items-center gap-3 text-red-200">
+            <AlertCircle size={18} className="text-red-500" />
+            <span className="text-sm">{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <div className="form-group mb-0 flex flex-col gap-2">
+            <label className="flex items-center gap-2 text-white/70 font-medium">
               <User size={14} /> Usuario
             </label>
             <input 
@@ -62,8 +62,8 @@ export default function Login({ onLoginSuccess }: LoginProps) {
             />
           </div>
 
-          <div className="form-group">
-            <label>
+          <div className="form-group mb-0 flex flex-col gap-2">
+            <label className="flex items-center gap-2 text-white/70 font-medium">
               <Lock size={14} /> Contraseña
             </label>
             <input 
@@ -79,7 +79,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
           <button 
             type="submit" 
             disabled={loading}
-            className="btn btn-primary"
+            className="btn btn-primary w-full justify-center mt-4 text-base py-3"
           >
             {loading ? 'Validando...' : 'Entrar'}
           </button>

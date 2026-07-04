@@ -121,7 +121,7 @@ export default function Dashboard() {
   return (
     <div>
       {/* Live Ticker superior */}
-      <div className="w-full bg-darker overflow-hidden flex items-center border-b border-white/5 mb-24 h-10 relative -mt-32 -ml-32 w-[calc(100%+64px)]">
+      <div className="w-full bg-[#12141d] overflow-hidden flex items-center border border-white/10 rounded-xl mb-32 h-12 relative shadow-lg">
         <div className="bg-primary h-full px-16 flex items-center gap-8 font-bold text-xs uppercase tracking-wider text-white z-10 relative shadow-[5px_0_15px_rgba(0,0,0,0.5)]">
           <Activity size={14} className="animate-pulse" /> LIVE
         </div>
@@ -238,9 +238,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Área de Gráficos */}
-      <div className="dashboard-charts-grid mb-32">
-        {/* Proyector de Flujo de Efectivo (Novedad) */}
+      {/* Proyector de Flujo de Efectivo (Full Width) */}
+      <div className="mb-32">
         <div className="data-card data-card-padded">
           <div className="flex justify-between items-center mb-24">
             <h3 className="m-0 flex items-center gap-8 font-bold text-lg">
@@ -273,7 +272,10 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
         </div>
+      </div>
 
+      {/* Área de Gráficos Secundarios */}
+      <div className="dashboard-charts-grid mb-32">
         {/* Curva de ventas */}
         <div className="data-card data-card-padded">
           <h3 className="m-0 mb-24 font-bold text-md text-white/80">

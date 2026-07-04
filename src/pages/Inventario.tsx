@@ -211,15 +211,15 @@ export default function Inventario() {
       </div>
 
       {/* Buscador */}
-      <div className="data-card mb-24-p-16">
-        <div className="flex-center-gap-16">
-          <Search size={20} />
+      <div className="data-card p-16 mb-24">
+        <div className="relative">
+          <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
           <input 
             type="text" 
-            placeholder="Buscar por código de barras o nombre..." 
+            placeholder="Buscar por código o nombre de producto..." 
             value={search} 
             onChange={(e) => setSearch(e.target.value)} 
-            className="form-control search-input-field"
+            className="form-control !pl-12 w-full"
           />
         </div>
       </div>
@@ -276,7 +276,7 @@ export default function Inventario() {
                         </button>
                       </td>
                       <td className="text-right">
-                        <div className="inline-flex-gap-8">
+                        <div className="flex items-center justify-end gap-2">
                           <button className="btn btn-secondary btn-icon-sm" title="Ver Kardex" onClick={() => handleOpenKardex(p)}>
                             <History size={16} />
                           </button>
@@ -389,7 +389,7 @@ export default function Inventario() {
                 />
               </div>
 
-              <div className="flex-end-gap-12 mt-24">
+              <div className="flex justify-end gap-16 mt-24">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowProductModal(false)}>Cancelar</button>
                 <button type="submit" className="btn btn-primary">Guardar Producto</button>
               </div>
@@ -446,7 +446,7 @@ export default function Inventario() {
                 />
               </div>
 
-              <div className="flex-end-gap-12 mt-24">
+              <div className="flex justify-end gap-16 mt-24">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowStockModal(false)}>Cancelar</button>
                 <button type="submit" className="btn btn-primary">Registrar Movimiento</button>
               </div>
