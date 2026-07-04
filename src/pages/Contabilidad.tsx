@@ -200,7 +200,7 @@ export default function Contabilidad() {
           <button
             onClick={() => setActiveTab('nuevo')}
             className={`btn flex-center-gap-8 ${activeTab === 'nuevo' ? 'btn-success text-white' : 'btn-secondary text-success'}`}
-            style={activeTab === 'nuevo' ? { backgroundColor: 'var(--success)' } : { borderColor: 'var(--success)', color: 'var(--success)' }}
+            className={`tab-btn ${activeTab === 'nuevo' ? 'bg-success text-white border-success' : 'border-success text-success'}`}
           >
             <PlusCircle size={18} /> Nuevo Comprobante
           </button>
@@ -282,7 +282,7 @@ export default function Contabilidad() {
                     comprobantes.map(comp => (
                       <React.Fragment key={comp.id}>
                         {comp.detalles.map((det, idx) => (
-                          <tr key={`${comp.id}-${idx}`} style={comp.estado === 'ANULADO' ? { opacity: 0.5, textDecoration: 'line-through' } : {}} className={idx === comp.detalles.length - 1 ? 'border-b-thick' : ''}>
+                          <tr key={`${comp.id}-${idx}`} className={`${comp.estado === 'ANULADO' ? 'opacity-50 line-through' : ''} ${idx === comp.detalles.length - 1 ? 'border-b-thick' : ''}`}>
                             {idx === 0 ? (
                               <>
                                 <td rowSpan={comp.detalles.length} className="font-semibold">{new Date(comp.fecha).toLocaleDateString()}</td>
