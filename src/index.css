@@ -550,9 +550,6 @@ table.data-table tr:hover td {
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
-  /* Scrollbar styles for the sidebar */
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-color) transparent;
 }
 
 .sidebar-nav::-webkit-scrollbar {

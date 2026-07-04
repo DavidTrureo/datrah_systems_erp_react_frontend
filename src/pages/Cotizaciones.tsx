@@ -12,7 +12,7 @@ interface CartItem {
 
 const Cotizaciones: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'nueva' | 'historial'>('nueva');
-  
+
   // Historial
   const [cotizaciones, setCotizaciones] = useState<Cotizacion[]>([]);
   const [filtroCotizacion, setFiltroCotizacion] = useState('');
@@ -23,11 +23,11 @@ const Cotizaciones: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [clienteSeleccionado, setClienteSeleccionado] = useState<number | null>(null);
-  
+
   const [descuentoGlobalValor, setDescuentoGlobalValor] = useState<number>(0);
   const [descuentoGlobalTipo, setDescuentoGlobalTipo] = useState<'PESOS' | 'PORCENTAJE'>('PESOS');
   const [notas, setNotas] = useState('');
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ const Cotizaciones: React.FC = () => {
 
   // Calculations
   const subtotal = cart.reduce((sum, item) => sum + (item.cantidad * item.producto.precioVenta), 0);
-  
+
   const descuentosItems = cart.reduce((sum, item) => {
     let desc = 0;
     if (item.tipoDescuento === 'PESOS') {
@@ -104,7 +104,7 @@ const Cotizaciones: React.FC = () => {
 
   const handleCrearCotizacion = async () => {
     if (cart.length === 0) return alert("Agrega productos");
-    
+
     setIsSubmitting(true);
     try {
       const payload = {
@@ -122,7 +122,7 @@ const Cotizaciones: React.FC = () => {
       };
 
       const result = await api.crearCotizacion(payload);
-      
+
       // Cleanup & show PDF
       setCart([]);
       setNotas('');
@@ -130,7 +130,7 @@ const Cotizaciones: React.FC = () => {
       setDescuentoGlobalValor(0);
       alert("Cotización Creada Exitosamente");
       generarCotizacionPDF(result);
-      
+
     } catch (err) {
       console.error(err);
       alert("Error al crear la cotización");
@@ -157,7 +157,7 @@ const Cotizaciones: React.FC = () => {
           valorDescuento: d.descuento
         }))
       };
-      
+
       await api.crearFactura(payload);
       await api.cambiarEstadoCotizacion(cot.id, 'FACTURADA');
       alert("Factura generada exitosamente. Revisa el módulo de Facturación.");
@@ -176,13 +176,13 @@ const Cotizaciones: React.FC = () => {
           <h1>Cotizaciones y Presupuestos</h1>
         </div>
         <div className="flex gap-8">
-          <button 
+          <button
             className={`btn ${activeTab === 'nueva' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('nueva')}
           >
             Nueva Cotización
           </button>
-          <button 
+          <button
             className={`btn ${activeTab === 'historial' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('historial')}
           >
@@ -194,7 +194,7 @@ const Cotizaciones: React.FC = () => {
       <div className="content-body">
         {activeTab === 'nueva' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-24">
-            
+
             {/* Buscador de Productos */}
             <div className="lg:col-span-2 space-y-24">
               <div className="data-card p-24">
@@ -209,7 +209,7 @@ const Cotizaciones: React.FC = () => {
                     onChange={e => setSearchQuery(e.target.value)}
                   />
                 </div>
-                
+
                 {searchQuery && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
                     {productos
@@ -308,14 +308,14 @@ const Cotizaciones: React.FC = () => {
                   <span className="text-secondary">Descuento Ítems</span>
                   <span className="text-danger">-${descuentosItems.toLocaleString()}</span>
                 </div>
-                
+
                 <div className="flex justify-between mb-16 items-center">
                   <span className="text-secondary text-sm">
                     Desc. Global:
                   </span>
                   <div className="flex items-center gap-8">
-                    <input type="number" aria-label="Valor de descuento" className="form-control text-right" style={{ width: '80px' }} value={descuentoGlobalValor} onChange={e => setDescuentoGlobalValor(Number(e.target.value))} />
-                    <select aria-label="Tipo de descuento" className="form-control" style={{ width: '70px', padding: '0 8px' }} value={descuentoGlobalTipo} onChange={e => setDescuentoGlobalTipo(e.target.value as 'PESOS' | 'PORCENTAJE')}>
+                    <input type="number" aria-label="Valor de descuento" className="form-control text-right w-[80px]" value={descuentoGlobalValor} onChange={e => setDescuentoGlobalValor(Number(e.target.value))} />
+                    <select aria-label="Tipo de descuento" className="form-control w-[70px] px-[8px]" value={descuentoGlobalTipo} onChange={e => setDescuentoGlobalTipo(e.target.value as 'PESOS' | 'PORCENTAJE')}>
                       <option value="PESOS">$</option>
                       <option value="PORCENTAJE">%</option>
                     </select>
@@ -325,13 +325,13 @@ const Cotizaciones: React.FC = () => {
                   <span className="text-secondary">IVA (19%)</span>
                   <span>${iva.toLocaleString()}</span>
                 </div>
-                
+
                 <div className="mt-auto pt-24 border-t border-white/10">
                   <div className="flex justify-between items-center mb-16">
                     <span className="text-xl">TOTAL</span>
                     <span className="text-3xl font-bold font-mono text-primary">${total.toLocaleString()}</span>
                   </div>
-                  <button 
+                  <button
                     className="btn btn-primary w-full py-12 flex justify-center gap-8 items-center font-bold text-lg"
                     onClick={handleCrearCotizacion}
                     disabled={isSubmitting || cart.length === 0}
@@ -350,7 +350,7 @@ const Cotizaciones: React.FC = () => {
             <div className="flex justify-between items-center mb-24">
               <div className="relative w-64">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none" size={18} />
-                <input 
+                <input
                   type="text"
                   className="form-control !pl-12 w-full"
                   placeholder="Buscar N° Cotización..."
@@ -376,28 +376,28 @@ const Cotizaciones: React.FC = () => {
                   {cotizaciones
                     .filter(c => c.numeroCotizacion.toLowerCase().includes(filtroCotizacion.toLowerCase()))
                     .map(cot => (
-                    <tr key={cot.id}>
-                      <td className="font-mono text-primary">{cot.numeroCotizacion}</td>
-                      <td>{new Date(cot.fechaEmision).toLocaleDateString()}</td>
-                      <td>{cot.cliente ? cot.cliente.nombre : 'General'}</td>
-                      <td className="font-bold">${Number(cot.total).toLocaleString()}</td>
-                      <td>
-                        <span className={`badge ${cot.estado === 'PENDIENTE' ? 'badge-warning' : (cot.estado === 'FACTURADA' ? 'badge-success' : 'badge-danger')}`}>
-                          {cot.estado}
-                        </span>
-                      </td>
-                      <td className="flex gap-8">
-                        <button className="btn btn-secondary btn-icon-sm p-8" title="Exportar PDF" onClick={() => generarCotizacionPDF(cot)}>
-                          <Printer size={16} />
-                        </button>
-                        {cot.estado === 'PENDIENTE' && (
-                          <button className="btn btn-primary btn-icon-sm p-8" title="Convertir a Factura" onClick={() => handleFacturar(cot)}>
-                            <ArrowRight size={16} />
+                      <tr key={cot.id}>
+                        <td className="font-mono text-primary">{cot.numeroCotizacion}</td>
+                        <td>{new Date(cot.fechaEmision).toLocaleDateString()}</td>
+                        <td>{cot.cliente ? cot.cliente.nombre : 'General'}</td>
+                        <td className="font-bold">${Number(cot.total).toLocaleString()}</td>
+                        <td>
+                          <span className={`badge ${cot.estado === 'PENDIENTE' ? 'badge-warning' : (cot.estado === 'FACTURADA' ? 'badge-success' : 'badge-danger')}`}>
+                            {cot.estado}
+                          </span>
+                        </td>
+                        <td className="flex gap-8">
+                          <button className="btn btn-secondary btn-icon-sm p-8" title="Exportar PDF" onClick={() => generarCotizacionPDF(cot)}>
+                            <Printer size={16} />
                           </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                          {cot.estado === 'PENDIENTE' && (
+                            <button className="btn btn-primary btn-icon-sm p-8" title="Convertir a Factura" onClick={() => handleFacturar(cot)}>
+                              <ArrowRight size={16} />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
                   {cotizaciones.length === 0 && (
                     <tr><td colSpan={6} className="table-empty-row">No hay cotizaciones emitidas</td></tr>
                   )}
