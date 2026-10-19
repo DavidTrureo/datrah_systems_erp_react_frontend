@@ -629,7 +629,7 @@ export default function Contabilidad() {
               <Printer size={16} /> Exportar a PDF
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24">
           <div className="data-card overflow-hidden">
             <h2 className="text-success m-0 p-16 bg-success/20 border-b border-success/30 flex items-center gap-2">
               <TrendingUp size={20} /> Activos
@@ -744,7 +744,7 @@ export default function Contabilidad() {
               <Printer size={16} /> Exportar a PDF
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-24 mb-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 mb-24">
             <div className="data-card overflow-hidden">
               <h2 className="text-success m-0 p-16 bg-success/20 border-b border-success/30 flex items-center gap-2">
                 <TrendingUp size={20} /> Ingresos (Ganancias)
