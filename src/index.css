@@ -1636,6 +1636,54 @@ table.data-table tr:hover td {
     right: 12px !important;
     bottom: 80px !important;
   }
+
+  /* POS / Facturacion Mobile Flow */
+  .billing-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .grid-add-product-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .grid-add-product-row .btn,
+  .form-group-min-110,
+  .pos-summary {
+    width: 100% !important;
+  }
+
+  /* Responsive Toolbar Action Buttons */
+  .flex-end-gap-12 {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  .flex-end-gap-12 button,
+  .flex-end-gap-12 label {
+    flex: 1 1 calc(50% - 8px);
+    justify-content: center;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Modals Mobile Touch Experience */
+  .modal-overlay {
+    padding: 8px !important;
+    align-items: flex-end !important;
+  }
+
+  .modal-content,
+  .modal-container {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+  }
 }
 
 @media (max-width: 640px) {
