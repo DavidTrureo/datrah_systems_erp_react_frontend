@@ -232,10 +232,47 @@ const Cotizaciones: React.FC = () => {
                 )}
               </div>
 
-              <div className="data-card p-24">
+              <div className="data-card p-16 md:p-24">
                 {/* Carrito */}
                 <h2 className="text-secondary mb-16 text-xl">Detalle de Cotización</h2>
-                <div className="table-responsive">
+
+                {/* Vista Móvil: Tarjetas de ítems en cotización */}
+                <div className="block md:hidden">
+                  {cart.length === 0 ? (
+                    <div className="text-center py-16 text-muted text-sm bg-white/[0.02] rounded-xl border border-white/5">
+                      No hay productos en la cotización
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-10">
+                      {cart.map((item, index) => {
+                        const precio = Number(item.producto.precioVenta);
+                        let desc = item.tipoDescuento === 'PESOS' ? Number(item.descuentoUnitario) : (precio * item.cantidad * (Number(item.descuentoUnitario) / 100));
+                        const subt = (precio * item.cantidad) - desc;
+                        return (
+                          <div key={index} className="p-12 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                            <div className="flex justify-between items-start">
+                              <span className="font-semibold text-white text-sm leading-snug">{item.producto.nombre}</span>
+                              <button onClick={() => removeFromCart(index)} className="btn btn-secondary btn-icon-sm text-danger" title="Eliminar" aria-label="Eliminar">
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                            <div className="flex items-center justify-between gap-8 text-xs pt-4 border-t border-white/5">
+                              <div className="flex items-center gap-4">
+                                <span className="text-muted">Cant:</span>
+                                <input type="number" className="form-control w-16 py-2 px-4 text-center" value={item.cantidad} onChange={e => updateCartItem(index, 'cantidad', Number(e.target.value))} min={1} />
+                              </div>
+                              <span className="text-muted">${precio.toLocaleString()} c/u</span>
+                              <span className="font-bold text-success text-sm">${subt.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Vista Escritorio: Tabla tradicional */}
+                <div className="hidden md:block table-responsive">
                   <table className="data-table">
                     <thead>
                       <tr>
@@ -362,7 +399,47 @@ const Cotizaciones: React.FC = () => {
               </div>
             </div>
 
-            <div className="table-responsive">
+            {/* Vista Móvil: Tarjetas de Cotizaciones */}
+            <div className="block md:hidden">
+              {cotizaciones.length === 0 ? (
+                <div className="text-center py-20 text-muted">No hay cotizaciones emitidas</div>
+              ) : (
+                <div className="flex flex-col gap-10">
+                  {cotizaciones
+                    .filter(c => c.numeroCotizacion.toLowerCase().includes(filtroCotizacion.toLowerCase()))
+                    .map(cot => (
+                      <div key={cot.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                        <div className="flex justify-between items-center">
+                          <span className="font-mono text-primary font-bold">{cot.numeroCotizacion}</span>
+                          <span className={`badge ${cot.estado === 'PENDIENTE' ? 'badge-warning' : (cot.estado === 'FACTURADA' ? 'badge-success' : 'badge-danger')}`}>
+                            {cot.estado}
+                          </span>
+                        </div>
+                        <div className="text-sm font-semibold text-white">
+                          {cot.cliente ? cot.cliente.nombre : 'Cliente General'}
+                        </div>
+                        <div className="flex justify-between items-center text-xs text-muted">
+                          <span>{new Date(cot.fechaEmision).toLocaleDateString()}</span>
+                          <span className="text-base font-bold text-success">${Number(cot.total).toLocaleString()}</span>
+                        </div>
+                        <div className="flex gap-8 pt-8 border-t border-white/5">
+                          <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => generarCotizacionPDF(cot)}>
+                            <Printer size={14} /> PDF
+                          </button>
+                          {cot.estado === 'PENDIENTE' && (
+                            <button className="btn btn-primary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => handleFacturar(cot)}>
+                              <ArrowRight size={14} /> Facturar
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+
+            {/* Vista Escritorio: Tabla tradicional */}
+            <div className="hidden md:block table-responsive">
               <table className="data-table">
                 <thead>
                   <tr>

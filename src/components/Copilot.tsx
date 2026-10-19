@@ -124,7 +124,7 @@ export function Copilot() {
   return (
     <div 
       ref={copilotRef}
-      className="fixed bottom-24 right-24 z-50 transition-transform duration-200"
+      className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 transition-transform duration-200"
     >
       {/* Botón flotante */}
       {!isOpen && (

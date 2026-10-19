@@ -360,9 +360,62 @@ export default function Facturacion() {
           </div>
 
           {/* Listado del Carrito */}
-          <div className="data-card p-24">
-            <h3 className="mb-16">Detalles de la Compra</h3>
-            <div className="table-responsive">
+          <div className="data-card p-16 md:p-24">
+            <h3 className="mb-16 text-lg font-bold">Detalles de la Compra</h3>
+            
+            {/* Vista Móvil: Tarjetas Táctiles que se adaptan al 100% de la pantalla del celular */}
+            <div className="block md:hidden">
+              {cart.length === 0 ? (
+                <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
+                  El carro está vacío. Agrega productos arriba.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-10">
+                  {cart.map((item, index) => {
+                    const itemSubtotal = item.cantidad * item.producto.precioVenta - item.descuento;
+                    return (
+                      <div key={index} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-semibold text-white text-base leading-snug">{item.producto.nombre}</div>
+                            <div className="text-xs text-muted mt-2">
+                              ${item.producto.precioVenta.toLocaleString('es-CL')} c/u
+                            </div>
+                          </div>
+                          <button 
+                            className="btn btn-secondary btn-icon-sm text-danger" 
+                            onClick={() => handleRemoveFromCart(index)} 
+                            title="Eliminar del carrito" 
+                            aria-label="Eliminar"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+
+                        <div className="flex justify-between items-center pt-8 border-t border-white/5">
+                          <div className="flex items-center gap-8 text-sm">
+                            <span className="text-muted text-xs">Cant:</span>
+                            <span className="font-bold bg-white/10 px-8 py-2 rounded-md">{item.cantidad}</span>
+                            {item.valorDescuento > 0 && (
+                              <span className="text-xs text-danger">
+                                -{item.tipoDescuento === 'PORCENTAJE' ? `${item.valorDescuento}%` : `$${item.descuento.toLocaleString('es-CL')}`}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs text-muted block">Subtotal</span>
+                            <span className="font-bold text-success text-base">${itemSubtotal.toLocaleString('es-CL')}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Vista Escritorio: Tabla de alta densidad */}
+            <div className="hidden md:block table-responsive">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -574,7 +627,69 @@ export default function Facturacion() {
             Exportar Excel
           </button>
         </div>
-        <div className="table-responsive">
+        {/* Vista Móvil: Tarjetas de Facturas */}
+        <div className="block md:hidden p-16">
+          {loading ? (
+            <div className="text-center py-20 text-muted">Cargando historial...</div>
+          ) : facturas.length === 0 ? (
+            <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
+              No hay facturas emitidas aún
+            </div>
+          ) : (
+            <div className="flex flex-col gap-12">
+              {facturas.map((f) => (
+                <div key={f.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-white text-base">Factura #{f.numeroFactura}</span>
+                    <span className={`badge ${f.estado === 'EMITIDA' ? 'badge-success' : 'badge-danger'}`}>
+                      {f.estado}
+                    </span>
+                  </div>
+                  <div className="text-sm font-medium text-white/90">
+                    {f.cliente?.nombre || 'Cliente General'}
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-muted">
+                    <span>{new Date(f.fechaEmision).toLocaleDateString()}</span>
+                    <span>{f.metodoPago}</span>
+                    <span className="text-base font-bold text-success">${f.total.toLocaleString('es-CL')}</span>
+                  </div>
+                  <div className="flex gap-8 pt-8 border-t border-white/5 mt-4">
+                    <button 
+                      className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" 
+                      onClick={async () => {
+                        try {
+                          await api.descargarFacturaPdf(f.id!);
+                        } catch (err) {
+                          alert("Error al descargar PDF: " + (err as Error).message);
+                        }
+                      }}
+                    >
+                      <FileText size={14} /> PDF
+                    </button>
+                    <button 
+                      className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" 
+                      onClick={() => handleOpenPrintModal(f)}
+                    >
+                      <Printer size={14} /> Ticket
+                    </button>
+                    {f.estado === 'EMITIDA' && (
+                      <button 
+                        className="btn btn-secondary text-danger py-6 px-10 text-xs" 
+                        onClick={() => handleAnularFactura(f.id!)} 
+                        title="Anular Factura"
+                      >
+                        <Ban size={14} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Vista Escritorio: Tabla tradicional */}
+        <div className="hidden md:block table-responsive">
           <table className="data-table">
             <thead>
               <tr>
