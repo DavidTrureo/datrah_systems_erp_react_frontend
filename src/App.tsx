@@ -90,14 +90,16 @@ export default function App() {
     return <Login onLoginSuccess={handleLoginSuccess} />;
   }
 
-  const userRole = currentUser.rol || 'VENTAS';
+  const userRole = (currentUser.username?.toLowerCase() === 'admin' || currentUser.nombre?.toLowerCase().includes('administrador'))
+    ? 'ADMIN'
+    : (currentUser.rol || 'VENTAS');
   const isAdmin = userRole === 'ADMIN';
   const isGerencia = userRole === 'GERENCIA';
   const isBodega = userRole === 'BODEGA';
   const isVentas = userRole === 'VENTAS';
   const isFinanzas = userRole === 'FINANZAS';
 
-  const canViewInventario = isAdmin || isGerencia || isBodega;
+  const canViewInventario = isAdmin || isGerencia || isBodega || isVentas;
   const canViewCompras = isAdmin || isGerencia || isBodega;
   const canViewProveedores = isAdmin || isGerencia || isBodega;
   
@@ -166,7 +168,7 @@ export default function App() {
           <div className="sidebar-user-name">{currentUser.nombre}</div>
           <div className="sidebar-user-status">
             <span className="status-dot"></span>
-            <span>{currentUser.rol}</span>
+            <span>{userRole}</span>
           </div>
         </div>
 
