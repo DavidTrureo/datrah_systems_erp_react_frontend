@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { api, type Producto, type Categoria, type Kardex } from '../api';
-import { Plus, Search, Edit3, Trash2, ArrowUp, ArrowDown, Settings2, History } from 'lucide-react';
+import { Plus, Search, Edit3, Trash2, ArrowUp, ArrowDown, Settings2, History, Download, Upload, Camera } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
+import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
+import * as XLSX from 'xlsx';
 
 export default function Inventario() {
+  const { showSuccess, showError, showWarning } = useToast();
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
@@ -13,6 +17,7 @@ export default function Inventario() {
   const [showStockModal, setShowStockModal] = useState(false);
   const [showKardexModal, setShowKardexModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showScannerModal, setShowScannerModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null);
 
   // Formulario Categoría
@@ -59,15 +64,96 @@ export default function Inventario() {
     }
   }
 
+  const handleExportExcel = () => {
+    try {
+      const data = productos.map((p) => ({
+        'ID': p.id,
+        'Código Barras': p.codigoBarras || '',
+        'Nombre': p.nombre,
+        'Descripción': p.descripcion || '',
+        'Categoría': p.categoria?.nombre || 'Sin Categoría',
+        'Precio Compra ($)': p.precioCompra,
+        'Precio Venta ($)': p.precioVenta,
+        'Stock Actual': p.stockActual,
+        'Stock Mínimo': p.stockMinimo || 0,
+        'Estado': p.activo ? 'Activo' : 'Inactivo',
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventario');
+      XLSX.writeFile(workbook, `Inventario_Datrah_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      showSuccess('Archivo Excel generado y descargado correctamente', 'Exportación Exitosa');
+    } catch (err: any) {
+      showError('Error al exportar inventario a Excel: ' + err.message);
+    }
+  };
+
+  const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try {
+        const bstr = evt.target?.result;
+        const workbook = XLSX.read(bstr, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+        if (!rows || rows.length === 0) {
+          showWarning('El archivo Excel no contiene filas de datos.');
+          return;
+        }
+
+        let importados = 0;
+        for (const row of rows) {
+          const nombre = row['Nombre'] || row['nombre'] || row['PRODUCTO'] || row['producto'];
+          if (!nombre) continue;
+
+          const pCompra = Number(row['Precio Compra ($)'] || row['precioCompra'] || row['Compra'] || 0);
+          const pVenta = Number(row['Precio Venta ($)'] || row['precioVenta'] || row['Venta'] || 0);
+          const sMin = Number(row['Stock Mínimo'] || row['stockMinimo'] || 0);
+          const cod = String(row['Código Barras'] || row['codigoBarras'] || row['Codigo'] || '').trim();
+
+          const catNombre = String(row['Categoría'] || row['categoria'] || '').trim();
+          let cat = categorias.find((c) => c.nombre.toLowerCase() === catNombre.toLowerCase());
+
+          await api.crearProducto({
+            nombre,
+            codigoBarras: cod,
+            precioCompra: pCompra,
+            precioVenta: pVenta,
+            stockMinimo: sMin,
+            stockActual: 0,
+            categoria: cat || undefined,
+          });
+          importados++;
+        }
+
+        showSuccess(`Se importaron ${importados} productos al inventario!`, 'Importación Exitosa');
+        loadData();
+      } catch (err: any) {
+        console.error('Error al importar Excel:', err);
+        showError('Error al procesar el archivo Excel: ' + err.message);
+      } finally {
+        e.target.value = '';
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
+
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await api.crearCategoria({ nombre: catName, descripcion: catDesc });
       setCatName('');
       setCatDesc('');
+      showSuccess(`Categoría "${catName}" creada con éxito.`);
       loadData();
     } catch (err) {
-      alert("Error al crear categoría: " + (err as Error).message);
+      showError("Error al crear categoría: " + (err as Error).message);
     }
   };
 
@@ -75,9 +161,10 @@ export default function Inventario() {
     if (!confirm("¿Estás seguro de que deseas desactivar/eliminar esta categoría?")) return;
     try {
       await api.eliminarCategoria(id);
+      showSuccess("Categoría eliminada.");
       loadData();
     } catch (err) {
-      alert("Error al eliminar categoría: " + (err as Error).message);
+      showError("Error al eliminar categoría: " + (err as Error).message);
     }
   };
 
@@ -125,13 +212,15 @@ export default function Inventario() {
 
       if (selectedProduct?.id) {
         await api.actualizarProducto(selectedProduct.id, payload);
+        showSuccess(`Producto "${formData.nombre}" actualizado.`);
       } else {
         await api.crearProducto(payload);
+        showSuccess(`Producto "${formData.nombre}" agregado al catálogo.`);
       }
       setShowProductModal(false);
       loadData();
     } catch (err) {
-      alert("Error al guardar producto: " + (err as Error).message);
+      showError("Error al guardar producto: " + (err as Error).message);
     }
   };
 
@@ -139,9 +228,10 @@ export default function Inventario() {
     if (confirm("¿Estás seguro de desactivar este producto del catálogo?")) {
       try {
         await api.eliminarProducto(id);
+        showSuccess("Producto eliminado del catálogo.");
         loadData();
       } catch (err) {
-        alert("Error al eliminar producto: " + (err as Error).message);
+        showError("Error al eliminar producto: " + (err as Error).message);
       }
     }
   };
@@ -200,10 +290,17 @@ export default function Inventario() {
           <h1>Inventario & Productos</h1>
           <p>Maneja tus artículos, precios y monitorea el flujo de existencias (Kardex).</p>
         </div>
-        <div className="flex-end-gap-12">
+        <div className="flex-end-gap-12 flex-wrap">
           <button className="btn btn-secondary" onClick={() => setShowCategoryModal(true)}>
             <Settings2 size={18} /> Categorías
           </button>
+          <button className="btn btn-secondary" onClick={handleExportExcel} title="Exportar catálogo completo a archivo Excel">
+            <Download size={18} /> Exportar Excel
+          </button>
+          <label className="btn btn-secondary cursor-pointer" title="Importar productos masivamente desde Excel">
+            <Upload size={18} /> Importar Excel
+            <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} className="hidden" />
+          </label>
           <button className="btn btn-primary" onClick={() => handleOpenProductModal()}>
             <Plus size={18} /> Nuevo Producto
           </button>
@@ -317,13 +414,24 @@ export default function Inventario() {
 
               <div className="form-group">
                 <label htmlFor="prod-codigo-input">Código de Barras</label>
-                <input 
-                  id="prod-codigo-input"
-                  type="text" 
-                  value={formData.codigoBarras} 
-                  onChange={(e) => setFormData({ ...formData, codigoBarras: e.target.value })} 
-                  className="form-control"
-                />
+                <div className="flex gap-2">
+                  <input 
+                    id="prod-codigo-input"
+                    type="text" 
+                    value={formData.codigoBarras} 
+                    onChange={(e) => setFormData({ ...formData, codigoBarras: e.target.value })} 
+                    className="form-control flex-1"
+                    placeholder="Escribe o escanea..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowScannerModal(true)}
+                    className="btn btn-secondary flex items-center gap-1.5 whitespace-nowrap text-xs"
+                    title="Escanear con cámara"
+                  >
+                    <Camera size={16} className="text-blue-400" /> Escanear
+                  </button>
+                </div>
               </div>
 
               <div className="form-group">
@@ -584,6 +692,17 @@ export default function Inventario() {
           </div>
         </div>
       )}
+
+      {/* Modal de Escaneo con Cámara */}
+      <BarcodeScannerModal
+        isOpen={showScannerModal}
+        onClose={() => setShowScannerModal(false)}
+        onScan={(code) => {
+          setFormData((prev) => ({ ...prev, codigoBarras: code }));
+          showSuccess(`Código escaneado: ${code}`);
+        }}
+        title="Escanear Código para Producto"
+      />
     </div>
   );
 }

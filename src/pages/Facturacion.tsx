@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { api, type Cliente, type Producto, type Factura } from '../api';
-import { Plus, Trash2, ShoppingCart, User, CreditCard, Ban, FileText, Printer, Percent } from 'lucide-react';
+import { Plus, Trash2, ShoppingCart, User, CreditCard, Ban, FileText, Printer, Percent, Camera } from 'lucide-react';
 import { generarTicketPDF } from '../utils/pdfGenerator';
+import { useToast } from '../context/ToastContext';
+import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
 
 interface CartItem {
   producto: Producto;
@@ -12,10 +14,12 @@ interface CartItem {
 }
 
 export default function Facturacion() {
+  const { showSuccess, showError, showWarning } = useToast();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [facturas, setFacturas] = useState<Factura[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showScannerModal, setShowScannerModal] = useState(false);
 
   // Cart State
   const [selectedClienteId, setSelectedClienteId] = useState('');
@@ -61,13 +65,42 @@ export default function Facturacion() {
     }
   }
 
+  const handleScanProduct = (code: string) => {
+    const trimmed = code.trim();
+    const prod = productos.find(p => p.codigoBarras === trimmed || String(p.id) === trimmed);
+    if (!prod) {
+      showError(`No se encontró ningún producto con el código: ${trimmed}`, 'Producto No Encontrado');
+      return;
+    }
+
+    if (Number(prod.stockActual) <= 0) {
+      showWarning(`El producto "${prod.nombre}" no tiene stock disponible.`, 'Sin Stock');
+      return;
+    }
+
+    setCart(prev => {
+      const existing = prev.find(item => item.producto.id === prod.id);
+      if (existing) {
+        if (Number(prod.stockActual) < existing.cantidad + 1) {
+          showWarning(`No hay más stock disponible para "${prod.nombre}".`);
+          return prev;
+        }
+        showSuccess(`+1 "${prod.nombre}" al carro`);
+        return prev.map(item => item.producto.id === prod.id ? { ...item, cantidad: item.cantidad + 1 } : item);
+      } else {
+        showSuccess(`"${prod.nombre}" agregado al carro`);
+        return [...prev, { producto: prod, cantidad: 1, descuento: 0, tipoDescuento: 'PESOS', valorDescuento: 0 }];
+      }
+    });
+  };
+
   const handleAddToCart = () => {
     if (!selectedProductId) return;
     const prod = productos.find(p => String(p.id) === selectedProductId);
     if (!prod) return;
 
     if (Number(prod.stockActual) < addQty) {
-      alert(`No hay stock suficiente. Stock disponible: ${prod.stockActual}`);
+      showWarning(`No hay stock suficiente. Stock disponible: ${prod.stockActual}`);
       return;
     }
 
@@ -84,7 +117,7 @@ export default function Facturacion() {
     if (existingIndex >= 0) {
       const newQty = cart[existingIndex].cantidad + addQty;
       if (Number(prod.stockActual) < newQty) {
-        alert(`No hay stock suficiente para aumentar la cantidad. Stock disponible: ${prod.stockActual}`);
+        showWarning(`No hay stock suficiente para aumentar la cantidad. Stock disponible: ${prod.stockActual}`);
         return;
       }
       const updatedCart = [...cart];
@@ -101,6 +134,7 @@ export default function Facturacion() {
       }
       updatedCart[existingIndex].descuento = newFlatDiscount;
       setCart(updatedCart);
+      showSuccess(`"${prod.nombre}" actualizado en el carro`);
     } else {
       setCart([...cart, { 
         producto: prod, 
@@ -109,6 +143,7 @@ export default function Facturacion() {
         tipoDescuento: addDiscountType,
         valorDescuento: addDiscountVal
       }]);
+      showSuccess(`"${prod.nombre}" agregado al carro`);
     }
 
     // Reset helper inputs
@@ -177,11 +212,11 @@ export default function Facturacion() {
   const handleCreateInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedClienteId) {
-      alert("Por favor selecciona un cliente.");
+      showWarning("Por favor selecciona un cliente para emitir la factura.");
       return;
     }
     if (cart.length === 0) {
-      alert("El carro de compras está vacío.");
+      showWarning("El carro de compras está vacío. Agrega al menos un producto.");
       return;
     }
 
@@ -215,9 +250,9 @@ export default function Facturacion() {
       
       // Recargar datos
       loadData();
-      alert("¡Factura emitida correctamente!");
+      showSuccess("¡Factura emitida correctamente con rebaja de stock!", "Venta Exitosa");
     } catch (err) {
-      alert("Error al emitir factura: " + (err as Error).message);
+      showError("Error al emitir factura: " + (err as Error).message);
     }
   };
 
@@ -227,9 +262,9 @@ export default function Facturacion() {
         await api.anularFactura(id);
         window.dispatchEvent(new Event('refresh-bajo-stock'));
         loadData();
-        alert("Factura anulada con éxito.");
+        showSuccess("Factura anulada con éxito y stock repuesto.");
       } catch (err) {
-        alert("Error al anular factura: " + (err as Error).message);
+        showError("Error al anular factura: " + (err as Error).message);
       }
     }
   };
@@ -248,9 +283,19 @@ export default function Facturacion() {
         <div>
           {/* Añadir Producto al Carro */}
           <div className="data-card data-card-padded-mb-24">
-            <h3 className="mb-16 flex-center-gap-8">
-              <ShoppingCart size={18} className="text-primary" /> Agregar al Carro
-            </h3>
+            <div className="flex items-center justify-between mb-16">
+              <h3 className="m-0 flex items-center gap-2">
+                <ShoppingCart size={18} className="text-primary" /> Agregar al Carro
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowScannerModal(true)}
+                className="btn btn-secondary flex items-center gap-1.5 text-xs py-1.5"
+                title="Escanear producto con cámara web o celular"
+              >
+                <Camera size={16} className="text-blue-400" /> Escanear Código
+              </button>
+            </div>
             <div className="grid-add-product-row">
               <div className="form-group m-0">
                 <label htmlFor="producto-select-factura">Producto</label>
@@ -599,7 +644,13 @@ export default function Facturacion() {
         </div>
       </div>
 
-
+      {/* Modal de Escaneo con Cámara para POS */}
+      <BarcodeScannerModal
+        isOpen={showScannerModal}
+        onClose={() => setShowScannerModal(false)}
+        onScan={handleScanProduct}
+        title="Escanear Producto para la Venta"
+      />
     </div>
   );
 }

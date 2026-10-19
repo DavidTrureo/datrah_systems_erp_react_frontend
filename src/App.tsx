@@ -156,6 +156,12 @@ export default function App() {
               </a>
             </li>
             
+            {/* Sección Comercial */}
+            {(canViewFacturacion || canViewClientes) && (
+              <div className="sidebar-section-header">
+                <span>Comercial</span>
+              </div>
+            )}
             {canViewFacturacion && (
               <>
                 <li className={`nav-item ${activeView === 'facturacion' ? 'active' : ''}`}>
@@ -172,7 +178,6 @@ export default function App() {
                 </li>
               </>
             )}
-
             {canViewClientes && (
               <li className={`nav-item ${activeView === 'clientes' ? 'active' : ''}`}>
                 <a href="#clientes" onClick={() => setActiveView('clientes')}>
@@ -182,6 +187,12 @@ export default function App() {
               </li>
             )}
 
+            {/* Sección Operaciones */}
+            {(canViewInventario || canViewCompras || canViewProveedores) && (
+              <div className="sidebar-section-header">
+                <span>Operaciones</span>
+              </div>
+            )}
             {canViewInventario && (
               <li className={`nav-item ${activeView === 'inventario' ? 'active' : ''}`}>
                 <a href="#inventario" onClick={() => setActiveView('inventario')}>
@@ -190,7 +201,6 @@ export default function App() {
                 </a>
               </li>
             )}
-            
             {canViewCompras && (
               <li className={`nav-item ${activeView === 'compras' ? 'active' : ''}`}>
                 <a href="#compras" onClick={() => setActiveView('compras')}>
@@ -199,7 +209,6 @@ export default function App() {
                 </a>
               </li>
             )}
-
             {canViewProveedores && (
               <li className={`nav-item ${activeView === 'proveedores' ? 'active' : ''}`}>
                 <a href="#proveedores" onClick={() => setActiveView('proveedores')}>
@@ -209,15 +218,20 @@ export default function App() {
               </li>
             )}
 
+            {/* Sección Finanzas & Contabilidad */}
+            {(canViewFinanzas || canViewContabilidad) && (
+              <div className="sidebar-section-header">
+                <span>Finanzas</span>
+              </div>
+            )}
             {canViewFinanzas && (
               <li className={`nav-item ${activeView === 'finanzas' ? 'active' : ''}`}>
                 <a href="#finanzas" onClick={() => setActiveView('finanzas')}>
                   <DollarSign size={20} />
-                  <span>Finanzas / Tesorería</span>
+                  <span>Tesorería / Caja</span>
                 </a>
               </li>
             )}
-
             {canViewContabilidad && (
               <li className={`nav-item ${activeView === 'contabilidad' ? 'active' : ''}`}>
                 <a href="#contabilidad" onClick={() => setActiveView('contabilidad')}>
@@ -227,6 +241,12 @@ export default function App() {
               </li>
             )}
 
+            {/* Sección Sistema */}
+            {canViewAdmin && (
+              <div className="sidebar-section-header">
+                <span>Sistema</span>
+              </div>
+            )}
             {canViewAdmin && (
               <li className={`nav-item ${activeView === 'administracion' ? 'active' : ''}`}>
                 <a href="#administracion" onClick={() => setActiveView('administracion')}>

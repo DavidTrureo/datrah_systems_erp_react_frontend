@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api, type Producto, type Cliente, type Cotizacion } from '../api';
 import { FileText, Trash2, Printer, Search, ArrowRight } from 'lucide-react';
 import { generarCotizacionPDF } from '../utils/pdfGenerator';
+import { useToast } from '../context/ToastContext';
 
 interface CartItem {
   producto: Producto;
@@ -11,6 +12,7 @@ interface CartItem {
 }
 
 const Cotizaciones: React.FC = () => {
+  const { showSuccess, showError } = useToast();
   const [activeTab, setActiveTab] = useState<'nueva' | 'historial'>('nueva');
 
   // Historial
@@ -128,12 +130,12 @@ const Cotizaciones: React.FC = () => {
       setNotas('');
       setClienteSeleccionado(null);
       setDescuentoGlobalValor(0);
-      alert("Cotización Creada Exitosamente");
+      showSuccess("Cotización Creada Exitosamente", "Documento Emitido");
       generarCotizacionPDF(result);
 
     } catch (err) {
       console.error(err);
-      alert("Error al crear la cotización");
+      showError("Error al crear la cotización");
     } finally {
       setIsSubmitting(false);
     }
@@ -160,11 +162,11 @@ const Cotizaciones: React.FC = () => {
 
       await api.crearFactura(payload);
       await api.cambiarEstadoCotizacion(cot.id, 'FACTURADA');
-      alert("Factura generada exitosamente. Revisa el módulo de Facturación.");
+      showSuccess("Factura generada exitosamente. Revisa el módulo de Facturación.", "Facturación Exitosa");
       fetchCotizaciones();
     } catch (error) {
       console.error(error);
-      alert("Error al facturar la cotización. Verifica el stock.");
+      showError("Error al facturar la cotización. Verifica el stock disponible.");
     }
   };
 

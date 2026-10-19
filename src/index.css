@@ -570,6 +570,16 @@ table.data-table tr:hover td {
   padding-top: 16px;
 }
 
+.sidebar-section-header {
+  padding: 14px 14px 4px 14px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  user-select: none;
+}
+
 .text-danger {
   color: var(--danger) !important;
 }
