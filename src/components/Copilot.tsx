@@ -30,14 +30,17 @@ export function Copilot() {
   const initialMouse = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    if (copilotRef.current) {
+    if (copilotRef.current && window.innerWidth >= 768) {
       copilotRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
+    } else if (copilotRef.current) {
+      copilotRef.current.style.transform = 'none';
     }
-  }, [position]);
+  }, [position, isOpen]);
   const initialPos = useRef({ x: 0, y: 0 });
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    // Only allow dragging from the header
+    // Only allow dragging on desktop screens
+    if (window.innerWidth < 768) return;
     if (!(e.target as HTMLElement).closest('.copilot-header')) return;
     setIsDragging(true);
     initialMouse.current = { x: e.clientX, y: e.clientY };
@@ -46,7 +49,7 @@ export function Copilot() {
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging) return;
+    if (!isDragging || window.innerWidth < 768) return;
     const dx = e.clientX - initialMouse.current.x;
     const dy = e.clientY - initialMouse.current.y;
     setPosition({
@@ -122,50 +125,78 @@ export function Copilot() {
   };
 
   return (
-    <div 
-      ref={copilotRef}
-      className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 transition-transform duration-200"
-    >
-      {/* Botón flotante */}
+    <>
+      {/* Botón flotante para abrir Copilot */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="copilot-btn flex-center-gap-8 relative group"
-          title="Abrir Copilot"
-        >
-          <div className="absolute top-0 right-0 bg-danger rounded-full w-3 h-3 animate-ping"></div>
-          <div className="absolute top-0 right-0 bg-danger rounded-full w-3 h-3 border-2 border-primary"></div>
-          <Sparkles size={24} className="text-white group-hover:scale-110 transition-transform" />
-        </button>
+        <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40">
+          <button
+            onClick={() => {
+              setPosition({ x: 0, y: 0 });
+              setIsOpen(true);
+            }}
+            className="copilot-btn flex-center-gap-8 relative group cursor-pointer"
+            title="Abrir Copilot"
+            aria-label="Abrir Asistente Copilot"
+          >
+            <div className="absolute top-0 right-0 bg-danger rounded-full w-3 h-3 animate-ping"></div>
+            <div className="absolute top-0 right-0 bg-danger rounded-full w-3 h-3 border-2 border-primary"></div>
+            <Sparkles size={24} className="text-white group-hover:scale-110 transition-transform" />
+          </button>
+        </div>
       )}
 
-      {/* Ventana de chat */}
+      {/* Ventana de chat / Bottom Sheet en móviles */}
       {isOpen && (
         <div 
-          className="copilot-window shadow-2xl flex flex-col"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
+          className="copilot-modal-wrapper"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && window.innerWidth < 768) {
+              setIsOpen(false);
+            }
+          }}
         >
-          {/* Header */}
-          <div className="p-16 flex items-center justify-between copilot-header cursor-move select-none">
-            <div className="flex items-center gap-12">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#4f46e5] flex items-center justify-center shadow-lg shadow-primary/30">
-                <Sparkles size={20} className="text-white" />
-              </div>
-              <div>
-                <h3 className="m-0 text-white font-semibold text-[16px] tracking-wide flex items-center gap-8">
-                  Copilot
-                  <span className="text-[10px] uppercase tracking-wider px-6 py-2 rounded-full bg-white/10 text-white/80 border border-white/20">Beta</span>
-                </h3>
-                <p className="m-0 text-muted text-[12px] mt-2">Inteligencia Financiera</p>
-              </div>
+          <div 
+            ref={copilotRef}
+            className="copilot-window shadow-2xl flex flex-col"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+          >
+            {/* Tirador táctil en móviles */}
+            <div 
+              className="copilot-mobile-handle block md:hidden cursor-pointer"
+              onClick={() => setIsOpen(false)}
+              role="button"
+              tabIndex={0}
+              aria-label="Cerrar Copilot"
+            >
+              <div className="copilot-drag-pill" />
             </div>
-            <button onClick={() => setIsOpen(false)} className="bg-transparent border-none p-8 hover:bg-white/10 rounded-full text-muted hover:text-white transition-colors flex items-center justify-center" title="Cerrar">
-              <X size={18} />
-            </button>
-          </div>
+
+            {/* Header */}
+            <div className="p-16 flex items-center justify-between copilot-header select-none">
+              <div className="flex items-center gap-12">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-[#4f46e5] flex items-center justify-center shadow-lg shadow-primary/30">
+                  <Sparkles size={20} className="text-white" />
+                </div>
+                <div>
+                  <h3 className="m-0 text-white font-semibold text-[16px] tracking-wide flex items-center gap-8">
+                    Copilot
+                    <span className="text-[10px] uppercase tracking-wider px-6 py-2 rounded-full bg-white/10 text-white/80 border border-white/20">Beta</span>
+                  </h3>
+                  <p className="m-0 text-muted text-[12px] mt-2">Inteligencia Financiera</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsOpen(false)} 
+                className="bg-transparent border-none p-8 hover:bg-white/10 rounded-full text-muted hover:text-white transition-colors flex items-center justify-center cursor-pointer" 
+                title="Cerrar"
+                aria-label="Cerrar Copilot"
+              >
+                <X size={20} />
+              </button>
+            </div>
 
           {/* Cuerpo del chat */}
           <div className="flex-1 overflow-y-auto p-16 copilot-body">
@@ -235,7 +266,8 @@ export function Copilot() {
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    )}
+  </>
   );
 }
