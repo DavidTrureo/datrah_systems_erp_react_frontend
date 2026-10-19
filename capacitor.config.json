@@ -1,0 +1,14 @@
+{
+  "appId": "com.datrah.erp",
+  "appName": "Datrah ERP",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}
