@@ -150,8 +150,8 @@ export default function Dashboard() {
 
       <div className="content-header mb-32">
         <div className="page-title">
-          <h1 className="flex items-center gap-12 font-bold text-[2.5rem]">
-            <Zap className="text-primary animate-pulse" size={32} /> Command Center
+          <h1 className="flex items-center gap-12 font-bold text-2xl md:text-[2.5rem]">
+            <Zap className="text-primary animate-pulse" size={28} /> Command Center
           </h1>
           <p className="text-muted font-mono mt-8">Datrah Systems ERP • Visión global operativa</p>
         </div>

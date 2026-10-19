@@ -7,11 +7,10 @@ import Proveedores from './pages/Proveedores';
 import Compras from './pages/Compras';
 import Login from './pages/Login';
 import { api, type LoginResponse, type Producto } from './api';
-import { LayoutDashboard, ShoppingCart, Package, Users, Truck, LogOut, Bell, DollarSign } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Package, Users, Truck, LogOut, Bell, DollarSign, Book, FileText, Menu, X } from 'lucide-react';
 import Finanzas from './pages/Finanzas';
 import Administracion from './pages/Administracion';
 import Contabilidad from './pages/Contabilidad';
-import { Book, FileText } from 'lucide-react';
 import { Copilot } from './components/Copilot';
 import Cotizaciones from './pages/Cotizaciones';
 
@@ -21,6 +20,12 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<LoginResponse | null>(null);
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleNavigate = (view: ViewType) => {
+    setActiveView(view);
+    setMobileMenuOpen(false);
+  };
 
   // Stock Alerts States
   const [bajoStock, setBajoStock] = useState<Producto[]>([]);
@@ -71,6 +76,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    setMobileMenuOpen(false);
     setCurrentUser(null);
     localStorage.removeItem('currentUser');
   };
@@ -132,10 +138,27 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* Sidebar de Navegación */}
-      <aside className="sidebar">
-        <div className="logo-container app-logo-container">
-          <img src="/logo.png" alt="Datrah Systems" className="w-40 h-auto mx-auto object-contain" />
+      {/* Backdrop para móviles al abrir el drawer */}
+      {mobileMenuOpen && (
+        <div 
+          className="sidebar-backdrop" 
+          onClick={() => setMobileMenuOpen(false)} 
+        />
+      )}
+
+      {/* Sidebar de Navegación con soporte off-canvas móvil */}
+      <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="sidebar-top-bar">
+          <div className="logo-container app-logo-container">
+            <img src="/logo.png" alt="Datrah Systems" className="w-36 h-auto object-contain" />
+          </div>
+          <button 
+            className="sidebar-close-btn" 
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Cerrar menú"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Info del usuario logueado */}
@@ -150,7 +173,7 @@ export default function App() {
         <nav className="sidebar-nav">
           <ul className="nav-links">
             <li className={`nav-item ${activeView === 'dashboard' ? 'active' : ''}`}>
-              <a href="#dashboard" onClick={() => setActiveView('dashboard')}>
+              <a href="#dashboard" onClick={() => handleNavigate('dashboard')}>
                 <LayoutDashboard size={20} />
                 <span>Panel Control</span>
               </a>
@@ -165,13 +188,13 @@ export default function App() {
             {canViewFacturacion && (
               <>
                 <li className={`nav-item ${activeView === 'facturacion' ? 'active' : ''}`}>
-                  <a href="#facturacion" onClick={() => setActiveView('facturacion')}>
+                  <a href="#facturacion" onClick={() => handleNavigate('facturacion')}>
                     <ShoppingCart size={20} />
                     <span>Facturación (POS)</span>
                   </a>
                 </li>
                 <li className={`nav-item ${activeView === 'cotizaciones' ? 'active' : ''}`}>
-                  <a href="#cotizaciones" onClick={() => setActiveView('cotizaciones')}>
+                  <a href="#cotizaciones" onClick={() => handleNavigate('cotizaciones')}>
                     <FileText size={20} />
                     <span>Cotizaciones</span>
                   </a>
@@ -180,7 +203,7 @@ export default function App() {
             )}
             {canViewClientes && (
               <li className={`nav-item ${activeView === 'clientes' ? 'active' : ''}`}>
-                <a href="#clientes" onClick={() => setActiveView('clientes')}>
+                <a href="#clientes" onClick={() => handleNavigate('clientes')}>
                   <Users size={20} />
                   <span>Clientes</span>
                 </a>
@@ -195,7 +218,7 @@ export default function App() {
             )}
             {canViewInventario && (
               <li className={`nav-item ${activeView === 'inventario' ? 'active' : ''}`}>
-                <a href="#inventario" onClick={() => setActiveView('inventario')}>
+                <a href="#inventario" onClick={() => handleNavigate('inventario')}>
                   <Package size={20} />
                   <span>Inventario & Kardex</span>
                 </a>
@@ -203,7 +226,7 @@ export default function App() {
             )}
             {canViewCompras && (
               <li className={`nav-item ${activeView === 'compras' ? 'active' : ''}`}>
-                <a href="#compras" onClick={() => setActiveView('compras')}>
+                <a href="#compras" onClick={() => handleNavigate('compras')}>
                   <Truck size={20} />
                   <span>Compras (Stock)</span>
                 </a>
@@ -211,7 +234,7 @@ export default function App() {
             )}
             {canViewProveedores && (
               <li className={`nav-item ${activeView === 'proveedores' ? 'active' : ''}`}>
-                <a href="#proveedores" onClick={() => setActiveView('proveedores')}>
+                <a href="#proveedores" onClick={() => handleNavigate('proveedores')}>
                   <Users size={20} />
                   <span>Proveedores</span>
                 </a>
@@ -226,7 +249,7 @@ export default function App() {
             )}
             {canViewFinanzas && (
               <li className={`nav-item ${activeView === 'finanzas' ? 'active' : ''}`}>
-                <a href="#finanzas" onClick={() => setActiveView('finanzas')}>
+                <a href="#finanzas" onClick={() => handleNavigate('finanzas')}>
                   <DollarSign size={20} />
                   <span>Tesorería / Caja</span>
                 </a>
@@ -234,7 +257,7 @@ export default function App() {
             )}
             {canViewContabilidad && (
               <li className={`nav-item ${activeView === 'contabilidad' ? 'active' : ''}`}>
-                <a href="#contabilidad" onClick={() => setActiveView('contabilidad')}>
+                <a href="#contabilidad" onClick={() => handleNavigate('contabilidad')}>
                   <Book size={20} />
                   <span>Contabilidad (ERP)</span>
                 </a>
@@ -249,7 +272,7 @@ export default function App() {
             )}
             {canViewAdmin && (
               <li className={`nav-item ${activeView === 'administracion' ? 'active' : ''}`}>
-                <a href="#administracion" onClick={() => setActiveView('administracion')}>
+                <a href="#administracion" onClick={() => handleNavigate('administracion')}>
                   <Users size={20} />
                   <span>Administración</span>
                 </a>
@@ -274,8 +297,43 @@ export default function App() {
       {/* Área Principal de Contenido */}
       <main className="main-content">
         
-        {/* Header Superior de Alertas de Stock */}
-        <div className="header-alerts-container">
+        {/* Barra superior visible exclusivamente en móviles */}
+        <header className="mobile-topbar">
+          <div className="mobile-topbar-left">
+            <button 
+              className="mobile-menu-toggle" 
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Abrir menú"
+            >
+              <Menu size={22} />
+            </button>
+            <div className="mobile-brand">
+              <span className="mobile-brand-title">DATRAH</span>
+              <span className="mobile-brand-badge">ERP</span>
+            </div>
+          </div>
+
+          <div className="mobile-topbar-right">
+            <div 
+              className="bell-notification-trigger" 
+              onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+              title="Alertas de Stock"
+            >
+              <Bell size={20} />
+              {bajoStock.length > 0 && (
+                <span className="notification-badge">
+                  {bajoStock.length}
+                </span>
+              )}
+            </div>
+            <div className="mobile-user-avatar" title={`${currentUser.nombre || 'Usuario'} (${currentUser.rol || ''})`}>
+              {(currentUser.nombre || 'U').charAt(0).toUpperCase()}
+            </div>
+          </div>
+        </header>
+
+        {/* Header Superior de Alertas de Stock (solo desktop) */}
+        <div className="header-alerts-container desktop-alerts">
           <div className="bell-notification-trigger" onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}>
             <Bell size={20} />
             {bajoStock.length > 0 && (
@@ -284,33 +342,34 @@ export default function App() {
               </span>
             )}
           </div>
-
-          {showNotificationDropdown && (
-            <div className="dropdown-panel">
-              <div className="dropdown-header">
-                <strong>Alertas de Inventario ({bajoStock.length})</strong>
-                <button onClick={() => setShowNotificationDropdown(false)} className="btn-close-dropdown">Cerrar</button>
-              </div>
-              <div className="dropdown-body">
-                {bajoStock.length === 0 ? (
-                  <div className="dropdown-empty">
-                    ✅ Todo en orden. No hay productos con stock crítico.
-                  </div>
-                ) : (
-                  bajoStock.map((prod) => (
-                    <div key={prod.id} className="notification-item-critical">
-                      <div className="notification-item-title">{prod.nombre}</div>
-                      <div className="notification-item-meta">
-                        <span>Stock: <strong className="text-danger">{Number(prod.stockActual).toFixed(0)}</strong></span>
-                        <span>Mínimo: <strong>{Number(prod.stockMinimo).toFixed(0)}</strong></span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Panel Dropdown de Alertas de Inventario */}
+        {showNotificationDropdown && (
+          <div className="dropdown-panel">
+            <div className="dropdown-header">
+              <strong>Alertas de Inventario ({bajoStock.length})</strong>
+              <button onClick={() => setShowNotificationDropdown(false)} className="btn-close-dropdown">Cerrar</button>
+            </div>
+            <div className="dropdown-body">
+              {bajoStock.length === 0 ? (
+                <div className="dropdown-empty">
+                  ✅ Todo en orden. No hay productos con stock crítico.
+                </div>
+              ) : (
+                bajoStock.map((prod) => (
+                  <div key={prod.id} className="notification-item-critical">
+                    <div className="notification-item-title">{prod.nombre}</div>
+                    <div className="notification-item-meta">
+                      <span>Stock: <strong className="text-danger">{Number(prod.stockActual).toFixed(0)}</strong></span>
+                      <span>Mínimo: <strong>{Number(prod.stockMinimo).toFixed(0)}</strong></span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
 
         {renderActiveView()}
         <Copilot />
