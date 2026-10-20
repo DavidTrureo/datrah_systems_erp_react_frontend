@@ -47,7 +47,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
         <div className="text-center flex flex-col items-center">
           <img src="/logo.png" alt="Datrah Systems ERP" className="w-48 mb-2 drop-shadow-2xl" />
           <h1 className="text-xl font-bold text-white tracking-wide mt-2">Iniciar Sesión</h1>
-          <p className="text-xs text-white/60">Ingresa tus credenciales para acceder al ERP</p>
+          <p className="text-xs text-white/60">Ingresa tus credenciales para continuar</p>
         </div>
 
         {error && (
