@@ -268,7 +268,7 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
                 <h2 className="text-secondary mb-16 text-xl">Detalle de Cotización</h2>
 
                 {/* Vista Móvil: Tarjetas de ítems en cotización */}
-                <div className="block md:hidden">
+                <div className="mobile-only-cards block md:hidden">
                   {cart.length === 0 ? (
                     <div className="text-center py-16 text-muted text-sm bg-white/[0.02] rounded-xl border border-white/5">
                       No hay productos en la cotización
@@ -303,7 +303,7 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
                 </div>
 
                 {/* Vista Escritorio: Tabla tradicional */}
-                <div className="hidden md:block table-responsive">
+                <div className="desktop-only-table hidden md:block table-responsive">
                   <table className="data-table">
                     <thead>
                       <tr>
@@ -431,7 +431,7 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
             </div>
 
             {/* Vista Móvil: Tarjetas de Cotizaciones */}
-            <div className="block md:hidden">
+            <div className="mobile-only-cards block md:hidden">
               {cotizaciones.length === 0 ? (
                 <div className="text-center py-20 text-muted">No hay cotizaciones emitidas</div>
               ) : (
@@ -477,7 +477,7 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
             </div>
 
             {/* Vista Escritorio: Tabla tradicional */}
-            <div className="hidden md:block table-responsive">
+            <div className="desktop-only-table hidden md:block table-responsive">
               <table className="data-table">
                 <thead>
                   <tr>

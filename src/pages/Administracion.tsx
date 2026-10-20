@@ -272,7 +272,7 @@ const Administracion: React.FC = () => {
               <h2 className="text-[18px] font-semibold m-0">Usuarios del Sistema</h2>
             </div>
             {/* Vista Móvil: Tarjetas Táctiles */}
-            <div className="block md:hidden p-14">
+            <div className="mobile-only-cards block md:hidden p-14">
               {loadingUsuarios ? (
                 <div className="text-center py-20 text-muted">Cargando usuarios...</div>
               ) : usuarios.length === 0 ? (
@@ -320,7 +320,7 @@ const Administracion: React.FC = () => {
             </div>
 
             {/* Vista Escritorio: Tabla tradicional */}
-            <div className="hidden md:block table-responsive">
+            <div className="desktop-only-table hidden md:block table-responsive">
               {loadingUsuarios ? (
                 <div className="p-16">Cargando usuarios...</div>
               ) : (

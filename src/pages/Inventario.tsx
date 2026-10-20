@@ -324,7 +324,7 @@ export default function Inventario() {
       {/* Tabla de Productos */}
       <div className="data-card">
         {/* Vista Móvil: Tarjetas de Producto Táctiles adaptadas al teléfono */}
-        <div className="block md:hidden p-14">
+        <div className="mobile-only-cards block md:hidden p-14">
           {loading ? (
             <div className="text-center py-20 text-muted">Cargando catálogo...</div>
           ) : filteredProducts.length === 0 ? (
@@ -390,7 +390,7 @@ export default function Inventario() {
         </div>
 
         {/* Vista Escritorio: Tabla de alta densidad */}
-        <div className="hidden md:block table-responsive">
+        <div className="desktop-only-table hidden md:block table-responsive">
           <table className="data-table">
             <thead>
               <tr>

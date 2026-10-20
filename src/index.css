@@ -1700,12 +1700,25 @@ table.data-table tr:hover td {
     max-width: 100% !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    display: block !important;
     position: relative !important;
+    box-sizing: border-box !important;
   }
 
-  table.data-table {
-    min-width: 520px;
+  /* Force hide desktop tables on mobile and show mobile card views */
+  .desktop-only-table {
+    display: none !important;
+  }
+
+  .mobile-only-cards {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Only give min-width to tables that are legitimately visible on mobile and scroll horizontally */
+  .table-responsive:not(.desktop-only-table) table.data-table {
+    min-width: 480px;
   }
 
   table.data-table th,
@@ -1778,19 +1791,47 @@ table.data-table tr:hover td {
 
   /* POS / Facturacion Mobile Flow */
   .billing-grid {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    gap: 16px !important;
+  }
+
+  .billing-grid > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .pos-cart {
+    height: auto !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .pos-cart-items {
+    max-height: 320px !important;
+    overflow-y: auto !important;
   }
 
   .grid-add-product-row {
     grid-template-columns: 1fr !important;
     gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   .grid-add-product-row .btn,
   .form-group-min-110,
   .pos-summary {
     width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* Responsive Toolbar Action Buttons */
@@ -1822,6 +1863,15 @@ table.data-table tr:hover td {
     border-bottom-right-radius: 0 !important;
     max-height: 88vh !important;
     overflow-y: auto !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .desktop-only-table {
+    display: block !important;
+  }
+  .mobile-only-cards {
+    display: none !important;
   }
 }
 

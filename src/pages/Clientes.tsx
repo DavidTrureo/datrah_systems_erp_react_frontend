@@ -131,7 +131,7 @@ export default function Clientes() {
       {/* Listado de Clientes */}
       <div className="data-card">
         {/* Vista Móvil: Tarjetas de Clientes adaptadas al teléfono */}
-        <div className="block md:hidden p-14">
+        <div className="mobile-only-cards block md:hidden p-14">
           {loading ? (
             <div className="text-center py-20 text-muted">Cargando clientes...</div>
           ) : filteredClientes.length === 0 ? (
@@ -170,7 +170,7 @@ export default function Clientes() {
         </div>
 
         {/* Vista Escritorio: Tabla tradicional */}
-        <div className="hidden md:block table-responsive">
+        <div className="desktop-only-table hidden md:block table-responsive">
           <table className="data-table">
             <thead>
               <tr>

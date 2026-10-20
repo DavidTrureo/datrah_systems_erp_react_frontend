@@ -214,9 +214,41 @@ export default function Compras() {
           </div>
 
           {/* Listado del Carrito */}
-          <div className="data-card p-24">
+          <div className="data-card p-16 md:p-24">
             <h3 className="mb-16">Detalles de Recepción</h3>
-            <div className="table-responsive">
+
+            {/* Vista Móvil: Tarjetas Táctiles adaptadas al teléfono */}
+            <div className="mobile-only-cards block md:hidden">
+              {cart.length === 0 ? (
+                <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
+                  El carro de compra está vacío. Agrega productos arriba.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-10">
+                  {cart.map((item, index) => {
+                    const itemSubtotal = item.cantidad * item.precioCompra;
+                    return (
+                      <div key={index} className="p-12 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                        <div className="flex justify-between items-start">
+                          <span className="font-semibold text-white text-sm leading-snug">{item.producto.nombre}</span>
+                          <button className="btn btn-secondary btn-icon-sm" onClick={() => handleRemoveFromCart(index)} title="Eliminar del carrito" aria-label="Eliminar">
+                            <Trash2 size={16} className="text-danger" />
+                          </button>
+                        </div>
+                        <div className="flex items-center justify-between text-xs pt-4 border-t border-white/5">
+                          <span className="text-muted">Cant: <strong className="text-white">{item.cantidad}</strong></span>
+                          <span className="text-muted">Costo: ${item.precioCompra.toFixed(0)}</span>
+                          <span className="font-bold text-success text-sm">${itemSubtotal.toFixed(0)}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Vista Escritorio: Tabla tradicional */}
+            <div className="desktop-only-table hidden md:block table-responsive">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -345,7 +377,47 @@ export default function Compras() {
              <FileText size={20} className="text-cyan" /> Historial de Compras Recibidas
            </h2>
         </div>
-        <div className="table-responsive">
+        {/* Vista Móvil: Tarjetas de Compras */}
+        <div className="mobile-only-cards block md:hidden p-14">
+          {loading ? (
+            <div className="text-center py-20 text-muted">Cargando historial...</div>
+          ) : compras.length === 0 ? (
+            <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
+              No hay compras registradas aún
+            </div>
+          ) : (
+            <div className="flex flex-col gap-10">
+              {compras.map((c) => (
+                <div key={c.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-white text-base">Doc #{c.numeroDocumento}</span>
+                    <span className={`badge ${c.estado === 'COMPRADA' ? 'badge-success' : c.estado === 'CREDITO_PENDIENTE' ? 'badge-warning' : 'badge-danger'}`}>
+                      {c.estado}
+                    </span>
+                  </div>
+                  <div className="text-sm font-medium text-white/90">
+                    {c.proveedor?.nombre || 'Proveedor'}
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-muted">
+                    <span>{new Date(c.fechaCompra).toLocaleDateString()}</span>
+                    <span>{c.metodoPago || 'EFECTIVO'}</span>
+                    <span className="text-base font-bold text-success">${c.total.toFixed(0)}</span>
+                  </div>
+                  {c.estado === 'COMPRADA' && (
+                    <div className="pt-6 border-t border-white/5 flex justify-end">
+                      <button className="btn btn-secondary text-danger py-4 px-10 text-xs flex-center-gap-4" onClick={() => handleAnularCompra(c.id!)}>
+                        <Ban size={14} /> Anular Compra
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Vista Escritorio: Tabla tradicional */}
+        <div className="desktop-only-table hidden md:block table-responsive">
           <table className="data-table">
             <thead>
               <tr>

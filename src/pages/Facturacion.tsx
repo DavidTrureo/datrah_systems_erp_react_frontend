@@ -315,17 +315,20 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
         <div>
           {/* Añadir Producto al Carro */}
           <div className="data-card data-card-padded-mb-24">
-            <div className="flex items-center justify-between mb-16">
-              <h3 className="m-0 flex items-center gap-2">
-                <ShoppingCart size={18} className="text-primary" /> Agregar al Carro
+            <div className="flex flex-wrap items-center justify-between gap-8 mb-16">
+              <h3 className="m-0 flex items-center gap-2 text-base md:text-lg">
+                <ShoppingCart size={18} className="text-primary shrink-0" /> 
+                <span>Agregar al Carro</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowScannerModal(true)}
-                className="btn btn-secondary flex items-center gap-1.5 text-xs py-1.5"
+                className="btn btn-secondary flex items-center gap-1.5 text-xs py-1.5 px-3 shrink-0"
                 title="Escanear producto con cámara web o celular"
               >
-                <Camera size={16} className="text-blue-400" /> Escanear Código
+                <Camera size={15} className="text-blue-400" />
+                <span className="hidden sm:inline">Escanear Código</span>
+                <span className="sm:hidden">Escanear</span>
               </button>
             </div>
             <div className="grid-add-product-row">
@@ -396,7 +399,7 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
             <h3 className="mb-16 text-lg font-bold">Detalles de la Compra</h3>
             
             {/* Vista Móvil: Tarjetas Táctiles que se adaptan al 100% de la pantalla del celular */}
-            <div className="block md:hidden">
+            <div className="mobile-only-cards block md:hidden">
               {cart.length === 0 ? (
                 <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
                   El carro está vacío. Agrega productos arriba.
@@ -447,7 +450,7 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
             </div>
 
             {/* Vista Escritorio: Tabla de alta densidad */}
-            <div className="hidden md:block table-responsive">
+            <div className="desktop-only-table hidden md:block table-responsive">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -660,7 +663,7 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
           </button>
         </div>
         {/* Vista Móvil: Tarjetas de Facturas */}
-        <div className="block md:hidden p-16">
+        <div className="mobile-only-cards block md:hidden p-16">
           {loading ? (
             <div className="text-center py-20 text-muted">Cargando historial...</div>
           ) : facturas.length === 0 ? (
@@ -728,7 +731,7 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
         </div>
 
         {/* Vista Escritorio: Tabla tradicional */}
-        <div className="hidden md:block table-responsive">
+        <div className="desktop-only-table hidden md:block table-responsive">
           <table className="data-table">
             <thead>
               <tr>
