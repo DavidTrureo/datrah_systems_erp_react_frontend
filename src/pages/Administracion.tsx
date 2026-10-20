@@ -154,7 +154,7 @@ const Administracion: React.FC = () => {
       </div>
 
       {activeTab === 'usuarios' && (
-        <div className="grid grid-cols-[1fr_2fr] gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-24">
           {/* Formulario de Usuario */}
           <div className="data-card">
             <div className="data-card-header">
@@ -162,7 +162,7 @@ const Administracion: React.FC = () => {
                 {editingUsuario ? 'Editar Usuario' : 'Nuevo Usuario'}
               </h2>
             </div>
-            <div className="p-24">
+            <div className="p-16 md:p-24">
               <form onSubmit={handleSubmitUsuario}>
                 <div className="form-group">
                   <label>Username *</label>
@@ -186,7 +186,7 @@ const Administracion: React.FC = () => {
                     placeholder="Ej: John"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-16">
                   <div className="form-group">
                     <label>Apellido Paterno</label>
                     <input type="text" placeholder="Apellido Paterno" title="Apellido Paterno" value={apellidoPaterno}
@@ -271,9 +271,58 @@ const Administracion: React.FC = () => {
             <div className="data-card-header">
               <h2 className="text-[18px] font-semibold m-0">Usuarios del Sistema</h2>
             </div>
-            <div className="table-responsive">
+            {/* Vista Móvil: Tarjetas Táctiles */}
+            <div className="block md:hidden p-14">
               {loadingUsuarios ? (
-                <div>Cargando usuarios...</div>
+                <div className="text-center py-20 text-muted">Cargando usuarios...</div>
+              ) : usuarios.length === 0 ? (
+                <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
+                  No hay usuarios registrados
+                </div>
+              ) : (
+                <div className="flex flex-col gap-10">
+                  {usuarios.map(u => (
+                    <div key={u.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-bold text-white text-base">{u.nombre}</div>
+                          <div className="text-xs text-muted font-mono mt-1">@{u.username} {u.rut && `• ${u.rut}`}</div>
+                        </div>
+                        <div className="flex gap-6">
+                          <button
+                            onClick={() => handleEditUsuario(u)}
+                            className="btn btn-secondary btn-icon-sm p-8"
+                            title="Editar Usuario"
+                          >
+                            <Edit2 size={16} className="text-primary" />
+                          </button>
+                          <button
+                            onClick={() => toggleUsuarioActivo(u)}
+                            className="btn btn-secondary btn-icon-sm p-8"
+                            title={u.activo ? 'Desactivar Usuario' : 'Activar Usuario'}
+                          >
+                            {u.activo ? <UserX size={16} className="text-danger" /> : <UserCheck size={16} className="text-success" />}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-8 pt-6 border-t border-white/5">
+                        <span className={`badge ${u.rol === 'ADMIN' ? 'badge-warning' : 'badge-success'}`}>
+                          {u.rol}
+                        </span>
+                        <span className={`badge ${u.activo ? 'badge-success' : 'badge-danger'}`}>
+                          {u.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Vista Escritorio: Tabla tradicional */}
+            <div className="hidden md:block table-responsive">
+              {loadingUsuarios ? (
+                <div className="p-16">Cargando usuarios...</div>
               ) : (
                 <table className="data-table">
                   <thead>

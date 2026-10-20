@@ -228,52 +228,56 @@ export default function Finanzas() {
             <div className="grid-2-cols-gap-16">
               <div className="data-card p-16-mb-20 m-0">
                 <h3 className="mb-12-fs-16 flex-center-gap-8 text-success"><ArrowUpRight size={18} /> Entradas de Caja</h3>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Concepto</th>
-                      <th className="text-right">Monto</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {transacciones.filter(t => t.tipo === 'INGRESO').slice(0, 10).map((t, idx) => (
-                      <tr key={idx}>
-                        <td>{t.concepto}</td>
-                        <td className="font-semibold text-success text-right">${t.monto.toLocaleString('es-CL')}</td>
-                      </tr>
-                    ))}
-                    {transacciones.filter(t => t.tipo === 'INGRESO').length === 0 && (
+                <div className="table-responsive">
+                  <table className="data-table">
+                    <thead>
                       <tr>
-                        <td colSpan={2} className="table-empty-row-p-16">No hay registros de ingresos.</td>
+                        <th>Concepto</th>
+                        <th className="text-right">Monto</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {transacciones.filter(t => t.tipo === 'INGRESO').slice(0, 10).map((t, idx) => (
+                        <tr key={idx}>
+                          <td>{t.concepto}</td>
+                          <td className="font-semibold text-success text-right">${t.monto.toLocaleString('es-CL')}</td>
+                        </tr>
+                      ))}
+                      {transacciones.filter(t => t.tipo === 'INGRESO').length === 0 && (
+                        <tr>
+                          <td colSpan={2} className="table-empty-row-p-16">No hay registros de ingresos.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               <div className="data-card p-16-mb-20 m-0">
                 <h3 className="mb-12-fs-16 flex-center-gap-8 text-danger"><ArrowDownRight size={18} /> Salidas de Caja</h3>
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Concepto</th>
-                      <th className="text-right">Monto</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {transacciones.filter(t => t.tipo === 'EGRESO').slice(0, 10).map((t, idx) => (
-                      <tr key={idx}>
-                        <td>{t.concepto}</td>
-                        <td className="font-semibold text-danger text-right">${t.monto.toLocaleString('es-CL')}</td>
-                      </tr>
-                    ))}
-                    {transacciones.filter(t => t.tipo === 'EGRESO').length === 0 && (
+                <div className="table-responsive">
+                  <table className="data-table">
+                    <thead>
                       <tr>
-                        <td colSpan={2} className="table-empty-row-p-16">No hay registros de egresos.</td>
+                        <th>Concepto</th>
+                        <th className="text-right">Monto</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {transacciones.filter(t => t.tipo === 'EGRESO').slice(0, 10).map((t, idx) => (
+                        <tr key={idx}>
+                          <td>{t.concepto}</td>
+                          <td className="font-semibold text-danger text-right">${t.monto.toLocaleString('es-CL')}</td>
+                        </tr>
+                      ))}
+                      {transacciones.filter(t => t.tipo === 'EGRESO').length === 0 && (
+                        <tr>
+                          <td colSpan={2} className="table-empty-row-p-16">No hay registros de egresos.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>

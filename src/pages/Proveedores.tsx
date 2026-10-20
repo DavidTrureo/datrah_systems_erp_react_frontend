@@ -130,7 +130,47 @@ export default function Proveedores() {
 
       {/* Listado de Proveedores */}
       <div className="data-card">
-        <div className="table-responsive">
+        {/* Vista Móvil: Tarjetas Táctiles adaptadas al teléfono */}
+        <div className="block md:hidden p-14">
+          {loading ? (
+            <div className="text-center py-20 text-muted">Cargando proveedores...</div>
+          ) : filteredProveedores.length === 0 ? (
+            <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
+              No se encontraron proveedores
+            </div>
+          ) : (
+            <div className="flex flex-col gap-10">
+              {filteredProveedores.map((p) => (
+                <div key={p.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="font-bold text-white text-base">{p.nombre}</div>
+                      <div className="text-xs text-muted font-mono mt-1">Doc: {p.documentoIdentidad}</div>
+                    </div>
+                    <div className="flex gap-6">
+                      <button className="btn btn-secondary btn-icon-sm" onClick={() => handleOpenModal(p)} title="Editar" aria-label="Editar">
+                        <Edit3 size={16} />
+                      </button>
+                      <button className="btn btn-secondary btn-icon-sm text-danger" onClick={() => handleDeleteProveedor(p.id!)} title="Eliminar" aria-label="Eliminar">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  {(p.email || p.telefono || p.direccion) && (
+                    <div className="text-xs text-secondary flex flex-col gap-4 pt-6 border-t border-white/5">
+                      {p.email && <div>✉️ {p.email}</div>}
+                      {p.telefono && <div>📞 {p.telefono}</div>}
+                      {p.direccion && <div>📍 {p.direccion}</div>}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Vista Escritorio: Tabla tradicional */}
+        <div className="hidden md:block table-responsive">
           <table className="data-table">
             <thead>
               <tr>
@@ -161,11 +201,11 @@ export default function Proveedores() {
                     <td>{p.direccion || '-'}</td>
                     <td>
                       <div className="flex items-center gap-2">
-                        <button className="btn btn-secondary" onClick={() => handleOpenModal(p)} title="Editar" aria-label="Editar">
-                          <Edit3 size={18} />
+                        <button className="btn btn-secondary btn-icon-sm p-8" onClick={() => handleOpenModal(p)} title="Editar" aria-label="Editar">
+                          <Edit3 size={16} />
                         </button>
-                        <button className="btn btn-secondary" onClick={() => handleDeleteProveedor(p.id!)} title="Eliminar" aria-label="Eliminar">
-                          <Trash2 size={18} />
+                        <button className="btn btn-secondary btn-icon-sm p-8 text-danger" onClick={() => handleDeleteProveedor(p.id!)} title="Eliminar" aria-label="Eliminar">
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>

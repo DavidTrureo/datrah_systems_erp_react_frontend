@@ -1652,6 +1652,36 @@ table.data-table tr:hover td {
     padding: 16px !important;
   }
 
+  .grid-2-cols-gap-16 {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .dashboard-charts-grid,
+  .dashboard-tables-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .data-card {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .data-card.p-24,
+  .data-card-padded,
+  .p-24 {
+    padding: 14px 12px !important;
+  }
+
+  .data-card-header {
+    padding: 14px 16px !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+
   /* Forms & Modals */
   .modal-container,
   .modal-content {
@@ -1661,17 +1691,26 @@ table.data-table tr:hover td {
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     padding: 20px 16px !important;
+    box-sizing: border-box !important;
   }
 
-  /* Tables */
+  /* Tables & Horizontal Touch Scrolling */
   .table-responsive {
+    width: 100% !important;
+    max-width: 100% !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    display: block !important;
+    position: relative !important;
+  }
+
+  table.data-table {
+    min-width: 520px;
   }
 
   table.data-table th,
   table.data-table td {
-    padding: 12px 14px !important;
+    padding: 10px 12px !important;
     font-size: 13px !important;
     white-space: nowrap !important;
   }
@@ -1864,4 +1903,23 @@ table.data-table tr:hover td {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Universal Eye Toggle Button (Android/WebKit Reset) */
+.eye-toggle-btn,
+button.eye-toggle-btn {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }

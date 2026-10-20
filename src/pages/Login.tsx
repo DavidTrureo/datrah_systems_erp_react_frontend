@@ -50,9 +50,7 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="modal-content !max-w-md w-full relative z-10 flex flex-col gap-6 shadow-2xl border border-white/10 backdrop-blur-md">
         <div className="text-center flex flex-col items-center">
-          <img src="/logo.png" alt="Datrah Systems ERP" className="w-48 mb-2 drop-shadow-2xl" />
-          <h1 className="text-xl font-bold text-white tracking-wide mt-2">Iniciar Sesión</h1>
-          <p className="text-xs text-white/60">Ingresa tus credenciales para continuar</p>
+          <img src="/logo.png" alt="Datrah Systems ERP" className="w-52 mb-1 drop-shadow-2xl" />
         </div>
 
         {error && (
@@ -98,7 +96,8 @@ export default function Login({ onLoginSuccess }: LoginProps) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 text-white/50 hover:text-white transition-colors"
+                className="eye-toggle-btn absolute right-3 text-white/50 hover:text-white transition-colors bg-transparent border-0 p-0 shadow-none outline-none focus:outline-none appearance-none flex items-center justify-center cursor-pointer"
+                style={{ background: 'transparent', border: 'none', outline: 'none', boxShadow: 'none' }}
                 title={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

@@ -344,45 +344,47 @@ export default function Contabilidad() {
       )}
 
       {activeTab === 'plan' && (
-        <div className="data-card mt-20 p-24">
-          <div className="flex-between mb-16">
+        <div className="data-card mt-20 p-16 md:p-24">
+          <div className="flex flex-col sm:flex-row gap-12 sm:items-center sm:justify-between mb-16">
             <h2 className="m-0">Plan de Cuentas (Chile)</h2>
-            <div className="relative">
+            <div className="relative w-full sm:w-72">
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
-              <input type="text" placeholder="Buscar cuenta..." className="form-control !pl-10 w-72" />
+              <input type="text" placeholder="Buscar cuenta..." className="form-control !pl-10 w-full" />
             </div>
           </div>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Código</th>
-                <th>Nombre Cuenta</th>
-                <th>Tipo</th>
-                <th className="text-center">Imputable</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cuentas.map(c => (
-                <tr key={c.id}>
-                  <td className="font-mono text-primary font-bold">{c.codigo}</td>
-                  <td className="font-semibold">{c.nombre}</td>
-                  <td>
-                    <span className={`badge ${
-                      c.tipo === 'ACTIVO' ? 'badge-success' :
-                      c.tipo === 'PASIVO' ? 'badge-danger' :
-                      c.tipo === 'PATRIMONIO' ? 'badge-warning' :
-                      'badge-primary'
-                    }`}>
-                      {c.tipo}
-                    </span>
-                  </td>
-                  <td className="text-center">
-                    {c.imputable ? <CheckCircle size={18} className="text-success inline-block" /> : <XCircle size={18} className="text-danger inline-block" />}
-                  </td>
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Nombre Cuenta</th>
+                  <th>Tipo</th>
+                  <th className="text-center">Imputable</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {cuentas.map(c => (
+                  <tr key={c.id}>
+                    <td className="font-mono text-primary font-bold">{c.codigo}</td>
+                    <td className="font-semibold">{c.nombre}</td>
+                    <td>
+                      <span className={`badge ${
+                        c.tipo === 'ACTIVO' ? 'badge-success' :
+                        c.tipo === 'PASIVO' ? 'badge-danger' :
+                        c.tipo === 'PATRIMONIO' ? 'badge-warning' :
+                        'badge-primary'
+                      }`}>
+                        {c.tipo}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      {c.imputable ? <CheckCircle size={18} className="text-success inline-block" /> : <XCircle size={18} className="text-danger inline-block" />}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -435,10 +437,10 @@ export default function Contabilidad() {
               </div>
             </div>
 
-            <div className="data-card p-24 mb-24">
+            <div className="data-card p-16 md:p-24 mb-24">
               <h3 className="mb-16 text-secondary">1. Agregar Línea de Detalle</h3>
-              <div className="flex items-end gap-16 bg-darker p-16 rounded-lg border border-gray-800/50">
-                <div className="form-group m-0 flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-12 items-end bg-darker p-14 sm:p-16 rounded-lg border border-gray-800/50">
+                <div className="form-group m-0 col-span-1 sm:col-span-2 md:col-span-4">
                   <label>Cuenta Contable</label>
                   <select 
                     title="Cuenta Contable"
@@ -455,67 +457,69 @@ export default function Contabilidad() {
                     ))}
                   </select>
                 </div>
-                <div className="form-group m-0 flex-1">
+                <div className="form-group m-0 col-span-1 sm:col-span-2 md:col-span-3">
                   <label>Glosa Línea (Opcional)</label>
                   <input type="text" title="Glosa" className="form-control" value={detalleForm.glosaLinea} onChange={e => setDetalleForm({...detalleForm, glosaLinea: e.target.value})} placeholder="Detalle de la cuenta..." />
                 </div>
-                <div className="form-group m-0 w-32">
+                <div className="form-group m-0 col-span-1 sm:col-span-1 md:col-span-2">
                   <label>Debe ($)</label>
                   <input type="number" title="Debe" placeholder="0" min="0" className="form-control" value={detalleForm.debe || ''} onChange={e => setDetalleForm({...detalleForm, debe: Number(e.target.value)})} />
                 </div>
-                <div className="form-group m-0 w-32">
+                <div className="form-group m-0 col-span-1 sm:col-span-1 md:col-span-2">
                   <label>Haber ($)</label>
                   <input type="number" title="Haber" placeholder="0" min="0" className="form-control" value={detalleForm.haber || ''} onChange={e => setDetalleForm({...detalleForm, haber: Number(e.target.value)})} />
                 </div>
-                <div>
-                  <button type="button" onClick={handleAddDetalle} className="btn btn-secondary h-11" title="Agregar Línea" aria-label="Agregar Línea">
-                    <PlusCircle size={18} /> Agregar
+                <div className="col-span-1 sm:col-span-2 md:col-span-1">
+                  <button type="button" onClick={handleAddDetalle} className="btn btn-secondary h-11 w-full justify-center" title="Agregar Línea" aria-label="Agregar Línea">
+                    <PlusCircle size={18} /> <span className="md:hidden">Agregar</span>
                   </button>
                 </div>
               </div>
 
               <h3 className="mt-24 mb-16 text-secondary">2. Asiento Contable</h3>
-              <table className="data-table">
-                <thead>
-                  <tr className="bg-darker">
-                    <th>Cuenta</th>
-                    <th>Glosa</th>
-                    <th className="text-right">Debe</th>
-                    <th className="text-right">Haber</th>
-                    <th className="text-center">Acción</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {nuevoComp.detalles?.map((det, idx) => (
-                    <tr key={idx} className="border-b border-gray-800/50">
-                      <td className="font-semibold">{det.cuenta?.codigo} - {det.cuenta?.nombre}</td>
-                      <td className="text-secondary">{det.glosaLinea}</td>
-                      <td className="text-right font-mono text-success">{det.debe! > 0 ? `$${det.debe?.toLocaleString('es-CL')}` : ''}</td>
-                      <td className="text-right font-mono text-danger">{det.haber! > 0 ? `$${det.haber?.toLocaleString('es-CL')}` : ''}</td>
-                      <td className="text-center">
-                        <button type="button" onClick={() => handleRemoveDetalle(idx)} className="btn-link text-danger">Eliminar</button>
+              <div className="table-responsive">
+                <table className="data-table">
+                  <thead>
+                    <tr className="bg-darker">
+                      <th>Cuenta</th>
+                      <th>Glosa</th>
+                      <th className="text-right">Debe</th>
+                      <th className="text-right">Haber</th>
+                      <th className="text-center">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {nuevoComp.detalles?.map((det, idx) => (
+                      <tr key={idx} className="border-b border-gray-800/50">
+                        <td className="font-semibold">{det.cuenta?.codigo} - {det.cuenta?.nombre}</td>
+                        <td className="text-secondary">{det.glosaLinea}</td>
+                        <td className="text-right font-mono text-success">{det.debe! > 0 ? `$${det.debe?.toLocaleString('es-CL')}` : ''}</td>
+                        <td className="text-right font-mono text-danger">{det.haber! > 0 ? `$${det.haber?.toLocaleString('es-CL')}` : ''}</td>
+                        <td className="text-center">
+                          <button type="button" onClick={() => handleRemoveDetalle(idx)} className="btn-link text-danger">Eliminar</button>
+                        </td>
+                      </tr>
+                    ))}
+                    {nuevoComp.detalles?.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="text-center p-32 text-secondary bg-darker/50 italic">Aún no has agregado líneas al comprobante.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                  <tfoot>
+                    <tr className="bg-darker border-t border-gray-700">
+                      <td colSpan={2} className="text-right p-16 font-bold">TOTALES:</td>
+                      <td className={`text-right font-mono p-16 font-bold ${nuevoComp.detalles?.reduce((a,b)=>a+(b.debe||0),0) !== nuevoComp.detalles?.reduce((a,b)=>a+(b.haber||0),0) ? 'text-danger' : 'text-success'}`}>
+                        ${nuevoComp.detalles?.reduce((a,b)=>a+(b.debe||0),0).toLocaleString('es-CL')}
                       </td>
+                      <td className={`text-right font-mono p-16 font-bold ${nuevoComp.detalles?.reduce((a,b)=>a+(b.debe||0),0) !== nuevoComp.detalles?.reduce((a,b)=>a+(b.haber||0),0) ? 'text-danger' : 'text-success'}`}>
+                        ${nuevoComp.detalles?.reduce((a,b)=>a+(b.haber||0),0).toLocaleString('es-CL')}
+                      </td>
+                      <td></td>
                     </tr>
-                  ))}
-                  {nuevoComp.detalles?.length === 0 && (
-                    <tr>
-                      <td colSpan={5} className="text-center p-32 text-secondary bg-darker/50 italic">Aún no has agregado líneas al comprobante.</td>
-                    </tr>
-                  )}
-                </tbody>
-                <tfoot>
-                  <tr className="bg-darker border-t border-gray-700">
-                    <td colSpan={2} className="text-right p-16 font-bold">TOTALES:</td>
-                    <td className={`text-right font-mono p-16 font-bold ${nuevoComp.detalles?.reduce((a,b)=>a+(b.debe||0),0) !== nuevoComp.detalles?.reduce((a,b)=>a+(b.haber||0),0) ? 'text-danger' : 'text-success'}`}>
-                      ${nuevoComp.detalles?.reduce((a,b)=>a+(b.debe||0),0).toLocaleString('es-CL')}
-                    </td>
-                    <td className={`text-right font-mono p-16 font-bold ${nuevoComp.detalles?.reduce((a,b)=>a+(b.debe||0),0) !== nuevoComp.detalles?.reduce((a,b)=>a+(b.haber||0),0) ? 'text-danger' : 'text-success'}`}>
-                      ${nuevoComp.detalles?.reduce((a,b)=>a+(b.haber||0),0).toLocaleString('es-CL')}
-                    </td>
-                    <td></td>
-                  </tr>
-                </tfoot>
-              </table>
+                  </tfoot>
+                </table>
+              </div>
               
               <div className="flex-between mt-24">
                 <div className="text-sm">
@@ -636,7 +640,7 @@ export default function Contabilidad() {
             <h2 className="text-success m-0 p-16 bg-success/20 border-b border-success/30 flex items-center gap-2">
               <TrendingUp size={20} /> Activos
             </h2>
-            <div className="p-16">
+            <div className="p-16 table-responsive">
               <table className="data-table">
                 <tbody>
                   {balance.activos.map(c => (
@@ -660,7 +664,7 @@ export default function Contabilidad() {
               <h2 className="text-danger m-0 p-16 bg-danger/20 border-b border-danger/30 flex items-center gap-2">
                 <TrendingDown size={20} /> Pasivos
               </h2>
-              <div className="p-16">
+              <div className="p-16 table-responsive">
                 <table className="data-table">
                   <tbody>
                     {balance.pasivos.map(c => (
@@ -684,7 +688,7 @@ export default function Contabilidad() {
               <h2 className="text-warning m-0 p-16 bg-warning/20 border-b border-warning/30 flex items-center gap-2">
                 <BookOpen size={20} /> Patrimonio
               </h2>
-              <div className="p-16">
+              <div className="p-16 table-responsive">
                 <table className="data-table">
                   <tbody>
                     {balance.patrimonio.map(c => (
@@ -751,7 +755,7 @@ export default function Contabilidad() {
               <h2 className="text-success m-0 p-16 bg-success/20 border-b border-success/30 flex items-center gap-2">
                 <TrendingUp size={20} /> Ingresos (Ganancias)
               </h2>
-              <div className="p-16">
+              <div className="p-16 table-responsive">
                 <table className="data-table">
                   <tbody>
                     {resultados.ingresos.map(c => (
@@ -778,7 +782,7 @@ export default function Contabilidad() {
               <h2 className="text-danger m-0 p-16 bg-danger/20 border-b border-danger/30 flex items-center gap-2">
                 <TrendingDown size={20} /> Egresos (Pérdidas)
               </h2>
-              <div className="p-16">
+              <div className="p-16 table-responsive">
                 <table className="data-table">
                   <tbody>
                     {resultados.egresos.map(c => (
