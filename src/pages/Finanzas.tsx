@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../context/ToastContext';
 import { api, type Factura, type Compra, type FinanzasResumen, type TransaccionCaja } from '../api';
+import ConciliacionBancaria from '../components/ConciliacionBancaria';
 import { 
   DollarSign, 
   TrendingUp, 
@@ -10,7 +11,8 @@ import {
   ArrowDownRight, 
   PlusCircle, 
   FileText,
-  Calendar
+  Calendar,
+  Building2
 } from 'lucide-react';
 
 export default function Finanzas() {
@@ -20,7 +22,7 @@ export default function Finanzas() {
   const [cxpList, setCxpList] = useState<Compra[]>([]);
   const [transacciones, setTransacciones] = useState<TransaccionCaja[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'caja' | 'cxc' | 'cxp' | 'historial'>('caja');
+  const [activeTab, setActiveTab] = useState<'caja' | 'cxc' | 'cxp' | 'historial' | 'conciliacion'>('caja');
 
   // Modal de Abono
   const [showAbonoModal, setShowAbonoModal] = useState(false);
@@ -215,11 +217,26 @@ export default function Finanzas() {
           >
             Historial de Movimientos Caja
           </button>
+          <button 
+            className={`btn ${activeTab === 'conciliacion' ? 'btn-primary' : 'btn-secondary'} flex items-center gap-2`}
+            onClick={() => setActiveTab('conciliacion')}
+          >
+            <Building2 size={16} /> Conciliación Bancaria
+          </button>
         </div>
       </div>
 
       {/* CONTENIDO DE PESTAÑAS */}
-      <div className="data-card mt-20 p-24">
+      {activeTab === 'conciliacion' ? (
+        <div className="mt-20">
+          <ConciliacionBancaria
+            cxcList={cxcList}
+            cxpList={cxpList}
+            onRefreshFinanzas={loadData}
+          />
+        </div>
+      ) : (
+        <div className="data-card mt-20 p-24">
         {activeTab === 'caja' && (
           <div>
             <h2 className="mb-16 flex-center-gap-8"><TrendingUp size={20} className="text-primary" /> Distribución de Flujo de Caja</h2>
@@ -456,6 +473,7 @@ export default function Finanzas() {
           </div>
         )}
       </div>
+      )}
 
       {/* MODAL: Registrar Abono / Pago */}
       {showAbonoModal && abonoTarget && (
