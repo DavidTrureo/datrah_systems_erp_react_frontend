@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useToast } from '../context/ToastContext';
 import { api, type Cliente } from '../api';
 import { Plus, Search, Edit3, Trash2 } from 'lucide-react';
 
 export default function Clientes() {
+  const { showSuccess, showError } = useToast();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -77,9 +79,10 @@ export default function Clientes() {
       }
 
       setShowModal(false);
+      showSuccess(selectedCliente?.id ? "Cliente actualizado con éxito" : "Cliente registrado con éxito");
       loadClientes();
     } catch (err) {
-      alert("Error al guardar cliente: " + (err as Error).message);
+      showError("Error al guardar cliente: " + (err as Error).message);
     }
   };
 
@@ -89,7 +92,7 @@ export default function Clientes() {
         await api.eliminarCliente(id);
         loadClientes();
       } catch (err) {
-        alert("Error al desactivar cliente: " + (err as Error).message);
+        showError("Error al desactivar cliente: " + (err as Error).message);
       }
     }
   };

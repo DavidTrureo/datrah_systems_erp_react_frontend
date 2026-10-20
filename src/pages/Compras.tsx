@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useToast } from '../context/ToastContext';
 import { api, type Proveedor, type Producto, type Compra } from '../api';
 import { Plus, Trash2, Truck, FileText, Ban } from 'lucide-react';
 
@@ -9,6 +10,7 @@ interface PurchaseCartItem {
 }
 
 export default function Compras() {
+  const { showSuccess, showError, showWarning } = useToast();
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [compras, setCompras] = useState<Compra[]>([]);
@@ -87,15 +89,15 @@ export default function Compras() {
   const handleCreatePurchase = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProveedorId) {
-      alert("Por favor selecciona un proveedor.");
+      showWarning("Por favor selecciona un proveedor.");
       return;
     }
     if (!numeroDocumento) {
-      alert("Por favor ingresa el número de documento / factura de compra.");
+      showWarning("Por favor ingresa el número de documento / factura de compra.");
       return;
     }
     if (cart.length === 0) {
-      alert("El carro de compras está vacío.");
+      showWarning("El carro de compras está vacío.");
       return;
     }
 
@@ -125,9 +127,9 @@ export default function Compras() {
       setMetodoPago('EFECTIVO');
       
       loadData();
-      alert("¡Ingreso de mercadería / compra registrado correctamente!");
+      showSuccess("¡Ingreso de mercadería / compra registrado correctamente!");
     } catch (err) {
-      alert("Error al registrar compra: " + (err as Error).message);
+      showError("Error al registrar compra: " + (err as Error).message);
     }
   };
 
@@ -137,9 +139,9 @@ export default function Compras() {
         await api.anularCompra(id);
         window.dispatchEvent(new Event('refresh-bajo-stock'));
         loadData();
-        alert("Compra anulada con éxito.");
+        showSuccess("Compra anulada con éxito.");
       } catch (err) {
-        alert("Error al anular compra: " + (err as Error).message);
+        showError("Error al anular compra: " + (err as Error).message);
       }
     }
   };

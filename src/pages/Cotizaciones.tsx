@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api, type Producto, type Cliente, type Cotizacion } from '../api';
-import { FileText, Trash2, Printer, Search, ArrowRight } from 'lucide-react';
+import { FileText, Trash2, Printer, Search, ArrowRight, MessageCircle } from 'lucide-react';
 import { generarCotizacionPDF } from '../utils/pdfGenerator';
 import { useToast } from '../context/ToastContext';
 
@@ -104,8 +104,39 @@ const Cotizaciones: React.FC = () => {
   const iva = baseImponible * 0.19;
   const total = baseImponible + iva;
 
+  const handleShareWhatsApp = (cot: Cotizacion) => {
+    const clienteNombre = cot.cliente?.nombre || 'Estimado Cliente';
+    const num = cot.numeroCotizacion;
+    const totalFmt = `$${Number(cot.total).toLocaleString('es-CL')}`;
+    
+    const itemsList = cot.detalles && cot.detalles.length > 0 
+      ? cot.detalles.map(d => `• ${d.cantidad}x ${d.producto?.nombre || 'Producto'} ($${Number(d.subtotal || 0).toLocaleString('es-CL')})`).join('\n')
+      : '';
+
+    const text = 
+`Hola ${clienteNombre}! 📋
+Le compartimos el detalle de su *Cotización N° ${num}* de Datrah Systems:
+
+${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💰 *Total:* ${totalFmt}
+🗓️ *Vigencia:* 15 días
+
+Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
+¡Muchas gracias!`;
+
+    let telefono = cot.cliente?.telefono ? cot.cliente.telefono.replace(/\D/g, '') : '';
+    if (telefono.length === 9 && telefono.startsWith('9')) {
+      telefono = '56' + telefono;
+    }
+
+    const url = telefono 
+      ? `https://wa.me/${telefono}?text=${encodeURIComponent(text)}`
+      : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+    window.open(url, '_blank');
+  };
+
   const handleCrearCotizacion = async () => {
-    if (cart.length === 0) { showWarning("Agrega productos a la cotización"); return; }
+    if (cart.length === 0) { showWarning("Agrega al menos un producto a la cotización", "Cotización Vacía"); return; }
 
     setIsSubmitting(true);
     try {
@@ -423,11 +454,18 @@ const Cotizaciones: React.FC = () => {
                           <span className="text-base font-bold text-success">${Number(cot.total).toLocaleString()}</span>
                         </div>
                         <div className="flex gap-8 pt-8 border-t border-white/5">
-                          <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => generarCotizacionPDF(cot)}>
+                          <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4 cursor-pointer" onClick={() => generarCotizacionPDF(cot)}>
                             <Printer size={14} /> PDF
                           </button>
+                          <button 
+                            className="btn bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 flex-1 py-6 text-xs flex-center-gap-4 cursor-pointer transition-colors" 
+                            onClick={() => handleShareWhatsApp(cot)}
+                            title="Compartir por WhatsApp"
+                          >
+                            <MessageCircle size={14} className="text-emerald-400" /> WhatsApp
+                          </button>
                           {cot.estado === 'PENDIENTE' && (
-                            <button className="btn btn-primary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => handleFacturar(cot)}>
+                            <button className="btn btn-primary flex-1 py-6 text-xs flex-center-gap-4 cursor-pointer" onClick={() => handleFacturar(cot)}>
                               <ArrowRight size={14} /> Facturar
                             </button>
                           )}
@@ -466,11 +504,18 @@ const Cotizaciones: React.FC = () => {
                           </span>
                         </td>
                         <td className="flex gap-8">
-                          <button className="btn btn-secondary btn-icon-sm p-8" title="Exportar PDF" onClick={() => generarCotizacionPDF(cot)}>
+                          <button className="btn btn-secondary btn-icon-sm p-8 cursor-pointer" title="Exportar PDF" onClick={() => generarCotizacionPDF(cot)}>
                             <Printer size={16} />
                           </button>
+                          <button 
+                            className="btn bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 btn-icon-sm p-8 cursor-pointer transition-colors" 
+                            title="Compartir por WhatsApp" 
+                            onClick={() => handleShareWhatsApp(cot)}
+                          >
+                            <MessageCircle size={16} />
+                          </button>
                           {cot.estado === 'PENDIENTE' && (
-                            <button className="btn btn-primary btn-icon-sm p-8" title="Convertir a Factura" onClick={() => handleFacturar(cot)}>
+                            <button className="btn btn-primary btn-icon-sm p-8 cursor-pointer" title="Convertir a Factura" onClick={() => handleFacturar(cot)}>
                               <ArrowRight size={16} />
                             </button>
                           )}

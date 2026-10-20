@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useToast } from '../context/ToastContext';
 import { api, type Factura, type Compra, type FinanzasResumen, type TransaccionCaja } from '../api';
 import { 
   DollarSign, 
@@ -13,6 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function Finanzas() {
+  const { showSuccess, showError, showWarning } = useToast();
   const [resumen, setResumen] = useState<FinanzasResumen | null>(null);
   const [cxcList, setCxcList] = useState<Factura[]>([]);
   const [cxpList, setCxpList] = useState<Compra[]>([]);
@@ -71,11 +73,11 @@ export default function Finanzas() {
     if (!abonoTarget) return;
 
     if (abonoMonto <= 0) {
-      alert("El monto del abono debe ser mayor a 0.");
+      showWarning("El monto del abono debe ser mayor a 0.");
       return;
     }
     if (abonoMonto > abonoTarget.pending) {
-      alert("El monto del abono no puede exceder el saldo pendiente.");
+      showWarning("El monto del abono no puede exceder el saldo pendiente.");
       return;
     }
 
@@ -95,9 +97,9 @@ export default function Finanzas() {
       setShowAbonoModal(false);
       setAbonoTarget(null);
       await loadData();
-      alert("¡Abono registrado con éxito!");
+      showSuccess("¡Abono registrado con éxito!");
     } catch (err) {
-      alert("Error al registrar abono: " + (err as Error).message);
+      showError("Error al registrar abono: " + (err as Error).message);
     }
   };
 

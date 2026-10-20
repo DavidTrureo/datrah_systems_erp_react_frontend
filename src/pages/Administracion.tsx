@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { api, type Usuario, type LogActividad } from '../api';
 import { Edit2, UserX, UserCheck } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const Administracion: React.FC = () => {
+  const { showSuccess, showError } = useToast();
   const [activeTab, setActiveTab] = useState<'usuarios' | 'bitacora'>('usuarios');
   
   // Usuarios State
@@ -82,11 +84,12 @@ const Administracion: React.FC = () => {
           password,
         });
       }
+      showSuccess(editingUsuario ? "Usuario actualizado exitosamente" : "Usuario creado exitosamente");
       resetForm();
       fetchUsuarios();
     } catch (error) {
       console.error('Error guardando usuario:', error);
-      alert('Error al guardar el usuario');
+      showError('Error al guardar el usuario');
     }
   };
 

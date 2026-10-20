@@ -7,12 +7,13 @@ import Proveedores from './pages/Proveedores';
 import Compras from './pages/Compras';
 import Login from './pages/Login';
 import { api, type LoginResponse, type Producto } from './api';
-import { LayoutDashboard, ShoppingCart, Package, Users, Truck, LogOut, Bell, DollarSign, Book, FileText, Menu, X } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Package, Users, Truck, LogOut, Bell, DollarSign, Book, FileText, Menu, X, Search } from 'lucide-react';
 import Finanzas from './pages/Finanzas';
 import Administracion from './pages/Administracion';
 import Contabilidad from './pages/Contabilidad';
 import { Copilot } from './components/Copilot';
 import Cotizaciones from './pages/Cotizaciones';
+import { CommandPalette } from './components/CommandPalette';
 
 type ViewType = 'dashboard' | 'facturacion' | 'cotizaciones' | 'inventario' | 'clientes' | 'compras' | 'proveedores' | 'finanzas' | 'administracion' | 'contabilidad';
 
@@ -21,6 +22,19 @@ export default function App() {
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  // Escuchar atajo de teclado universal Ctrl + K / Cmd + K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleNavigate = (view: ViewType) => {
     setActiveView(view);
@@ -316,6 +330,14 @@ export default function App() {
           </div>
 
           <div className="mobile-topbar-right">
+            <button 
+              className="mobile-search-trigger" 
+              onClick={() => setIsCommandPaletteOpen(true)}
+              title="Buscar en el ERP (Ctrl+K)"
+              aria-label="Buscar"
+            >
+              <Search size={19} />
+            </button>
             <div 
               className="bell-notification-trigger" 
               onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
@@ -334,8 +356,19 @@ export default function App() {
           </div>
         </header>
 
-        {/* Header Superior de Alertas de Stock (solo desktop) */}
+        {/* Header Superior de Búsqueda Universal y Alertas de Stock (solo desktop) */}
         <div className="header-alerts-container desktop-alerts">
+          <button 
+            type="button"
+            className="command-palette-trigger-btn"
+            onClick={() => setIsCommandPaletteOpen(true)}
+            title="Búsqueda Universal (Ctrl + K / Cmd + K)"
+          >
+            <Search size={15} className="text-indigo-400 shrink-0" />
+            <span className="trigger-text">Buscar clientes, facturas, productos, cuentas...</span>
+            <kbd className="trigger-kbd">⌘K</kbd>
+          </button>
+
           <div className="bell-notification-trigger" onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}>
             <Bell size={20} />
             {bajoStock.length > 0 && (
@@ -375,6 +408,11 @@ export default function App() {
 
         {renderActiveView()}
         <Copilot />
+        <CommandPalette
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+          onNavigate={handleNavigate}
+        />
       </main>
     </div>
   );

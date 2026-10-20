@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useToast } from '../context/ToastContext';
 import { api, type Proveedor } from '../api';
 import { Plus, Search, Edit3, Trash2 } from 'lucide-react';
 
 export default function Proveedores() {
+  const { showSuccess, showError } = useToast();
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -77,9 +79,10 @@ export default function Proveedores() {
       }
 
       setShowModal(false);
+      showSuccess(selectedProveedor?.id ? "Proveedor actualizado con éxito" : "Proveedor registrado con éxito");
       loadProveedores();
     } catch (err) {
-      alert("Error al guardar proveedor: " + (err as Error).message);
+      showError("Error al guardar proveedor: " + (err as Error).message);
     }
   };
 
@@ -89,7 +92,7 @@ export default function Proveedores() {
         await api.eliminarProveedor(id);
         loadProveedores();
       } catch (err) {
-        alert("Error al desactivar proveedor: " + (err as Error).message);
+        showError("Error al desactivar proveedor: " + (err as Error).message);
       }
     }
   };

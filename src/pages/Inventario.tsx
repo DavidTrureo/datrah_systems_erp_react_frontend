@@ -262,7 +262,7 @@ export default function Inventario() {
       setShowStockModal(false);
       loadData();
     } catch (err) {
-      alert("Error al registrar movimiento: " + (err as Error).message);
+      showError("Error al registrar movimiento: " + (err as Error).message);
     }
   };
 
@@ -274,7 +274,7 @@ export default function Inventario() {
       setKardexList(history);
       setShowKardexModal(true);
     } catch (err) {
-      alert("Error al obtener Kardex: " + (err as Error).message);
+      showError("Error al obtener Kardex: " + (err as Error).message);
     }
   };
 

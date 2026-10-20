@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api, type Cliente, type Producto, type Factura } from '../api';
-import { Plus, Trash2, ShoppingCart, User, CreditCard, Ban, FileText, Printer, Percent, Camera } from 'lucide-react';
+import { Plus, Trash2, ShoppingCart, User, CreditCard, Ban, FileText, Printer, Percent, Camera, MessageCircle } from 'lucide-react';
 import { generarTicketPDF } from '../utils/pdfGenerator';
 import { useToast } from '../context/ToastContext';
 import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
@@ -254,6 +254,38 @@ export default function Facturacion() {
     } catch (err) {
       showError("Error al emitir factura: " + (err as Error).message);
     }
+  };
+
+  const handleShareFacturaWhatsApp = (f: Factura) => {
+    const clienteNombre = f.cliente?.nombre || 'Estimado Cliente';
+    const num = f.numeroFactura;
+    const totalFmt = `$${Number(f.total).toLocaleString('es-CL')}`;
+    const metodo = f.metodoPago || 'Efectivo';
+    
+    const itemsList = f.detalles && f.detalles.length > 0
+      ? f.detalles.map(d => `• ${d.cantidad}x ${d.producto?.nombre || 'Producto'} ($${Number(d.subtotal || 0).toLocaleString('es-CL')})`).join('\n')
+      : '';
+
+    const text = 
+`Hola ${clienteNombre}! 🧾
+Le compartimos el comprobante de su *Factura / Venta N° ${num}* de Datrah Systems:
+
+${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de Pago:* ${metodo}
+💰 *Total Pagado:* ${totalFmt}
+📅 *Fecha:* ${new Date(f.fechaEmision).toLocaleDateString('es-CL')}
+
+¡Muchas gracias por su compra! Quedamos a su disposición.`;
+
+    let telefono = f.cliente?.telefono ? f.cliente.telefono.replace(/\D/g, '') : '';
+    if (telefono.length === 9 && telefono.startsWith('9')) {
+      telefono = '56' + telefono;
+    }
+
+    const url = telefono 
+      ? `https://wa.me/${telefono}?text=${encodeURIComponent(text)}`
+      : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+    window.open(url, '_blank');
   };
 
   const handleAnularFactura = async (id: number) => {
@@ -621,7 +653,7 @@ export default function Facturacion() {
             try {
               await api.descargarVentasExcel();
             } catch (err) {
-              alert("Error al descargar Excel: " + (err as Error).message);
+              showError("Error al descargar Excel: " + (err as Error).message);
             }
           }}>
             Exportar Excel
@@ -660,7 +692,7 @@ export default function Facturacion() {
                         try {
                           await api.descargarFacturaPdf(f.id!);
                         } catch (err) {
-                          alert("Error al descargar PDF: " + (err as Error).message);
+                          showError("Error al descargar PDF: " + (err as Error).message);
                         }
                       }}
                     >
@@ -671,6 +703,13 @@ export default function Facturacion() {
                       onClick={() => handleOpenPrintModal(f)}
                     >
                       <Printer size={14} /> Ticket
+                    </button>
+                    <button 
+                      className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10" 
+                      onClick={() => handleShareFacturaWhatsApp(f)}
+                      title="Compartir por WhatsApp"
+                    >
+                      <MessageCircle size={14} className="text-emerald-400" /> WhatsApp
                     </button>
                     {f.estado === 'EMITIDA' && (
                       <button 
@@ -734,13 +773,20 @@ export default function Facturacion() {
                           try {
                             await api.descargarFacturaPdf(f.id!);
                           } catch (err) {
-                            alert("Error al descargar PDF: " + (err as Error).message);
+                            showError("Error al descargar PDF: " + (err as Error).message);
                           }
                         }}>
                           PDF
                         </button>
                         <button className="btn btn-secondary btn-sm" title="Imprimir Ticket POS" onClick={() => handleOpenPrintModal(f)}>
                           <Printer size={14} className="mr-4" /> Ticket
+                        </button>
+                        <button 
+                          className="btn btn-secondary btn-sm flex-center-gap-4 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10" 
+                          title="Compartir por WhatsApp" 
+                          onClick={() => handleShareFacturaWhatsApp(f)}
+                        >
+                          <MessageCircle size={14} className="text-emerald-400 mr-4" /> WhatsApp
                         </button>
                         {f.estado === 'EMITIDA' ? (
                           <button className="btn btn-secondary btn-danger-outline" onClick={() => handleAnularFactura(f.id!)}>

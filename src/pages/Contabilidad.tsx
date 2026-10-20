@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useToast } from '../context/ToastContext';
 import { api, type CuentaContable, type ComprobanteContable, type DetalleComprobante, type BalanceGeneralReport, type EstadoResultadosReport, type LibroMayorRow } from '../api';
 import { PlusCircle, CheckCircle, XCircle, Search, FileText, ArrowRight, BookOpen, AlertCircle, TrendingUp, TrendingDown, Printer } from 'lucide-react';
 import { generarReporteTablaPDF } from '../utils/pdfGenerator';
 
 export default function Contabilidad() {
+  const { showSuccess, showError, showWarning } = useToast();
   const [cuentas, setCuentas] = useState<CuentaContable[]>([]);
   const [comprobantes, setComprobantes] = useState<ComprobanteContable[]>([]);
   const [loading, setLoading] = useState(true);
@@ -87,18 +89,18 @@ export default function Contabilidad() {
 
   const handleAddDetalle = () => {
     if (!detalleForm.cuenta) {
-      alert("Debe seleccionar una cuenta contable");
+      showWarning("Debe seleccionar una cuenta contable");
       return;
     }
     const debe = Number(detalleForm.debe || 0);
     const haber = Number(detalleForm.haber || 0);
 
     if (debe === 0 && haber === 0) {
-      alert("Debe ingresar un monto en Debe o Haber");
+      showWarning("Debe ingresar un monto en Debe o Haber");
       return;
     }
     if (debe > 0 && haber > 0) {
-      alert("Una línea no puede tener monto en Debe y Haber al mismo tiempo");
+      showWarning("Una línea no puede tener monto en Debe y Haber al mismo tiempo");
       return;
     }
 
@@ -121,7 +123,7 @@ export default function Contabilidad() {
   const handleSaveComprobante = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nuevoComp.glosa || !nuevoComp.fecha || !nuevoComp.detalles || nuevoComp.detalles.length < 2) {
-      alert("Complete los datos requeridos y agregue al menos 2 líneas de detalle.");
+      showWarning("Complete los datos requeridos y agregue al menos 2 líneas de detalle.");
       return;
     }
 
@@ -130,7 +132,7 @@ export default function Contabilidad() {
     const totalHaber = nuevoComp.detalles.reduce((acc, det) => acc + Number(det.haber || 0), 0);
 
     if (totalDebe !== totalHaber) {
-      alert(`El comprobante no cuadra (Partida Doble).\nTotal Debe: $${totalDebe}\nTotal Haber: $${totalHaber}`);
+      showWarning(`El comprobante no cuadra (Partida Doble).\nTotal Debe: $${totalDebe}\nTotal Haber: $${totalHaber}`);
       return;
     }
 
@@ -141,7 +143,7 @@ export default function Contabilidad() {
       const payload = { ...nuevoComp, numeroComprobante: numC };
       
       await api.crearComprobante(payload);
-      alert("Comprobante creado exitosamente.");
+      showSuccess("Comprobante creado exitosamente.");
       setActiveTab('diario');
       setNuevoComp({
         tipo: 'INGRESO',
@@ -152,7 +154,7 @@ export default function Contabilidad() {
       });
       loadData();
     } catch (err) {
-      alert("Error al crear comprobante: " + (err as Error).message);
+      showError("Error al crear comprobante: " + (err as Error).message);
     }
   };
 
@@ -162,7 +164,7 @@ export default function Contabilidad() {
       await api.anularComprobante(id);
       loadData();
     } catch (err) {
-      alert("Error al anular: " + (err as Error).message);
+      showError("Error al anular: " + (err as Error).message);
     }
   };
 
