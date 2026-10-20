@@ -25,7 +25,7 @@ export default function Facturacion() {
   const [selectedClienteId, setSelectedClienteId] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [metodoPago, setMetodoPago] = useState('EFECTIVO');
-  const [impuestoPorcentaje, setImpuestoPorcentaje] = useState(19);
+  const impuestoPorcentaje = 19;
   const [notas, setNotas] = useState('');
 
   // Aux variables
@@ -546,17 +546,6 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
               </select>
             </div>
 
-            {/* IVA */}
-            <div className="form-group">
-              <label htmlFor="iva-input-facturacion">Impuesto (IVA %) </label>
-              <input 
-                id="iva-input-facturacion"
-                type="number" 
-                value={impuestoPorcentaje} 
-                onChange={(e) => setImpuestoPorcentaje(Number(e.target.value))} 
-                className="form-control"
-              />
-            </div>
 
             {/* Notas */}
             <div className="form-group">
