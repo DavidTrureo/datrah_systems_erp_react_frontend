@@ -12,7 +12,7 @@ interface CartItem {
 }
 
 const Cotizaciones: React.FC = () => {
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showWarning } = useToast();
   const [activeTab, setActiveTab] = useState<'nueva' | 'historial'>('nueva');
 
   // Historial
@@ -105,7 +105,7 @@ const Cotizaciones: React.FC = () => {
   const total = baseImponible + iva;
 
   const handleCrearCotizacion = async () => {
-    if (cart.length === 0) return alert("Agrega productos");
+    if (cart.length === 0) { showWarning("Agrega productos a la cotización"); return; }
 
     setIsSubmitting(true);
     try {
@@ -371,9 +371,9 @@ const Cotizaciones: React.FC = () => {
                     <span className="text-3xl font-bold font-mono text-primary">${total.toLocaleString()}</span>
                   </div>
                   <button
-                    className="btn btn-primary w-full py-12 flex justify-center gap-8 items-center font-bold text-lg"
+                    className="btn btn-primary w-full py-12 flex justify-center gap-8 items-center font-bold text-lg cursor-pointer"
                     onClick={handleCrearCotizacion}
-                    disabled={isSubmitting || cart.length === 0}
+                    disabled={isSubmitting}
                   >
                     <FileText size={20} /> Generar Cotización
                   </button>
