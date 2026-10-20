@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api, type LoginResponse } from '../api';
 import { Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
@@ -12,6 +12,11 @@ export default function Login({ onLoginSuccess }: LoginProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Precalentar el backend en Cloud Run inmediatamente al abrir la pantalla de inicio
+    api.warmup();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

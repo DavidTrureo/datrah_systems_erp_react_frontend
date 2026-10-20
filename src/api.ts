@@ -247,6 +247,10 @@ export interface EstadoResultadosReport {
 }
 
 export const api = {
+  // Precalentamiento de backend en Cloud Run
+  warmup: () => {
+    fetch(`${API_BASE_URL}/auth/login`, { method: 'OPTIONS' }).catch(() => {});
+  },
   // Auth & Usuarios
   login: (credentials: { username: string; password?: string }) => 
     request<LoginResponse>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) }),

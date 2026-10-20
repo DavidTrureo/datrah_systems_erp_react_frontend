@@ -1,19 +1,21 @@
-import { useState, useEffect } from 'react';
-import Dashboard from './pages/Dashboard';
-import Inventario from './pages/Inventario';
-import Facturacion from './pages/Facturacion';
-import Clientes from './pages/Clientes';
-import Proveedores from './pages/Proveedores';
-import Compras from './pages/Compras';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import Login from './pages/Login';
 import { api, type LoginResponse, type Producto } from './api';
-import { LayoutDashboard, ShoppingCart, Package, Users, Truck, LogOut, Bell, DollarSign, Book, FileText, Menu, X, Search } from 'lucide-react';
-import Finanzas from './pages/Finanzas';
-import Administracion from './pages/Administracion';
-import Contabilidad from './pages/Contabilidad';
-import { Copilot } from './components/Copilot';
-import Cotizaciones from './pages/Cotizaciones';
-import { CommandPalette } from './components/CommandPalette';
+import { LayoutDashboard, ShoppingCart, Package, Users, Truck, LogOut, Bell, DollarSign, Book, FileText, Menu, X, Search, Loader2 } from 'lucide-react';
+
+// Carga diferida (Code Splitting) para que la pantalla inicial cargue en milisegundos
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Inventario = lazy(() => import('./pages/Inventario'));
+const Facturacion = lazy(() => import('./pages/Facturacion'));
+const Clientes = lazy(() => import('./pages/Clientes'));
+const Proveedores = lazy(() => import('./pages/Proveedores'));
+const Compras = lazy(() => import('./pages/Compras'));
+const Finanzas = lazy(() => import('./pages/Finanzas'));
+const Administracion = lazy(() => import('./pages/Administracion'));
+const Contabilidad = lazy(() => import('./pages/Contabilidad'));
+const Cotizaciones = lazy(() => import('./pages/Cotizaciones'));
+const Copilot = lazy(() => import('./components/Copilot').then(m => ({ default: m.Copilot })));
+const CommandPalette = lazy(() => import('./components/CommandPalette').then(m => ({ default: m.CommandPalette })));
 
 type ViewType = 'dashboard' | 'facturacion' | 'cotizaciones' | 'inventario' | 'clientes' | 'compras' | 'proveedores' | 'finanzas' | 'administracion' | 'contabilidad';
 
@@ -406,13 +408,20 @@ export default function App() {
           </div>
         )}
 
-        {renderActiveView()}
-        <Copilot />
-        <CommandPalette
-          isOpen={isCommandPaletteOpen}
-          onClose={() => setIsCommandPaletteOpen(false)}
-          onNavigate={handleNavigate}
-        />
+        <Suspense fallback={
+          <div className="flex flex-col items-center justify-center min-h-[350px] w-full text-white/60 gap-3 py-16">
+            <Loader2 className="animate-spin text-indigo-400" size={32} />
+            <span className="text-sm font-medium tracking-wide">Cargando módulo...</span>
+          </div>
+        }>
+          {renderActiveView()}
+          <Copilot />
+          <CommandPalette
+            isOpen={isCommandPaletteOpen}
+            onClose={() => setIsCommandPaletteOpen(false)}
+            onNavigate={handleNavigate}
+          />
+        </Suspense>
       </main>
     </div>
   );
