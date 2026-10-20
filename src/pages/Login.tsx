@@ -35,9 +35,9 @@ export default function Login({ onLoginSuccess }: LoginProps) {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="modal-content !max-w-md w-full relative z-10 flex flex-col gap-6">
         <div className="text-center flex flex-col items-center">
-          <img src="/logo.png" alt="Datrah Systems" className="w-48 mb-6 drop-shadow-2xl" />
+          <img src="/logo.png" alt="Datrah Systems ERP" className="w-48 mb-6 drop-shadow-2xl" />
           <h1 className="text-2xl font-bold mb-2">Iniciar Sesión</h1>
-          <p className="text-white/60">Ingresa a Datrah Systems</p>
+          <p className="text-white/60">Ingresa a Datrah Systems ERP</p>
         </div>
 
         {error && (

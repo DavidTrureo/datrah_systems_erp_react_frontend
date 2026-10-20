@@ -166,7 +166,7 @@ export default function App() {
       <aside className={`sidebar ${mobileMenuOpen ? 'open' : ''}`}>
         <div className="sidebar-top-bar">
           <div className="logo-container app-logo-container">
-            <img src="/logo.png" alt="Datrah Systems" className="w-36 h-auto object-contain" />
+            <img src="/logo.png" alt="Datrah Systems ERP" className="w-36 h-auto object-contain" />
           </div>
           <button 
             className="sidebar-close-btn" 
