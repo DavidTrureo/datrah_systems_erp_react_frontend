@@ -431,7 +431,57 @@ table.data-table tr:hover td {
   outline: none;
   border-color: var(--primary);
   background-color: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 0 4px var(--primary-glow);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+/* Universal Select Styling - Strips OS native Aqua / Blue pop-up overlays (macOS/iOS/Android) */
+select,
+select.form-control,
+.form-control select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-color: #0d0f17 !important;
+  color: #f8fafc !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 0 38px 0 14px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  box-sizing: border-box !important;
+  cursor: pointer !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23818cf8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 16px 16px !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+}
+
+select:focus,
+select.form-control:focus {
+  outline: none !important;
+  border-color: var(--primary) !important;
+  background-color: #121522 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+}
+
+select option,
+select optgroup {
+  background-color: #0d0f17 !important;
+  color: #f8fafc !important;
+  padding: 10px 14px !important;
+  font-size: 14px !important;
+}
+
+select option:checked,
+select option:hover {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
+}
+
+select::-ms-expand {
+  display: none !important;
 }
 
 /* Billing Screen Specifics */
