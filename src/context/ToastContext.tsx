@@ -77,7 +77,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <ToastContext.Provider value={{ showToast, showSuccess, showError, showWarning, showInfo }}>
       {children}
       {/* Container de Toasts Flotantes */}
-      <div className="fixed top-5 right-5 z-[99999] flex flex-col gap-3 max-w-sm w-full pointer-events-none">
+      <div 
+        className="fixed z-[99999] flex flex-col gap-3 pointer-events-none transition-all px-4 sm:px-0 w-full max-w-[420px] left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0"
+        style={{
+          top: 'calc(68px + env(safe-area-inset-top, 0px))'
+        }}
+      >
         {toasts.map((toast) => (
           <div
             key={toast.id}

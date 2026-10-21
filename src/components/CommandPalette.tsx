@@ -261,7 +261,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-[10000] flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[10000] flex items-start justify-center px-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
+      style={{
+        paddingTop: 'calc(48px + env(safe-area-inset-top, 0px))'
+      }}
       onClick={onClose}
     >
       <div 

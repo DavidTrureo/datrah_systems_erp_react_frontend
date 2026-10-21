@@ -128,7 +128,13 @@ export function Copilot() {
     <>
       {/* Botón flotante para abrir Copilot */}
       {!isOpen && (
-        <div className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-40">
+        <div 
+          className="fixed z-40 transition-all"
+          style={{
+            bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))',
+            right: 'calc(16px + env(safe-area-inset-right, 0px))'
+          }}
+        >
           <button
             onClick={() => {
               setPosition({ x: 0, y: 0 });
