@@ -119,10 +119,9 @@ export default function Finanzas() {
       </div>
 
       {/* Tarjetas KPI Financieros */}
-      {/* Tarjetas KPI Financieros */}
       {resumen && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24 mb-32">
-          <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-16 md:gap-24 mb-32 w-full">
+          <div className="data-card p-20 md:p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
             <div className="absolute -right-4 -top-4 w-24 h-24 bg-success/20 rounded-full blur-xl group-hover:bg-success/30 transition-all"></div>
             <div className="flex justify-between items-start mb-16 relative z-10">
               <span className="text-muted font-medium uppercase tracking-wider text-xs">Ingresos Reales</span>
@@ -303,10 +302,64 @@ export default function Finanzas() {
         {activeTab === 'cxc' && (
           <div>
             <h2 className="mb-16 flex-center-gap-8"><Clock size={20} className="text-warning" /> Cuentas por Cobrar (Clientes)</h2>
-            <p className="text-secondary mb-20">Controla las facturas y ventas emitidas a crédito. Registra abonos cuando los clientes realicen transferencias o entreguen efectivo.</p>
+            <p className="text-secondary mb-20 text-sm">Controla las facturas y ventas emitidas a crédito. Registra abonos cuando los clientes realicen transferencias o entreguen efectivo.</p>
             
-            <div className="table-responsive">
-              <table className="data-table">
+            {/* Mobile View: Cards */}
+            <div className="mobile-only-cards block md:hidden">
+              {cxcList.length === 0 ? (
+                <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
+                  No hay cuentas por cobrar pendientes.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-10">
+                  {cxcList.map((f) => {
+                    const pendiente = f.total - (f.montoPagado || 0);
+                    return (
+                      <div key={f.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-10 shadow-sm">
+                        <div className="flex justify-between items-start gap-8">
+                          <div>
+                            <span className="font-bold text-white text-base">Factura #{f.numeroFactura}</span>
+                            <div className="text-xs text-muted mt-2">{f.cliente?.nombre || 'Cliente General'}</div>
+                            <div className="text-xxs-secondary text-muted font-mono mt-1">{new Date(f.fechaEmision).toLocaleDateString()}</div>
+                          </div>
+                          <span className={`badge ${f.estado === 'EMITIDA' ? 'badge-success' : 'badge-warning'}`}>
+                            {f.estado === 'EMITIDA' ? 'SALDADA' : 'PENDIENTE'}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-8 py-8 px-10 bg-white/[0.02] rounded-lg border border-white/5 text-center text-xs">
+                          <div>
+                            <span className="text-muted block text-[10px]">Total</span>
+                            <span className="font-semibold text-white">${f.total.toLocaleString('es-CL')}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted block text-[10px]">Cobrado</span>
+                            <span className="font-semibold text-success">${(f.montoPagado || 0).toLocaleString('es-CL')}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted block text-[10px]">Pendiente</span>
+                            <span className="font-bold text-danger">${pendiente.toLocaleString('es-CL')}</span>
+                          </div>
+                        </div>
+
+                        {pendiente > 0 && (
+                          <button 
+                            className="btn btn-primary py-8 text-xs flex items-center justify-center gap-6 w-full"
+                            onClick={() => handleOpenAbonoModal('cxc', f.id!, f.numeroFactura, f.total, f.montoPagado)}
+                          >
+                            <PlusCircle size={14} /> Registrar Abono
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="desktop-only-table hidden md:block table-responsive w-full">
+              <table className="data-table min-w-[780px]">
                 <thead>
                   <tr>
                     <th>Nº Factura</th>
@@ -363,10 +416,64 @@ export default function Finanzas() {
         {activeTab === 'cxp' && (
           <div>
             <h2 className="mb-16 flex-center-gap-8"><Clock size={20} className="text-warning" /> Cuentas por Pagar (Proveedores)</h2>
-            <p className="text-secondary mb-20">Controla las compras de mercadería que has realizado a crédito. Registra tus pagos para llevar al día tus cuentas.</p>
+            <p className="text-secondary mb-20 text-sm">Controla las compras de mercadería que has realizado a crédito. Registra tus pagos para llevar al día tus cuentas.</p>
             
-            <div className="table-responsive">
-              <table className="data-table">
+            {/* Mobile View: Cards */}
+            <div className="mobile-only-cards block md:hidden">
+              {cxpList.length === 0 ? (
+                <div className="text-center py-20 text-muted bg-white/[0.02] rounded-xl border border-white/5">
+                  No hay cuentas por pagar pendientes.
+                </div>
+              ) : (
+                <div className="flex flex-col gap-10">
+                  {cxpList.map((c) => {
+                    const pendiente = c.total - (c.montoPagado || 0);
+                    return (
+                      <div key={c.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-10 shadow-sm">
+                        <div className="flex justify-between items-start gap-8">
+                          <div>
+                            <span className="font-bold text-white text-base">Orden #{c.numeroDocumento}</span>
+                            <div className="text-xs text-muted mt-2">{c.proveedor?.nombre || 'Proveedor General'}</div>
+                            <div className="text-xxs-secondary text-muted font-mono mt-1">{new Date(c.fechaCompra).toLocaleDateString()}</div>
+                          </div>
+                          <span className={`badge ${c.estado === 'COMPRADA' ? 'badge-success' : 'badge-warning'}`}>
+                            {c.estado === 'COMPRADA' ? 'SALDADO' : 'PENDIENTE'}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-8 py-8 px-10 bg-white/[0.02] rounded-lg border border-white/5 text-center text-xs">
+                          <div>
+                            <span className="text-muted block text-[10px]">Total</span>
+                            <span className="font-semibold text-white">${c.total.toLocaleString('es-CL')}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted block text-[10px]">Pagado</span>
+                            <span className="font-semibold text-success">${(c.montoPagado || 0).toLocaleString('es-CL')}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted block text-[10px]">Pendiente</span>
+                            <span className="font-bold text-danger">${pendiente.toLocaleString('es-CL')}</span>
+                          </div>
+                        </div>
+
+                        {pendiente > 0 && (
+                          <button 
+                            className="btn btn-primary py-8 text-xs flex items-center justify-center gap-6 w-full"
+                            onClick={() => handleOpenAbonoModal('cxp', c.id!, c.numeroDocumento, c.total, c.montoPagado)}
+                          >
+                            <PlusCircle size={14} /> Registrar Pago
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="desktop-only-table hidden md:block table-responsive w-full">
+              <table className="data-table min-w-[780px]">
                 <thead>
                   <tr>
                     <th>Nº Documento</th>

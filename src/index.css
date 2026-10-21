@@ -152,11 +152,16 @@ button, input, select, textarea {
 
 /* Main Content Area */
 .main-content {
-  flex: 1;
-  margin-left: var(--sidebar-width);
-  padding: 40px;
+  flex: 1 1 0%;
+  min-width: 0 !important;
+  width: calc(100vw - var(--sidebar-width)) !important;
+  max-width: calc(100vw - var(--sidebar-width)) !important;
+  margin-left: var(--sidebar-width) !important;
+  padding: 32px 36px 90px 36px !important;
   min-height: 100vh;
   position: relative;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
 }
 
 /* Header */
@@ -241,7 +246,10 @@ button, input, select, textarea {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .data-card-header {
@@ -253,12 +261,40 @@ button, input, select, textarea {
 }
 
 .table-responsive {
-  width: 100%;
-  overflow-x: auto;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-x: contain !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(99, 102, 241, 0.45) rgba(255, 255, 255, 0.04) !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 8px !important;
+  width: 8px !important;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-radius: 4px !important;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.45) !important;
+  border-radius: 4px !important;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.75) !important;
 }
 
 table.data-table {
   width: 100%;
+  min-width: max-content;
   border-collapse: collapse;
   text-align: left;
 }
@@ -1698,21 +1734,11 @@ table.data-table tr:hover td {
   .table-responsive {
     width: 100% !important;
     max-width: 100% !important;
+    min-width: 0 !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-x: contain !important;
     position: relative !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Force hide desktop tables on mobile and show mobile card views */
-  .desktop-only-table {
-    display: none !important;
-  }
-
-  .mobile-only-cards {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
     box-sizing: border-box !important;
   }
 
@@ -1863,6 +1889,18 @@ table.data-table tr:hover td {
     border-bottom-right-radius: 0 !important;
     max-height: 88vh !important;
     overflow-y: auto !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-only-table {
+    display: none !important;
+  }
+  .mobile-only-cards {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 }
 

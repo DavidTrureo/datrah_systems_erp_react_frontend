@@ -605,7 +605,7 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
 
       {/* KPI Cards de Conciliación */}
       {movimientos.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-16 w-full">
           <div className="data-card p-16 bg-white/[0.02] border border-white/5 flex flex-col justify-between">
             <div className="flex justify-between items-center text-xs text-muted mb-6">
               <span>Progreso de Conciliación</span>
@@ -660,13 +660,13 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
 
       {/* Banner de Conciliación Rápida Automática si hay coincidencias exactas */}
       {stats.pendientesMatchExacto > 0 && (
-        <div className="p-16 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent border border-emerald-500/30 flex flex-wrap justify-between items-center gap-12">
-          <div className="flex items-center gap-12">
-            <div className="p-8 rounded-lg bg-emerald-500/20 text-emerald-400">
+        <div className="p-16 rounded-xl bg-gradient-to-r from-emerald-500/15 via-teal-500/10 to-transparent border border-emerald-500/30 flex flex-wrap justify-between items-center gap-12 w-full box-border">
+          <div className="flex items-center gap-12 min-w-0 flex-1">
+            <div className="p-8 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">
               <Sparkles size={20} />
             </div>
-            <div>
-              <div className="text-sm font-bold text-white">
+            <div className="min-w-0">
+              <div className="text-sm font-bold text-white leading-snug">
                 ¡Detectamos {stats.pendientesMatchExacto} coincidencias exactas con facturas y órdenes de compra del ERP!
               </div>
               <div className="text-xs text-muted mt-2">
@@ -677,7 +677,7 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
           <button
             type="button"
             onClick={handleConciliarTodasExactas}
-            className="btn btn-primary bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-8 px-16 flex items-center gap-6 shadow-lg shadow-emerald-500/20"
+            className="btn btn-primary bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-8 px-16 flex items-center gap-6 shadow-lg shadow-emerald-500/20 shrink-0"
           >
             <CheckCheck size={16} /> Conciliar {stats.pendientesMatchExacto} Automáticamente
           </button>
@@ -871,17 +871,23 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
           </div>
 
           {/* Vista Escritorio: Tabla tradicional con touch scroll */}
-          <div className="desktop-only-table hidden md:block table-responsive">
-            <table className="data-table">
+          <div className="desktop-only-table hidden md:block table-responsive w-full">
+            <div className="px-16 py-8 bg-white/[0.02] border-b border-white/5 flex items-center justify-between text-xs text-muted">
+              <span>Listado de <strong>{movimientosFiltrados.length}</strong> movimientos bancarios</span>
+              <span className="text-[11px] text-indigo-400 flex items-center gap-4">
+                <span>↔ Desliza horizontalmente la tabla para ver cruces y acciones</span>
+              </span>
+            </div>
+            <table className="data-table min-w-[920px]">
               <thead>
                 <tr>
-                  <th>Fecha</th>
-                  <th>Glosa / Movimiento Bancario</th>
-                  <th>Tipo</th>
-                  <th>Monto Cartola</th>
-                  <th>Cruce / Documento Sugerido</th>
-                  <th>Estado</th>
-                  <th className="text-right">Acción</th>
+                  <th className="w-28 whitespace-nowrap">Fecha</th>
+                  <th className="min-w-[200px] max-w-xs">Glosa / Movimiento Bancario</th>
+                  <th className="w-28 whitespace-nowrap">Tipo</th>
+                  <th className="w-32 whitespace-nowrap">Monto Cartola</th>
+                  <th className="min-w-[200px]">Cruce / Documento Sugerido</th>
+                  <th className="w-28 whitespace-nowrap">Estado</th>
+                  <th className="text-right w-44 whitespace-nowrap pr-24">Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -899,34 +905,34 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
                     return (
                       <tr key={mov.id} className={isConciliado ? 'opacity-85' : ''}>
                         <td className="font-mono text-xs whitespace-nowrap">{mov.fecha}</td>
-                        <td className="font-medium text-sm text-white max-w-xs truncate" title={mov.descripcion}>
-                          {mov.descripcion}
+                        <td className="font-medium text-sm text-white max-w-xs" title={mov.descripcion}>
+                          <div className="truncate">{mov.descripcion}</div>
                         </td>
-                        <td>
+                        <td className="whitespace-nowrap">
                           <span className={`badge ${mov.tipo === 'ABONO' ? 'badge-success' : 'badge-danger'}`}>
                             {mov.tipo === 'ABONO' ? 'ABONO (+)' : 'CARGO (-)'}
                           </span>
                         </td>
-                        <td className={`font-mono font-bold text-sm ${mov.tipo === 'ABONO' ? 'text-success' : 'text-danger'}`}>
+                        <td className={`font-mono font-bold text-sm whitespace-nowrap ${mov.tipo === 'ABONO' ? 'text-success' : 'text-danger'}`}>
                           {mov.tipo === 'ABONO' ? '+' : '-'}${mov.monto.toLocaleString('es-CL')}
                         </td>
-                        <td>
+                        <td className="min-w-[200px]">
                           {isConciliado ? (
                             <div className="flex items-center gap-6 text-xs text-emerald-400 font-medium">
-                              <CheckCircle2 size={15} />
-                              <span>{mov.conciliadoCon?.tipo} #{mov.conciliadoCon?.docNumero} ({mov.conciliadoCon?.entidadNombre})</span>
+                              <CheckCircle2 size={15} className="shrink-0" />
+                              <span className="truncate">{mov.conciliadoCon?.tipo} #{mov.conciliadoCon?.docNumero} ({mov.conciliadoCon?.entidadNombre})</span>
                             </div>
                           ) : match ? (
                             <div className="flex flex-col gap-2">
                               <div className="flex items-center gap-6 text-xs">
-                                <span className={`badge ${match.confianza === 'EXACTA' ? 'badge-primary' : 'badge-warning'}`}>
+                                <span className={`badge shrink-0 ${match.confianza === 'EXACTA' ? 'badge-primary' : 'badge-warning'}`}>
                                   {match.confianza}
                                 </span>
                                 <span className="font-semibold text-white">
                                   {match.tipo} #{match.docNumero}
                                 </span>
                               </div>
-                              <span className="text-xxs-secondary text-muted">
+                              <span className="text-xxs-secondary text-muted truncate">
                                 {match.entidadNombre} • Saldo: ${match.montoPendiente.toLocaleString('es-CL')}
                               </span>
                             </div>
@@ -934,12 +940,12 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
                             <span className="text-xs text-muted">Sin coincidencia automática</span>
                           )}
                         </td>
-                        <td>
+                        <td className="whitespace-nowrap">
                           <span className={`badge ${isConciliado ? 'badge-success' : 'badge-warning'}`}>
                             {isConciliado ? 'CONCILIADO' : 'PENDIENTE'}
                           </span>
                         </td>
-                        <td className="text-right whitespace-nowrap">
+                        <td className="text-right whitespace-nowrap pr-24">
                           {isConciliado ? (
                             <button
                               type="button"
@@ -954,7 +960,7 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
                               type="button"
                               disabled={procesandoId === mov.id}
                               onClick={() => handleConciliarMovimiento(mov, match)}
-                              className="btn btn-primary btn-sm py-6 px-12 text-xs flex items-center gap-4"
+                              className="btn btn-primary btn-sm py-6 px-12 text-xs inline-flex items-center gap-4"
                             >
                               {procesandoId === mov.id ? <RefreshCw size={12} className="animate-spin" /> : <Check size={14} />}
                               Conciliar
