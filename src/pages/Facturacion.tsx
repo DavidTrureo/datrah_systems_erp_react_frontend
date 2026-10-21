@@ -95,12 +95,32 @@ export default function Facturacion() {
   };
 
   const handleAddToCart = () => {
-    if (!selectedProductId) return;
-    const prod = productos.find(p => String(p.id) === selectedProductId);
-    if (!prod) return;
+    if (!selectedProductId) {
+      showWarning("Por favor selecciona un producto antes de añadir al carro.", "Producto Requerido");
+      const selectEl = document.getElementById('producto-select-factura');
+      if (selectEl) {
+        selectEl.focus();
+      }
+      return;
+    }
+
+    if (!addQty || addQty <= 0 || isNaN(addQty)) {
+      showWarning("La cantidad a añadir debe ser mayor a 0.", "Cantidad Inválida");
+      const qtyEl = document.getElementById('cantidad-factura-input');
+      if (qtyEl) {
+        qtyEl.focus();
+      }
+      return;
+    }
+
+    const prod = productos.find(p => String(p.id) === String(selectedProductId));
+    if (!prod) {
+      showError("El producto seleccionado no fue encontrado en el catálogo.");
+      return;
+    }
 
     if (Number(prod.stockActual) < addQty) {
-      showWarning(`No hay stock suficiente. Stock disponible: ${prod.stockActual}`);
+      showWarning(`No hay stock suficiente para "${prod.nombre}". Stock disponible: ${prod.stockActual}`, "Stock Insuficiente");
       return;
     }
 
@@ -333,17 +353,17 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
             </div>
             <div className="grid-add-product-row">
               <div className="form-group m-0">
-                <label htmlFor="producto-select-factura">Producto</label>
+                <label htmlFor="producto-select-factura">Producto *</label>
                 <select 
                   id="producto-select-factura"
                   value={selectedProductId} 
                   onChange={(e) => setSelectedProductId(e.target.value)}
                   className="form-control"
                 >
-                  <option value="">Seleccione producto...</option>
+                  <option value="">{productos.length === 0 ? 'Sin productos disponibles' : 'Seleccione producto...'}</option>
                   {productos.map(p => (
                     <option key={p.id} value={p.id}>
-                      {p.nombre} - ${p.precioVenta.toFixed(0)} (Stock: {p.stockActual})
+                      {p.nombre} - ${Number(p.precioVenta).toLocaleString('es-CL')} (Stock: {p.stockActual}{Number(p.stockActual) <= 0 ? ' - Sin Stock' : ''})
                     </option>
                   ))}
                 </select>
