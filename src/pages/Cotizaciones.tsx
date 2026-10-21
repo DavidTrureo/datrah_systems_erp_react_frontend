@@ -206,10 +206,13 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
     <div className="page-container">
       <div className="content-header">
         <div className="page-title">
-          <FileText size={24} className="text-primary" />
+          <div className="module-badge">
+            <FileText size={13} className="text-indigo-400" /> Presupuestos Comerciales
+          </div>
           <h1>Cotizaciones y Presupuestos</h1>
+          <p className="text-muted mt-2">Emite presupuestos en PDF de alta fidelidad y compártelos directo por WhatsApp con tus clientes.</p>
         </div>
-        <div className="flex gap-8">
+        <div className="module-tabs-nav sm:w-auto mb-0">
           <button
             className={`btn ${activeTab === 'nueva' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('nueva')}
@@ -462,34 +465,34 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
                   {cotizaciones
                     .filter(c => c.numeroCotizacion.toLowerCase().includes(filtroCotizacion.toLowerCase()))
                     .map(cot => (
-                      <div key={cot.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                      <div key={cot.id} className="mobile-card-item">
                         <div className="flex justify-between items-center">
-                          <span className="font-mono text-primary font-bold">{cot.numeroCotizacion}</span>
+                          <span className="font-mono text-indigo-400 font-extrabold text-sm">{cot.numeroCotizacion}</span>
                           <span className={`badge ${cot.estado === 'PENDIENTE' ? 'badge-warning' : (cot.estado === 'FACTURADA' ? 'badge-success' : 'badge-danger')}`}>
                             {cot.estado}
                           </span>
                         </div>
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-base font-bold text-white">
                           {cot.cliente ? cot.cliente.nombre : 'Cliente General'}
                         </div>
-                        <div className="flex justify-between items-center text-xs text-muted">
-                          <span>{new Date(cot.fechaEmision).toLocaleDateString()}</span>
-                          <span className="text-base font-bold text-success">${Number(cot.total).toLocaleString()}</span>
+                        <div className="flex justify-between items-center text-xs text-muted pt-2">
+                          <span className="font-medium">{new Date(cot.fechaEmision).toLocaleDateString()}</span>
+                          <span className="text-lg font-black text-success font-mono">${Number(cot.total).toLocaleString('es-CL')}</span>
                         </div>
-                        <div className="flex gap-8 pt-8 border-t border-white/5">
-                          <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4 cursor-pointer" onClick={() => generarCotizacionPDF(cot)}>
-                            <Printer size={14} /> PDF
+                        <div className="flex gap-8 pt-10 border-t border-white/5">
+                          <button className="btn btn-secondary flex-1 h-10 text-xs flex-center-gap-4 cursor-pointer" onClick={() => generarCotizacionPDF(cot)}>
+                            <Printer size={15} /> PDF
                           </button>
                           <button 
-                            className="btn bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 flex-1 py-6 text-xs flex-center-gap-4 cursor-pointer transition-colors" 
+                            className="btn bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 flex-1 h-10 text-xs flex-center-gap-4 cursor-pointer transition-colors" 
                             onClick={() => handleShareWhatsApp(cot)}
                             title="Compartir por WhatsApp"
                           >
-                            <MessageCircle size={14} className="text-emerald-400" /> WhatsApp
+                            <MessageCircle size={15} className="text-emerald-400" /> WhatsApp
                           </button>
                           {cot.estado === 'PENDIENTE' && (
-                            <button className="btn btn-primary flex-1 py-6 text-xs flex-center-gap-4 cursor-pointer" onClick={() => handleFacturar(cot)}>
-                              <ArrowRight size={14} /> Facturar
+                            <button className="btn btn-primary flex-1 h-10 text-xs flex-center-gap-4 cursor-pointer" onClick={() => handleFacturar(cot)}>
+                              <ArrowRight size={15} /> Facturar
                             </button>
                           )}
                         </div>

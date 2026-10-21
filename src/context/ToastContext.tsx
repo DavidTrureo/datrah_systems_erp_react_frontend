@@ -80,7 +80,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       <div 
         className="fixed z-[99999] flex flex-col gap-3 pointer-events-none transition-all px-4 sm:px-0 w-full max-w-[420px] left-1/2 -translate-x-1/2 sm:left-auto sm:right-6 sm:translate-x-0"
         style={{
-          top: 'calc(68px + env(safe-area-inset-top, 0px))'
+          top: 'calc(80px + env(safe-area-inset-top, 0px))'
         }}
       >
         {toasts.map((toast) => (

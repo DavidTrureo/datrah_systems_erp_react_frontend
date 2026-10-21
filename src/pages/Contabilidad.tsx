@@ -182,8 +182,11 @@ export default function Contabilidad() {
     <div>
       <div className="content-header">
         <div className="page-title">
-          <h1>Contabilidad (ERP)</h1>
-          <p>Motor de partida doble, libro diario y plan de cuentas de la empresa.</p>
+          <div className="module-badge">
+            <BookOpen size={13} className="text-indigo-400" /> Contabilidad & Libros Legales
+          </div>
+          <h1>Contabilidad General (ERP)</h1>
+          <p className="text-muted mt-2">Motor de partida doble, libro diario, libro mayor y balances contables de la empresa.</p>
         </div>
         <button 
           className="btn btn-primary"
@@ -193,40 +196,37 @@ export default function Contabilidad() {
         </button>
       </div>
 
-      <div className="data-card mt-32 tabs-container-flat">
-        <div className="tabs-header-border">
-          <button
-            onClick={() => setActiveTab('diario')}
-            className={`btn ${activeTab === 'diario' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Libro Diario
-          </button>
-          <button
-            onClick={() => setActiveTab('plan')}
-            className={`btn ${activeTab === 'plan' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Plan de Cuentas
-          </button>
-
-          <button
-            onClick={() => setActiveTab('mayor')}
-            className={`btn ${activeTab === 'mayor' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Libro Mayor
-          </button>
-          <button
-            onClick={() => setActiveTab('balance')}
-            className={`btn ${activeTab === 'balance' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Balance General
-          </button>
-          <button
-            onClick={() => setActiveTab('resultados')}
-            className={`btn ${activeTab === 'resultados' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Estado de Resultados
-          </button>
-        </div>
+      <div className="module-tabs-nav">
+        <button
+          onClick={() => setActiveTab('diario')}
+          className={`btn ${activeTab === 'diario' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          Libro Diario
+        </button>
+        <button
+          onClick={() => setActiveTab('plan')}
+          className={`btn ${activeTab === 'plan' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          Plan de Cuentas
+        </button>
+        <button
+          onClick={() => setActiveTab('mayor')}
+          className={`btn ${activeTab === 'mayor' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          Libro Mayor
+        </button>
+        <button
+          onClick={() => setActiveTab('balance')}
+          className={`btn ${activeTab === 'balance' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          Balance General
+        </button>
+        <button
+          onClick={() => setActiveTab('resultados')}
+          className={`btn ${activeTab === 'resultados' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          Estado de Resultados
+        </button>
       </div>
 
       {activeTab === 'diario' && (
@@ -353,7 +353,36 @@ export default function Contabilidad() {
               <input type="text" placeholder="Buscar cuenta..." className="form-control !pl-10 w-full" />
             </div>
           </div>
-          <div className="table-responsive">
+          {/* Vista Móvil: Tarjetas Táctiles de Cuentas */}
+          <div className="mobile-only-cards block md:hidden">
+            {cuentas.map(c => (
+              <div key={c.id} className="mobile-card-item">
+                <div className="flex justify-between items-start gap-8">
+                  <div>
+                    <span className="font-mono text-indigo-400 font-black text-sm">{c.codigo}</span>
+                    <div className="font-bold text-white text-base mt-1">{c.nombre}</div>
+                  </div>
+                  <span className={`badge ${
+                    c.tipo === 'ACTIVO' ? 'badge-success' :
+                    c.tipo === 'PASIVO' ? 'badge-danger' :
+                    c.tipo === 'PATRIMONIO' ? 'badge-warning' :
+                    'badge-primary'
+                  }`}>
+                    {c.tipo}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-xs pt-8 border-t border-white/5 text-muted">
+                  <span>Imputable:</span>
+                  <span className={`font-semibold ${c.imputable ? 'text-success' : 'text-slate-400'}`}>
+                    {c.imputable ? '✓ Sí (Acepta Movimientos)' : '✗ No (Cuenta de Agrupación)'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Vista Escritorio: Tabla tradicional */}
+          <div className="desktop-only-table hidden md:block table-responsive">
             <table className="data-table">
               <thead>
                 <tr>
@@ -438,10 +467,13 @@ export default function Contabilidad() {
             </div>
 
             <div className="data-card p-16 md:p-24 mb-24">
-              <h3 className="mb-16 text-secondary">1. Agregar Línea de Detalle</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-12 items-end bg-darker p-14 sm:p-16 rounded-lg border border-gray-800/50">
-                <div className="form-group m-0 col-span-1 sm:col-span-2 md:col-span-4">
-                  <label>Cuenta Contable</label>
+              <h3 className="mb-16 text-white font-bold text-base flex items-center gap-2">
+                <PlusCircle size={18} className="text-indigo-400" />
+                <span>1. Agregar Línea de Detalle</span>
+              </h3>
+              <div className="grid-contabilidad-detalle bg-white/[0.02] p-16 sm:p-20 rounded-2xl border border-white/5">
+                <div className="form-group m-0">
+                  <label className="text-xs uppercase font-bold text-muted mb-2 block">Cuenta Contable *</label>
                   <CustomSelect
                     value={detalleForm.cuenta?.id ? String(detalleForm.cuenta.id) : ''}
                     onChange={val => {
@@ -458,21 +490,21 @@ export default function Contabilidad() {
                     ]}
                   />
                 </div>
-                <div className="form-group m-0 col-span-1 sm:col-span-2 md:col-span-3">
-                  <label>Glosa Línea (Opcional)</label>
+                <div className="form-group m-0">
+                  <label className="text-xs uppercase font-bold text-muted mb-2 block">Glosa Línea (Opcional)</label>
                   <input type="text" title="Glosa" className="form-control" value={detalleForm.glosaLinea} onChange={e => setDetalleForm({...detalleForm, glosaLinea: e.target.value})} placeholder="Detalle de la cuenta..." />
                 </div>
-                <div className="form-group m-0 col-span-1 sm:col-span-1 md:col-span-2">
-                  <label>Debe ($)</label>
+                <div className="form-group m-0">
+                  <label className="text-xs uppercase font-bold text-muted mb-2 block">Debe ($)</label>
                   <input type="number" title="Debe" placeholder="0" min="0" className="form-control" value={detalleForm.debe || ''} onChange={e => setDetalleForm({...detalleForm, debe: Number(e.target.value)})} />
                 </div>
-                <div className="form-group m-0 col-span-1 sm:col-span-1 md:col-span-2">
-                  <label>Haber ($)</label>
+                <div className="form-group m-0">
+                  <label className="text-xs uppercase font-bold text-muted mb-2 block">Haber ($)</label>
                   <input type="number" title="Haber" placeholder="0" min="0" className="form-control" value={detalleForm.haber || ''} onChange={e => setDetalleForm({...detalleForm, haber: Number(e.target.value)})} />
                 </div>
-                <div className="col-span-1 sm:col-span-2 md:col-span-1">
-                  <button type="button" onClick={handleAddDetalle} className="btn btn-secondary h-11 w-full justify-center" title="Agregar Línea" aria-label="Agregar Línea">
-                    <PlusCircle size={18} /> <span className="md:hidden">Agregar</span>
+                <div>
+                  <button type="button" onClick={handleAddDetalle} className="btn btn-primary h-11 w-full justify-center font-bold" title="Agregar Línea" aria-label="Agregar Línea">
+                    <PlusCircle size={18} /> Agregar Línea
                   </button>
                 </div>
               </div>

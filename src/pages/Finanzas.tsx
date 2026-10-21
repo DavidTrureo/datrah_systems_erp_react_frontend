@@ -114,116 +114,113 @@ export default function Finanzas() {
     <div>
       <div className="content-header">
         <div className="page-title">
+          <div className="module-badge">
+            <DollarSign size={13} className="text-indigo-400" /> Tesorería & Finanzas
+          </div>
           <h1>Finanzas & Tesorería ERP</h1>
-          <p>Supervisa el flujo de caja neto, gestiona las cuentas por cobrar a clientes y las cuentas por pagar a tus proveedores.</p>
+          <p className="text-muted mt-2">Supervisa el flujo de caja neto, gestiona las cuentas por cobrar a clientes y las cuentas por pagar a proveedores.</p>
         </div>
       </div>
 
       {/* Tarjetas KPI Financieros */}
       {resumen && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-16 md:gap-24 mb-32 w-full">
-          <div className="data-card p-20 md:p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-success/20 rounded-full blur-xl group-hover:bg-success/30 transition-all"></div>
-            <div className="flex justify-between items-start mb-16 relative z-10">
-              <span className="text-muted font-medium uppercase tracking-wider text-xs">Ingresos Reales</span>
-              <div className="p-8 bg-success/10 rounded-lg text-success">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-16 md:gap-20 mb-28 w-full">
+          <div className="card-stat">
+            <div className="card-stat-header">
+              <span className="card-stat-label">Ingresos Reales</span>
+              <div className="card-stat-icon icon-success">
                 <TrendingUp size={20} />
               </div>
             </div>
-            <div className="text-3xl font-mono font-bold text-white relative z-10">
+            <div className="card-stat-value text-white">
               ${resumen.totalIngresos.toLocaleString('es-CL')}
             </div>
-            <div className="text-xs text-muted mt-8 relative z-10">
+            <div className="text-xs text-success font-medium mt-2">
               Ventas contado + abonos cobrados
             </div>
           </div>
 
-          <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-danger/20 rounded-full blur-xl group-hover:bg-danger/30 transition-all"></div>
-            <div className="flex justify-between items-start mb-16 relative z-10">
-              <span className="text-muted font-medium uppercase tracking-wider text-xs">Egresos Reales</span>
-              <div className="p-8 bg-danger/10 rounded-lg text-danger">
+          <div className="card-stat">
+            <div className="card-stat-header">
+              <span className="card-stat-label">Egresos Reales</span>
+              <div className="card-stat-icon" style={{ backgroundColor: 'rgba(244, 63, 94, 0.15)', color: 'var(--danger)' }}>
                 <TrendingDown size={20} />
               </div>
             </div>
-            <div className="text-3xl font-mono font-bold text-white relative z-10">
+            <div className="card-stat-value text-white">
               ${resumen.totalEgresos.toLocaleString('es-CL')}
             </div>
-            <div className="text-xs text-muted mt-8 relative z-10">
+            <div className="text-xs text-danger font-medium mt-2">
               Compras contado + abonos pagados
             </div>
           </div>
 
-          <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/20 rounded-full blur-xl group-hover:bg-primary/30 transition-all"></div>
-            <div className="flex justify-between items-start mb-16 relative z-10">
-              <span className="text-muted font-medium uppercase tracking-wider text-xs">Caja / Saldo Neto</span>
-              <div className="p-8 bg-primary/10 rounded-lg text-primary">
+          <div className="card-stat">
+            <div className="card-stat-header">
+              <span className="card-stat-label">Caja / Saldo Neto</span>
+              <div className="card-stat-icon icon-blue">
                 <DollarSign size={20} />
               </div>
             </div>
-            <div className="text-3xl font-mono font-bold text-white relative z-10">
+            <div className="card-stat-value text-white">
               <span className={resumen.saldoNeto >= 0 ? 'text-primary' : 'text-danger'}>
                 ${resumen.saldoNeto.toLocaleString('es-CL')}
               </span>
             </div>
-            <div className="text-xs text-muted mt-8 relative z-10">
+            <div className="text-xs text-indigo-400 font-medium mt-2">
               Diferencia de flujo real
             </div>
           </div>
 
-          <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group flex flex-col h-full">
-            <div className="absolute -right-4 -top-4 w-24 h-24 bg-warning/20 rounded-full blur-xl group-hover:bg-warning/30 transition-all"></div>
-            <div className="flex justify-between items-start mb-16 relative z-10">
-              <span className="text-muted font-medium uppercase tracking-wider text-xs">Pendientes (CxC/CxP)</span>
-              <div className="p-8 bg-warning/10 rounded-lg text-warning">
+          <div className="card-stat">
+            <div className="card-stat-header">
+              <span className="card-stat-label">Pendientes (CxC - CxP)</span>
+              <div className="card-stat-icon icon-warning">
                 <Clock size={20} />
               </div>
             </div>
-            <div className="text-3xl font-mono font-bold text-white relative z-10">
-              <span className="text-warning">${(resumen.outstandingCxC - resumen.outstandingCxP).toLocaleString('es-CL')}</span>
+            <div className="card-stat-value text-warning">
+              ${(resumen.outstandingCxC - resumen.outstandingCxP).toLocaleString('es-CL')}
             </div>
-            <div className="text-xs text-muted mt-8 relative z-10">
+            <div className="text-xs text-muted font-medium mt-2">
               CxC: ${resumen.outstandingCxC.toLocaleString('es-CL')} | CxP: ${resumen.outstandingCxP.toLocaleString('es-CL')}
             </div>
           </div>
         </div>
       )}
 
-      {/* Pestañas de Submódulo */}
-      <div className="data-card mt-32 tabs-container-flat">
-        <div className="tabs-header-border">
-          <button 
-            className={`btn ${activeTab === 'caja' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveTab('caja')}
-          >
-            Flujo de Caja Real
-          </button>
-          <button 
-            className={`btn ${activeTab === 'cxc' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveTab('cxc')}
-          >
-            Cuentas por Cobrar (Clientes) {cxcList.filter(f => f.estado === 'CREDITO_PENDIENTE').length > 0 && `(${cxcList.filter(f => f.estado === 'CREDITO_PENDIENTE').length})`}
-          </button>
-          <button 
-            className={`btn ${activeTab === 'cxp' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveTab('cxp')}
-          >
-            Cuentas por Pagar (Proveedores) {cxpList.filter(c => c.estado === 'CREDITO_PENDIENTE').length > 0 && `(${cxpList.filter(c => c.estado === 'CREDITO_PENDIENTE').length})`}
-          </button>
-          <button 
-            className={`btn ${activeTab === 'historial' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveTab('historial')}
-          >
-            Historial de Movimientos Caja
-          </button>
-          <button 
-            className={`btn ${activeTab === 'conciliacion' ? 'btn-primary' : 'btn-secondary'} flex items-center gap-2`}
-            onClick={() => setActiveTab('conciliacion')}
-          >
-            <Building2 size={16} /> Conciliación Bancaria
-          </button>
-        </div>
+      {/* Pestañas de Submódulo Swipeable */}
+      <div className="module-tabs-nav">
+        <button 
+          className={`btn ${activeTab === 'caja' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('caja')}
+        >
+          Flujo de Caja Real
+        </button>
+        <button 
+          className={`btn ${activeTab === 'cxc' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('cxc')}
+        >
+          Cuentas por Cobrar {cxcList.filter(f => f.estado === 'CREDITO_PENDIENTE').length > 0 && `(${cxcList.filter(f => f.estado === 'CREDITO_PENDIENTE').length})`}
+        </button>
+        <button 
+          className={`btn ${activeTab === 'cxp' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('cxp')}
+        >
+          Cuentas por Pagar {cxpList.filter(c => c.estado === 'CREDITO_PENDIENTE').length > 0 && `(${cxpList.filter(c => c.estado === 'CREDITO_PENDIENTE').length})`}
+        </button>
+        <button 
+          className={`btn ${activeTab === 'historial' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('historial')}
+        >
+          Historial de Movimientos
+        </button>
+        <button 
+          className={`btn ${activeTab === 'conciliacion' ? 'btn-primary' : 'btn-secondary'} flex items-center gap-2`}
+          onClick={() => setActiveTab('conciliacion')}
+        >
+          <Building2 size={16} /> Conciliación Bancaria
+        </button>
       </div>
 
       {/* CONTENIDO DE PESTAÑAS */}
@@ -316,39 +313,39 @@ export default function Finanzas() {
                   {cxcList.map((f) => {
                     const pendiente = f.total - (f.montoPagado || 0);
                     return (
-                      <div key={f.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-10 shadow-sm">
-                        <div className="flex justify-between items-start gap-8">
+                      <div key={f.id} className="mobile-card-item">
+                        <div className="flex justify-between items-start gap-10">
                           <div>
-                            <span className="font-bold text-white text-base">Factura #{f.numeroFactura}</span>
-                            <div className="text-xs text-muted mt-2">{f.cliente?.nombre || 'Cliente General'}</div>
-                            <div className="text-xxs-secondary text-muted font-mono mt-1">{new Date(f.fechaEmision).toLocaleDateString()}</div>
+                            <span className="font-bold text-white text-base font-mono">Factura #{f.numeroFactura}</span>
+                            <div className="text-sm font-semibold text-white/90 mt-1">{f.cliente?.nombre || 'Cliente General'}</div>
+                            <div className="text-xs text-muted font-mono mt-1">{new Date(f.fechaEmision).toLocaleDateString()}</div>
                           </div>
                           <span className={`badge ${f.estado === 'EMITIDA' ? 'badge-success' : 'badge-warning'}`}>
                             {f.estado === 'EMITIDA' ? 'SALDADA' : 'PENDIENTE'}
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-8 py-8 px-10 bg-white/[0.02] rounded-lg border border-white/5 text-center text-xs">
+                        <div className="grid grid-cols-3 gap-8 py-10 px-12 bg-white/[0.03] rounded-xl border border-white/5 text-center text-xs">
                           <div>
-                            <span className="text-muted block text-[10px]">Total</span>
-                            <span className="font-semibold text-white">${f.total.toLocaleString('es-CL')}</span>
+                            <span className="text-muted block text-[10px] uppercase font-bold">Total</span>
+                            <span className="font-bold text-white font-mono">${f.total.toLocaleString('es-CL')}</span>
                           </div>
                           <div>
-                            <span className="text-muted block text-[10px]">Cobrado</span>
-                            <span className="font-semibold text-success">${(f.montoPagado || 0).toLocaleString('es-CL')}</span>
+                            <span className="text-muted block text-[10px] uppercase font-bold">Cobrado</span>
+                            <span className="font-bold text-success font-mono">${(f.montoPagado || 0).toLocaleString('es-CL')}</span>
                           </div>
                           <div>
-                            <span className="text-muted block text-[10px]">Pendiente</span>
-                            <span className="font-bold text-danger">${pendiente.toLocaleString('es-CL')}</span>
+                            <span className="text-muted block text-[10px] uppercase font-bold">Pendiente</span>
+                            <span className="font-black text-danger font-mono text-sm">${pendiente.toLocaleString('es-CL')}</span>
                           </div>
                         </div>
 
                         {pendiente > 0 && (
                           <button 
-                            className="btn btn-primary py-8 text-xs flex items-center justify-center gap-6 w-full"
+                            className="btn btn-primary h-10 text-xs flex items-center justify-center gap-6 w-full font-bold shadow-indigo-500/20"
                             onClick={() => handleOpenAbonoModal('cxc', f.id!, f.numeroFactura, f.total, f.montoPagado)}
                           >
-                            <PlusCircle size={14} /> Registrar Abono
+                            <PlusCircle size={15} /> Registrar Abono
                           </button>
                         )}
                       </div>
@@ -430,39 +427,39 @@ export default function Finanzas() {
                   {cxpList.map((c) => {
                     const pendiente = c.total - (c.montoPagado || 0);
                     return (
-                      <div key={c.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-10 shadow-sm">
-                        <div className="flex justify-between items-start gap-8">
+                      <div key={c.id} className="mobile-card-item">
+                        <div className="flex justify-between items-start gap-10">
                           <div>
-                            <span className="font-bold text-white text-base">Orden #{c.numeroDocumento}</span>
-                            <div className="text-xs text-muted mt-2">{c.proveedor?.nombre || 'Proveedor General'}</div>
-                            <div className="text-xxs-secondary text-muted font-mono mt-1">{new Date(c.fechaCompra).toLocaleDateString()}</div>
+                            <span className="font-bold text-white text-base font-mono">Orden #{c.numeroDocumento}</span>
+                            <div className="text-sm font-semibold text-white/90 mt-1">{c.proveedor?.nombre || 'Proveedor General'}</div>
+                            <div className="text-xs text-muted font-mono mt-1">{new Date(c.fechaCompra).toLocaleDateString()}</div>
                           </div>
                           <span className={`badge ${c.estado === 'COMPRADA' ? 'badge-success' : 'badge-warning'}`}>
                             {c.estado === 'COMPRADA' ? 'SALDADO' : 'PENDIENTE'}
                           </span>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-8 py-8 px-10 bg-white/[0.02] rounded-lg border border-white/5 text-center text-xs">
+                        <div className="grid grid-cols-3 gap-8 py-10 px-12 bg-white/[0.03] rounded-xl border border-white/5 text-center text-xs">
                           <div>
-                            <span className="text-muted block text-[10px]">Total</span>
-                            <span className="font-semibold text-white">${c.total.toLocaleString('es-CL')}</span>
+                            <span className="text-muted block text-[10px] uppercase font-bold">Total</span>
+                            <span className="font-bold text-white font-mono">${c.total.toLocaleString('es-CL')}</span>
                           </div>
                           <div>
-                            <span className="text-muted block text-[10px]">Pagado</span>
-                            <span className="font-semibold text-success">${(c.montoPagado || 0).toLocaleString('es-CL')}</span>
+                            <span className="text-muted block text-[10px] uppercase font-bold">Pagado</span>
+                            <span className="font-bold text-success font-mono">${(c.montoPagado || 0).toLocaleString('es-CL')}</span>
                           </div>
                           <div>
-                            <span className="text-muted block text-[10px]">Pendiente</span>
-                            <span className="font-bold text-danger">${pendiente.toLocaleString('es-CL')}</span>
+                            <span className="text-muted block text-[10px] uppercase font-bold">Pendiente</span>
+                            <span className="font-black text-danger font-mono text-sm">${pendiente.toLocaleString('es-CL')}</span>
                           </div>
                         </div>
 
                         {pendiente > 0 && (
                           <button 
-                            className="btn btn-primary py-8 text-xs flex items-center justify-center gap-6 w-full"
+                            className="btn btn-primary h-10 text-xs flex items-center justify-center gap-6 w-full font-bold shadow-indigo-500/20"
                             onClick={() => handleOpenAbonoModal('cxp', c.id!, c.numeroDocumento, c.total, c.montoPagado)}
                           >
-                            <PlusCircle size={14} /> Registrar Pago
+                            <PlusCircle size={15} /> Registrar Pago
                           </button>
                         )}
                       </div>

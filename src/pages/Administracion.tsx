@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api, type Usuario, type LogActividad } from '../api';
-import { Edit2, UserX, UserCheck } from 'lucide-react';
+import { Edit2, UserX, UserCheck, Shield } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { CustomSelect } from '../components/CustomSelect';
 
@@ -132,26 +132,27 @@ const Administracion: React.FC = () => {
     <div className="page-container">
       <div className="content-header">
         <div className="page-title">
+          <div className="module-badge">
+            <Shield size={13} className="text-indigo-400" /> Seguridad & Accesos
+          </div>
           <h1>Administración del Sistema</h1>
-          <p>Gestión de usuarios y auditoría de seguridad</p>
+          <p className="text-muted mt-2">Gestión de usuarios, permisos y auditoría de eventos de seguridad.</p>
         </div>
       </div>
 
-      <div className="data-card mt-32 tabs-container-flat mb-24">
-        <div className="tabs-header-border">
-          <button
-            onClick={() => setActiveTab('usuarios')}
-            className={`btn ${activeTab === 'usuarios' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Gestión de Usuarios
-          </button>
-          <button
-            onClick={() => setActiveTab('bitacora')}
-            className={`btn ${activeTab === 'bitacora' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Bitácora de Auditoría
-          </button>
-        </div>
+      <div className="module-tabs-nav">
+        <button
+          onClick={() => setActiveTab('usuarios')}
+          className={`btn ${activeTab === 'usuarios' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          Gestión de Usuarios
+        </button>
+        <button
+          onClick={() => setActiveTab('bitacora')}
+          className={`btn ${activeTab === 'bitacora' ? 'btn-primary' : 'btn-secondary'}`}
+        >
+          Bitácora de Auditoría
+        </button>
       </div>
 
       {activeTab === 'usuarios' && (
@@ -275,7 +276,7 @@ const Administracion: React.FC = () => {
               <h2 className="text-[18px] font-semibold m-0">Usuarios del Sistema</h2>
             </div>
             {/* Vista Móvil: Tarjetas Táctiles */}
-            <div className="mobile-only-cards block md:hidden p-14">
+            <div className="mobile-only-cards block md:hidden">
               {loadingUsuarios ? (
                 <div className="text-center py-20 text-muted">Cargando usuarios...</div>
               ) : usuarios.length === 0 ? (
@@ -283,32 +284,32 @@ const Administracion: React.FC = () => {
                   No hay usuarios registrados
                 </div>
               ) : (
-                <div className="flex flex-col gap-10">
+                <div className="flex flex-col gap-12">
                   {usuarios.map(u => (
-                    <div key={u.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <div className="font-bold text-white text-base">{u.nombre}</div>
+                    <div key={u.id} className="mobile-card-item">
+                      <div className="flex justify-between items-start gap-12">
+                        <div className="min-w-0">
+                          <div className="font-bold text-white text-base truncate">{u.nombre}</div>
                           <div className="text-xs text-muted font-mono mt-1">@{u.username} {u.rut && `• ${u.rut}`}</div>
                         </div>
-                        <div className="flex gap-6">
+                        <div className="flex gap-8 shrink-0">
                           <button
                             onClick={() => handleEditUsuario(u)}
-                            className="btn btn-secondary btn-icon-sm p-8"
+                            className="btn btn-secondary btn-icon-sm"
                             title="Editar Usuario"
                           >
-                            <Edit2 size={16} className="text-primary" />
+                            <Edit2 size={15} className="text-primary" />
                           </button>
                           <button
                             onClick={() => toggleUsuarioActivo(u)}
-                            className="btn btn-secondary btn-icon-sm p-8"
+                            className="btn btn-secondary btn-icon-sm"
                             title={u.activo ? 'Desactivar Usuario' : 'Activar Usuario'}
                           >
-                            {u.activo ? <UserX size={16} className="text-danger" /> : <UserCheck size={16} className="text-success" />}
+                            {u.activo ? <UserX size={15} className="text-danger" /> : <UserCheck size={15} className="text-success" />}
                           </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-8 pt-6 border-t border-white/5">
+                      <div className="flex items-center gap-8 pt-8 border-t border-white/5">
                         <span className={`badge ${u.rol === 'ADMIN' ? 'badge-warning' : 'badge-success'}`}>
                           {u.rol}
                         </span>

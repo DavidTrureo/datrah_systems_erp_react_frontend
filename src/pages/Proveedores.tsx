@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../context/ToastContext';
 import { api, type Proveedor } from '../api';
-import { Plus, Search, Edit3, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit3, Trash2, Truck } from 'lucide-react';
 
 export default function Proveedores() {
   const { showSuccess, showError } = useToast();
@@ -106,8 +106,11 @@ export default function Proveedores() {
     <div>
       <div className="content-header">
         <div className="page-title">
+          <div className="module-badge">
+            <Truck size={13} className="text-indigo-400" /> Abastecimiento & Proveedores
+          </div>
           <h1>Directorio de Proveedores</h1>
-          <p>Registra y administra las empresas proveedoras de tu mercancía.</p>
+          <p className="text-muted mt-2">Registra y administra las empresas proveedoras de tu mercancía y servicios.</p>
         </div>
         <button className="btn btn-primary" onClick={() => handleOpenModal()}>
           <Plus size={18} /> Nuevo Proveedor
@@ -131,7 +134,7 @@ export default function Proveedores() {
       {/* Listado de Proveedores */}
       <div className="data-card">
         {/* Vista Móvil: Tarjetas Táctiles adaptadas al teléfono */}
-        <div className="mobile-only-cards block md:hidden p-14">
+        <div className="mobile-only-cards block md:hidden">
           {loading ? (
             <div className="text-center py-20 text-muted">Cargando proveedores...</div>
           ) : filteredProveedores.length === 0 ? (
@@ -139,28 +142,33 @@ export default function Proveedores() {
               No se encontraron proveedores
             </div>
           ) : (
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-12">
               {filteredProveedores.map((p) => (
-                <div key={p.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <div className="font-bold text-white text-base">{p.nombre}</div>
-                      <div className="text-xs text-muted font-mono mt-1">Doc: {p.documentoIdentidad}</div>
+                <div key={p.id} className="mobile-card-item">
+                  <div className="flex justify-between items-start gap-12">
+                    <div className="flex items-center gap-12 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-purple-500/15 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold text-sm shrink-0">
+                        {p.nombre.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-bold text-white text-base leading-snug truncate">{p.nombre}</div>
+                        <div className="text-xs text-muted font-mono mt-1">Doc: {p.documentoIdentidad}</div>
+                      </div>
                     </div>
-                    <div className="flex gap-6">
+                    <div className="flex gap-8 shrink-0">
                       <button className="btn btn-secondary btn-icon-sm" onClick={() => handleOpenModal(p)} title="Editar" aria-label="Editar">
-                        <Edit3 size={16} />
+                        <Edit3 size={15} />
                       </button>
-                      <button className="btn btn-secondary btn-icon-sm text-danger" onClick={() => handleDeleteProveedor(p.id!)} title="Eliminar" aria-label="Eliminar">
-                        <Trash2 size={16} />
+                      <button className="btn btn-secondary btn-icon-sm text-danger hover:bg-danger/10 hover:border-danger/30" onClick={() => handleDeleteProveedor(p.id!)} title="Eliminar" aria-label="Eliminar">
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </div>
                   {(p.email || p.telefono || p.direccion) && (
-                    <div className="text-xs text-secondary flex flex-col gap-4 pt-6 border-t border-white/5">
-                      {p.email && <div>✉️ {p.email}</div>}
+                    <div className="text-xs text-secondary flex flex-col gap-6 pt-10 border-t border-white/5">
+                      {p.email && <div className="truncate">✉️ {p.email}</div>}
                       {p.telefono && <div>📞 {p.telefono}</div>}
-                      {p.direccion && <div>📍 {p.direccion}</div>}
+                      {p.direccion && <div className="truncate">📍 {p.direccion}</div>}
                     </div>
                   )}
                 </div>

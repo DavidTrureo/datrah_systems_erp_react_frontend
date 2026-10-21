@@ -148,92 +148,91 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="content-header mb-32">
+      <div className="content-header mb-28">
         <div className="page-title">
-          <h1 className="flex items-center gap-12 font-bold text-2xl md:text-[2.5rem]">
-            <Zap className="text-primary animate-pulse" size={28} /> Command Center
+          <div className="module-badge">
+            <Zap size={13} className="text-indigo-400" /> Command Center Executive
+          </div>
+          <h1 className="flex items-center gap-10 font-black text-2xl md:text-3xl">
+            Panel de Control General
           </h1>
-          <p className="text-muted font-mono mt-8">Datrah Systems ERP • Visión global operativa</p>
+          <p className="text-muted mt-2">Datrah Systems ERP • Monitor de métricas y rendimiento en tiempo real</p>
         </div>
       </div>
 
       {stats.alertasStock > 0 && (
-        <div className="dashboard-alert-banner mb-32 border-l-4 border-danger bg-[rgba(231,76,60,0.1)] p-16 rounded-r-lg">
-          <div className="flex gap-16 items-center">
-            <AlertTriangle size={32} className="text-danger animate-pulse" />
-            <div className="flex-1">
-              <h4 className="m-0 text-danger font-bold text-lg">¡ALERTA CRÍTICA DE STOCK!</h4>
-              <p className="m-0 text-white/80 mt-4">
-                Existen <strong className="text-white">{stats.alertasStock} producto(s)</strong> con nivel de inventario bajo el mínimo permitido.
-              </p>
-            </div>
+        <div className="dashboard-alert-banner mb-28 border border-danger/30 bg-danger/10 p-18 rounded-2xl flex items-center gap-14 shadow-lg shadow-danger/10">
+          <div className="p-10 rounded-xl bg-danger/20 text-danger shrink-0">
+            <AlertTriangle size={24} className="animate-pulse" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="m-0 text-danger font-bold text-base">Alerta Crítica de Inventario</h4>
+            <p className="m-0 text-white/80 text-xs md:text-sm mt-1">
+              Existen <strong className="text-white font-bold">{stats.alertasStock} producto(s)</strong> con existencias bajo el stock de seguridad.
+            </p>
           </div>
         </div>
       )}
 
-      {/* Grid de Estadísticas Premium */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-24 mb-32">
-        <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-success/20 rounded-full blur-xl group-hover:bg-success/30 transition-all"></div>
-          <div className="flex justify-between items-start mb-16 relative z-10">
-            <span className="text-muted font-medium uppercase tracking-wider text-xs">Flujo Actual</span>
-            <div className="p-8 bg-success/10 rounded-lg text-success">
+      {/* Grid de Estadísticas Premium Obsidian Luxury */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-20 mb-32">
+        <div className="card-stat">
+          <div className="card-stat-header">
+            <span className="card-stat-label">Flujo Actual Disponible</span>
+            <div className="card-stat-icon icon-success">
               <DollarSign size={20} />
             </div>
           </div>
-          <div className="text-3xl font-mono font-bold text-white relative z-10">
+          <div className="card-stat-value text-white">
             ${finanzas?.saldoNeto.toLocaleString('es-CL') || 0}
           </div>
-          <div className="text-xs text-success mt-8 flex items-center gap-4 relative z-10">
-            <TrendingUp size={12} /> Saldo líquido disponible
+          <div className="text-xs text-success font-medium flex items-center gap-4 mt-2">
+            <TrendingUp size={13} /> Saldo líquido en caja y bancos
           </div>
         </div>
 
-        <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group">
-          <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/20 rounded-full blur-xl group-hover:bg-primary/30 transition-all"></div>
-          <div className="flex justify-between items-start mb-16 relative z-10">
-            <span className="text-muted font-medium uppercase tracking-wider text-xs">Ventas (Total)</span>
-            <div className="p-8 bg-primary/10 rounded-lg text-primary">
+        <div className="card-stat">
+          <div className="card-stat-header">
+            <span className="card-stat-label">Ventas Totales</span>
+            <div className="card-stat-icon icon-blue">
               <Activity size={20} />
             </div>
           </div>
-          <div className="text-3xl font-mono font-bold text-white relative z-10">
+          <div className="card-stat-value text-white">
             ${stats.totalVendido.toLocaleString('es-CL')}
           </div>
-          <div className="text-xs text-primary mt-8 flex items-center gap-4 relative z-10">
-            En base a facturas emitidas
+          <div className="text-xs text-indigo-400 font-medium flex items-center gap-4 mt-2">
+            Facturas emitidas y confirmadas
           </div>
         </div>
 
-        <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-white/5 relative overflow-hidden group">
-           <div className="absolute -right-4 -top-4 w-24 h-24 bg-warning/20 rounded-full blur-xl group-hover:bg-warning/30 transition-all"></div>
-          <div className="flex justify-between items-start mb-16 relative z-10">
-            <span className="text-muted font-medium uppercase tracking-wider text-xs">Cuentas por Cobrar</span>
-            <div className="p-8 bg-warning/10 rounded-lg text-warning">
+        <div className="card-stat">
+          <div className="card-stat-header">
+            <span className="card-stat-label">Cuentas por Cobrar (CxC)</span>
+            <div className="card-stat-icon icon-warning">
               <Users size={20} />
             </div>
           </div>
-          <div className="text-3xl font-mono font-bold text-white relative z-10">
+          <div className="card-stat-value text-white">
             ${finanzas?.outstandingCxC.toLocaleString('es-CL') || 0}
           </div>
-          <div className="text-xs text-warning mt-8 flex items-center gap-4 relative z-10">
-            Dinero pendiente de ingreso
+          <div className="text-xs text-warning font-medium flex items-center gap-4 mt-2">
+            Créditos vigentes de clientes
           </div>
         </div>
 
-        <div className="data-card p-24 bg-gradient-to-br from-[#1e1e2e] to-[#2a2a3c] border border-danger/20 relative overflow-hidden group">
-           <div className="absolute -right-4 -top-4 w-24 h-24 bg-danger/20 rounded-full blur-xl group-hover:bg-danger/30 transition-all"></div>
-          <div className="flex justify-between items-start mb-16 relative z-10">
-            <span className="text-muted font-medium uppercase tracking-wider text-xs">Cuentas por Pagar</span>
-            <div className="p-8 bg-danger/10 rounded-lg text-danger">
+        <div className="card-stat">
+          <div className="card-stat-header">
+            <span className="card-stat-label">Cuentas por Pagar (CxP)</span>
+            <div className="card-stat-icon" style={{ backgroundColor: 'rgba(244, 63, 94, 0.15)', color: 'var(--danger)' }}>
               <ShoppingBag size={20} />
             </div>
           </div>
-          <div className="text-3xl font-mono font-bold text-white relative z-10">
+          <div className="card-stat-value text-white">
             ${finanzas?.outstandingCxP.toLocaleString('es-CL') || 0}
           </div>
-          <div className="text-xs text-danger mt-8 flex items-center gap-4 relative z-10">
-            Deuda pendiente con proveedores
+          <div className="text-xs text-danger font-medium flex items-center gap-4 mt-2">
+            Compromisos con proveedores
           </div>
         </div>
       </div>

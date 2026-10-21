@@ -151,8 +151,11 @@ export default function Compras() {
     <div>
       <div className="content-header">
         <div className="page-title">
-          <h1>Recepción de Mercadería (Compras)</h1>
-          <p>Ingresa stock al almacén respaldado por facturas de compra y actualiza el costo de adquisición.</p>
+          <div className="module-badge">
+            <Truck size={13} className="text-indigo-400" /> Abastecimiento & Compras
+          </div>
+          <h1>Recepción de Mercadería & Facturas de Compra</h1>
+          <p className="text-muted mt-2">Ingresa stock al almacén respaldado por facturas de compra y actualiza el costo de adquisición.</p>
         </div>
       </div>
 
@@ -382,7 +385,7 @@ export default function Compras() {
            </h2>
         </div>
         {/* Vista Móvil: Tarjetas de Compras */}
-        <div className="mobile-only-cards block md:hidden p-14">
+        <div className="mobile-only-cards block md:hidden">
           {loading ? (
             <div className="text-center py-20 text-muted">Cargando historial...</div>
           ) : compras.length === 0 ? (
@@ -390,26 +393,25 @@ export default function Compras() {
               No hay compras registradas aún
             </div>
           ) : (
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col gap-12">
               {compras.map((c) => (
-                <div key={c.id} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
+                <div key={c.id} className="mobile-card-item">
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-white text-base">Doc #{c.numeroDocumento}</span>
+                    <span className="font-bold text-white text-base font-mono">Doc #{c.numeroDocumento}</span>
                     <span className={`badge ${c.estado === 'COMPRADA' ? 'badge-success' : c.estado === 'CREDITO_PENDIENTE' ? 'badge-warning' : 'badge-danger'}`}>
                       {c.estado}
                     </span>
                   </div>
-                  <div className="text-sm font-medium text-white/90">
-                    {c.proveedor?.nombre || 'Proveedor'}
+                  <div className="text-sm font-semibold text-white/90">
+                    {c.proveedor?.nombre || 'Proveedor Desconocido'}
                   </div>
-                  <div className="flex justify-between items-center text-xs text-muted">
-                    <span>{new Date(c.fechaCompra).toLocaleDateString()}</span>
-                    <span>{c.metodoPago || 'EFECTIVO'}</span>
-                    <span className="text-base font-bold text-success">${c.total.toFixed(0)}</span>
+                  <div className="flex justify-between items-center text-xs text-muted pt-2">
+                    <span>{new Date(c.fechaCompra).toLocaleDateString()} • <strong className="text-slate-300">{c.metodoPago || 'EFECTIVO'}</strong></span>
+                    <span className="text-lg font-black text-success font-mono">${c.total.toLocaleString('es-CL')}</span>
                   </div>
                   {c.estado === 'COMPRADA' && (
-                    <div className="pt-6 border-t border-white/5 flex justify-end">
-                      <button className="btn btn-secondary text-danger py-4 px-10 text-xs flex-center-gap-4" onClick={() => handleAnularCompra(c.id!)}>
+                    <div className="pt-8 border-t border-white/5 flex justify-end">
+                      <button className="btn btn-secondary text-danger h-9 px-12 text-xs flex-center-gap-4 hover:bg-danger/10 hover:border-danger/30" onClick={() => handleAnularCompra(c.id!)}>
                         <Ban size={14} /> Anular Compra
                       </button>
                     </div>

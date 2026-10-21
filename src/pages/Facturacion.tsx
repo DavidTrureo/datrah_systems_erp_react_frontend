@@ -326,6 +326,11 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
     <div>
       <div className="content-header">
         <div className="page-title">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
+              Punto de Venta
+            </span>
+          </div>
           <h1>Módulo de Facturación (POS)</h1>
           <p>Crea facturas de venta rápidas y administra tus ingresos históricos.</p>
         </div>
@@ -336,18 +341,18 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
         <div>
           {/* Añadir Producto al Carro */}
           <div className="data-card data-card-padded-mb-24">
-            <div className="flex flex-wrap items-center justify-between gap-8 mb-16">
-              <h3 className="m-0 flex items-center gap-2 text-base md:text-lg">
-                <ShoppingCart size={18} className="text-primary shrink-0" /> 
-                <span>Agregar al Carro</span>
+            <div className="flex flex-wrap items-center justify-between gap-8 mb-18">
+              <h3 className="m-0 flex items-center gap-2.5 text-base md:text-lg font-bold text-white">
+                <ShoppingCart size={20} className="text-indigo-400 shrink-0" /> 
+                <span>Agregar Producto</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowScannerModal(true)}
-                className="btn btn-secondary flex items-center gap-1.5 text-xs py-1.5 px-3 shrink-0"
+                className="btn btn-secondary flex items-center gap-2 text-xs py-2 px-3.5 shrink-0"
                 title="Escanear producto con cámara web o celular"
               >
-                <Camera size={15} className="text-blue-400" />
+                <Camera size={15} className="text-indigo-400" />
                 <span className="hidden sm:inline">Escanear Código</span>
                 <span className="sm:hidden">Escanear</span>
               </button>
@@ -411,15 +416,25 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
                 />
               </div>
 
-              <button type="button" className="btn btn-primary h-45" onClick={handleAddToCart}>
-                <Plus size={18} /> Añadir
+              <button type="button" className="btn btn-primary h-[48px] font-bold text-base shadow-indigo-500/25" onClick={handleAddToCart}>
+                <Plus size={19} /> Añadir al Carro
               </button>
             </div>
           </div>
 
           {/* Listado del Carrito */}
           <div className="data-card p-16 md:p-24">
-            <h3 className="mb-16 text-lg font-bold">Detalles de la Compra</h3>
+            <div className="flex items-center justify-between mb-16">
+              <h3 className="m-0 text-base md:text-lg font-bold flex items-center gap-2 text-white">
+                <ShoppingCart size={18} className="text-indigo-400" />
+                <span>Detalles de la Compra</span>
+                {cart.length > 0 && (
+                  <span className="text-xs bg-indigo-500/15 border border-indigo-500/25 text-indigo-300 font-bold px-2 py-0.5 rounded-full">
+                    {cart.length}
+                  </span>
+                )}
+              </h3>
+            </div>
             
             {/* Vista Móvil: Tarjetas Táctiles que se adaptan al 100% de la pantalla del celular */}
             <div className="mobile-only-cards block md:hidden">
@@ -428,20 +443,20 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
                   El carro está vacío. Agrega productos arriba.
                 </div>
               ) : (
-                <div className="flex flex-col gap-10">
+                <div className="flex flex-col gap-12">
                   {cart.map((item, index) => {
                     const itemSubtotal = item.cantidad * item.producto.precioVenta - item.descuento;
                     return (
-                      <div key={index} className="p-14 rounded-xl bg-white/[0.03] border border-white/10 flex flex-col gap-8 shadow-sm">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-semibold text-white text-base leading-snug">{item.producto.nombre}</div>
-                            <div className="text-xs text-muted mt-2">
+                      <div key={index} className="p-16 rounded-2xl bg-white/[0.025] border border-white/10 flex flex-col gap-10 shadow-sm hover:border-white/20 transition-all">
+                        <div className="flex justify-between items-start gap-12">
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold text-white text-base leading-snug truncate">{item.producto.nombre}</div>
+                            <div className="text-xs text-muted font-mono mt-1">
                               ${item.producto.precioVenta.toLocaleString('es-CL')} c/u
                             </div>
                           </div>
                           <button 
-                            className="btn btn-secondary btn-icon-sm text-danger" 
+                            className="btn btn-secondary btn-icon-sm text-danger hover:bg-danger/10 hover:border-danger/30 shrink-0" 
                             onClick={() => handleRemoveFromCart(index)} 
                             title="Eliminar del carrito" 
                             aria-label="Eliminar"
@@ -450,19 +465,19 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
                           </button>
                         </div>
 
-                        <div className="flex justify-between items-center pt-8 border-t border-white/5">
+                        <div className="flex justify-between items-center pt-10 border-t border-white/5">
                           <div className="flex items-center gap-8 text-sm">
-                            <span className="text-muted text-xs">Cant:</span>
-                            <span className="font-bold bg-white/10 px-8 py-2 rounded-md">{item.cantidad}</span>
+                            <span className="text-muted text-xs font-medium">Cant:</span>
+                            <span className="font-bold bg-white/10 px-10 py-3 rounded-lg text-white font-mono text-xs">{item.cantidad}</span>
                             {item.valorDescuento > 0 && (
-                              <span className="text-xs text-danger">
+                              <span className="text-xs font-semibold text-danger bg-danger/10 border border-danger/20 px-8 py-2 rounded-md">
                                 -{item.tipoDescuento === 'PORCENTAJE' ? `${item.valorDescuento}%` : `$${item.descuento.toLocaleString('es-CL')}`}
                               </span>
                             )}
                           </div>
                           <div className="text-right">
-                            <span className="text-xs text-muted block">Subtotal</span>
-                            <span className="font-bold text-success text-base">${itemSubtotal.toLocaleString('es-CL')}</span>
+                            <span className="text-[11px] text-muted block uppercase tracking-wider font-semibold">Subtotal</span>
+                            <span className="font-extrabold text-success text-lg font-mono">${itemSubtotal.toLocaleString('es-CL')}</span>
                           </div>
                         </div>
                       </div>
@@ -648,14 +663,17 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
                    <span>{redondeoDiferencia > 0 ? `+$${redondeoDiferencia}` : `-$${Math.abs(redondeoDiferencia)}`}</span>
                  </div>
               )}
-              <div className="summary-row total">
-                <span>Total a Pagar:</span>
-                <span>${total.toLocaleString('es-CL')}</span>
+              <div className="summary-row total bg-white/[0.02] p-16 rounded-xl border border-white/5 my-8">
+                <div className="flex flex-col">
+                  <span className="text-xs uppercase tracking-wider text-muted font-bold">Total a Pagar</span>
+                  <span className="text-[11px] text-muted">Impuestos y ley de redondeo inc.</span>
+                </div>
+                <span className="text-2xl font-black text-success font-mono">${total.toLocaleString('es-CL')}</span>
               </div>
             </div>
 
-             <button type="submit" className="btn btn-primary btn-submit-checkout">
-               Emitir Factura
+             <button type="submit" className="btn btn-primary h-[50px] text-base font-bold shadow-lg shadow-indigo-500/30 w-full mt-8">
+               Emitir Factura ({metodoPago})
              </button>
           </form>
         </div>

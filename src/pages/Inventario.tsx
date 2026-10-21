@@ -288,18 +288,21 @@ export default function Inventario() {
     <div>
       <div className="content-header">
         <div className="page-title">
-          <h1>Inventario & Productos</h1>
-          <p>Maneja tus artículos, precios y monitorea el flujo de existencias (Kardex).</p>
+          <div className="module-badge">
+            <Settings2 size={13} className="text-indigo-400" /> Control de Inventario
+          </div>
+          <h1>Inventario & Catálogo de Productos</h1>
+          <p className="text-muted mt-2">Maneja tus artículos, precios y monitorea el flujo de existencias (Kardex).</p>
         </div>
         <div className="flex-end-gap-12 flex-wrap">
           <button className="btn btn-secondary" onClick={() => setShowCategoryModal(true)}>
-            <Settings2 size={18} /> Categorías
+            <Settings2 size={17} /> Categorías
           </button>
           <button className="btn btn-secondary" onClick={handleExportExcel} title="Exportar catálogo completo a archivo Excel">
-            <Download size={18} /> Exportar Excel
+            <Download size={17} /> Exportar Excel
           </button>
           <label className="btn btn-secondary cursor-pointer" title="Importar productos masivamente desde Excel">
-            <Upload size={18} /> Importar Excel
+            <Upload size={17} /> Importar Excel
             <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} className="hidden" />
           </label>
           <button className="btn btn-primary" onClick={() => handleOpenProductModal()}>
@@ -325,7 +328,7 @@ export default function Inventario() {
       {/* Tabla de Productos */}
       <div className="data-card">
         {/* Vista Móvil: Tarjetas de Producto Táctiles adaptadas al teléfono */}
-        <div className="mobile-only-cards block md:hidden p-14">
+        <div className="mobile-only-cards block md:hidden">
           {loading ? (
             <div className="text-center py-20 text-muted">Cargando catálogo...</div>
           ) : filteredProducts.length === 0 ? (
@@ -337,48 +340,48 @@ export default function Inventario() {
               {filteredProducts.map((p) => {
                 const isLow = Number(p.stockActual) <= Number(p.stockMinimo);
                 return (
-                  <div key={p.id} className={`p-14 rounded-xl bg-white/[0.03] border flex flex-col gap-10 shadow-sm ${isLow ? 'border-danger/40 bg-danger/[0.04]' : 'border-white/10'}`}>
-                    <div className="flex justify-between items-start gap-8">
-                      <div>
+                  <div key={p.id} className={`mobile-card-item ${isLow ? '!border-danger/40 !bg-danger/[0.04]' : ''}`}>
+                    <div className="flex justify-between items-start gap-10">
+                      <div className="flex-1 min-w-0">
                         <div className="font-bold text-white text-base leading-snug">{p.nombre}</div>
-                        <div className="text-xs text-muted font-mono mt-2">
+                        <div className="text-xs text-muted font-mono mt-1">
                           {p.codigoBarras ? `Cód: ${p.codigoBarras}` : 'Sin código'} • {p.categoria?.nombre || 'General'}
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className={`text-sm font-extrabold px-8 py-2 rounded-lg ${isLow ? 'bg-danger/20 text-danger border border-danger/30' : 'bg-success/20 text-success border border-success/30'}`}>
+                      <div className="text-right shrink-0">
+                        <div className={`text-xs font-black px-10 py-2 rounded-lg font-mono ${isLow ? 'bg-danger/20 text-danger border border-danger/30' : 'bg-success/20 text-success border border-success/30'}`}>
                           Stock: {p.stockActual}
                         </div>
-                        {isLow && <span className="text-[10px] text-danger block mt-1">Mínimo: {p.stockMinimo}</span>}
+                        {isLow && <span className="text-[10px] text-danger font-bold block mt-1">Mín: {p.stockMinimo}</span>}
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-xs py-6 px-10 bg-white/[0.02] rounded-lg border border-white/5">
-                      <span>Venta: <strong className="text-white text-sm">${p.precioVenta.toLocaleString('es-CL')}</strong></span>
-                      <span className="text-muted">Costo: ${p.precioCompra.toLocaleString('es-CL')}</span>
+                    <div className="flex justify-between items-center text-xs py-8 px-12 bg-white/[0.03] rounded-xl border border-white/5">
+                      <span>Venta: <strong className="text-white text-sm font-mono font-bold">${p.precioVenta.toLocaleString('es-CL')}</strong></span>
+                      <span className="text-muted font-mono">Costo: ${p.precioCompra.toLocaleString('es-CL')}</span>
                     </div>
 
                     {/* Botones de acción táctiles para móviles */}
-                    <div className="flex flex-col gap-8 pt-4">
-                      <div className="flex gap-6">
-                        <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => handleOpenStockModal(p, 'ENTRADA')}>
-                          <ArrowUp size={13} className="text-success" /> Entrada
+                    <div className="flex flex-col gap-8 pt-4 border-t border-white/5">
+                      <div className="flex gap-8">
+                        <button className="btn btn-secondary flex-1 h-9 text-xs flex-center-gap-4 font-semibold" onClick={() => handleOpenStockModal(p, 'ENTRADA')}>
+                          <ArrowUp size={14} className="text-success" /> Entrada
                         </button>
-                        <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => handleOpenStockModal(p, 'SALIDA')}>
-                          <ArrowDown size={13} className="text-danger" /> Salida
+                        <button className="btn btn-secondary flex-1 h-9 text-xs flex-center-gap-4 font-semibold" onClick={() => handleOpenStockModal(p, 'SALIDA')}>
+                          <ArrowDown size={14} className="text-danger" /> Salida
                         </button>
-                        <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => handleOpenStockModal(p, 'AJUSTE')}>
-                          <Settings2 size={13} className="text-warning" /> Ajustar
+                        <button className="btn btn-secondary flex-1 h-9 text-xs flex-center-gap-4 font-semibold" onClick={() => handleOpenStockModal(p, 'AJUSTE')}>
+                          <Settings2 size={14} className="text-warning" /> Ajustar
                         </button>
                       </div>
-                      <div className="flex gap-6 justify-end">
-                        <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => handleOpenKardex(p)}>
+                      <div className="flex gap-8">
+                        <button className="btn btn-secondary flex-1 h-9 text-xs flex-center-gap-4" onClick={() => handleOpenKardex(p)}>
                           <History size={14} /> Kardex
                         </button>
-                        <button className="btn btn-secondary flex-1 py-6 text-xs flex-center-gap-4" onClick={() => handleOpenProductModal(p)}>
+                        <button className="btn btn-secondary flex-1 h-9 text-xs flex-center-gap-4" onClick={() => handleOpenProductModal(p)}>
                           <Edit3 size={14} /> Editar
                         </button>
-                        <button className="btn btn-secondary text-danger py-6 px-12 text-xs" onClick={() => handleDeleteProduct(p.id!)}>
+                        <button className="btn btn-secondary text-danger h-9 px-12 text-xs hover:bg-danger/10 hover:border-danger/30" onClick={() => handleDeleteProduct(p.id!)} title="Eliminar producto">
                           <Trash2 size={14} />
                         </button>
                       </div>
