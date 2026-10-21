@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import { useToast } from '../context/ToastContext';
 import { api, type Factura, type Compra } from '../api';
+import { CustomSelect } from './CustomSelect';
 import {
   Building2,
   UploadCloud,
@@ -536,19 +537,22 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
             <Building2 size={20} className="text-primary" />
             <span className="text-sm font-semibold text-white">Banco / Cuenta:</span>
           </div>
-          <select 
-            value={banco} 
-            onChange={(e) => setBanco(e.target.value)}
-            className="form-control text-sm py-6 px-12 bg-black/40 border-white/10 w-auto"
-          >
-            <option value="BANCO_CHILE">Banco de Chile / Edwards</option>
-            <option value="BANCO_ESTADO">BancoEstado (Cuenta RUT / Corriente)</option>
-            <option value="SANTANDER">Banco Santander Chile</option>
-            <option value="BCI">Banco BCI / Nova</option>
-            <option value="SCOTIABANK">Scotiabank Chile</option>
-            <option value="ITAU">Banco Itaú</option>
-            <option value="OTRO">Otro Banco / Formato Genérico</option>
-          </select>
+          <div className="min-w-[240px] sm:min-w-[280px]">
+            <CustomSelect
+              value={banco}
+              onChange={(val) => setBanco(val)}
+              options={[
+                { value: 'BANCO_CHILE', label: 'Banco de Chile / Edwards' },
+                { value: 'BANCO_ESTADO', label: 'BancoEstado (Cuenta RUT / Corriente)' },
+                { value: 'SANTANDER', label: 'Banco Santander Chile' },
+                { value: 'BCI', label: 'Banco BCI / Nova' },
+                { value: 'SCOTIABANK', label: 'Scotiabank Chile' },
+                { value: 'ITAU', label: 'Banco Itaú' },
+                { value: 'OTRO', label: 'Otro Banco / Formato Genérico' }
+              ]}
+              searchable={false}
+            />
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-8">
@@ -1042,34 +1046,30 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
               <label className="text-xs font-semibold text-secondary mb-6 block">
                 Seleccionar Documento Pendiente del ERP:
               </label>
-              <select
+              <CustomSelect
                 value={manualDocId}
-                onChange={(e) => setManualDocId(e.target.value)}
-                className="form-control text-xs py-8"
-              >
-                <option value="">Selecciona un documento...</option>
-                {modalAsociarMov.tipo === 'ABONO' ? (
-                  <optgroup label="Facturas Pendientes de Cobro (CxC)">
-                    {cxcList
-                      .filter(f => (f.total - (f.montoPagado || 0)) > 0)
-                      .map(f => (
-                        <option key={f.id} value={`F-${f.id}`}>
-                          Factura #{f.numeroFactura} - {f.cliente?.nombre || 'Cliente General'} (Saldo: ${(f.total - (f.montoPagado || 0)).toLocaleString('es-CL')})
-                        </option>
-                      ))}
-                  </optgroup>
-                ) : (
-                  <optgroup label="Compras Pendientes a Proveedores (CxP)">
-                    {cxpList
-                      .filter(c => (c.total - (c.montoPagado || 0)) > 0)
-                      .map(c => (
-                        <option key={c.id} value={`C-${c.id}`}>
-                          Orden #{c.numeroDocumento} - {c.proveedor?.nombre || 'Proveedor'} (Saldo: ${(c.total - (c.montoPagado || 0)).toLocaleString('es-CL')})
-                        </option>
-                      ))}
-                  </optgroup>
-                )}
-              </select>
+                onChange={(val) => setManualDocId(val)}
+                placeholder="Selecciona un documento..."
+                options={[
+                  { value: '', label: 'Selecciona un documento...' },
+                  ...(modalAsociarMov.tipo === 'ABONO'
+                    ? cxcList
+                        .filter(f => (f.total - (f.montoPagado || 0)) > 0)
+                        .map(f => ({
+                          value: `F-${f.id}`,
+                          label: `Factura #${f.numeroFactura} - ${f.cliente?.nombre || 'Cliente General'}`,
+                          sublabel: `Saldo: $${(f.total - (f.montoPagado || 0)).toLocaleString('es-CL')}`
+                        }))
+                    : cxpList
+                        .filter(c => (c.total - (c.montoPagado || 0)) > 0)
+                        .map(c => ({
+                          value: `C-${c.id}`,
+                          label: `Orden #${c.numeroDocumento} - ${c.proveedor?.nombre || 'Proveedor'}`,
+                          sublabel: `Saldo: $${(c.total - (c.montoPagado || 0)).toLocaleString('es-CL')}`
+                        }))
+                  )
+                ]}
+              />
             </div>
 
             <div className="flex justify-end gap-8 pt-12 border-t border-white/5">

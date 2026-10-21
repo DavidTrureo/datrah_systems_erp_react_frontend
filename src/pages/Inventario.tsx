@@ -3,6 +3,7 @@ import { api, type Producto, type Categoria, type Kardex } from '../api';
 import { Plus, Search, Edit3, Trash2, ArrowUp, ArrowDown, Settings2, History, Download, Upload, Camera } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
+import { CustomSelect } from '../components/CustomSelect';
 import * as XLSX from 'xlsx';
 
 export default function Inventario() {
@@ -503,15 +504,16 @@ export default function Inventario() {
 
               <div className="form-group">
                 <label htmlFor="prod-categoria-select">Categoría</label>
-                <select 
+                <CustomSelect
                   id="prod-categoria-select"
-                  value={formData.categoriaId} 
-                  onChange={(e) => setFormData({ ...formData, categoriaId: e.target.value })}
-                  className="form-control"
-                >
-                  <option value="">Selecciona categoría...</option>
-                  {categorias.map(c => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-                </select>
+                  value={formData.categoriaId}
+                  onChange={(val) => setFormData({ ...formData, categoriaId: val })}
+                  placeholder="Selecciona categoría..."
+                  options={[
+                    { value: '', label: 'Selecciona categoría...' },
+                    ...categorias.map(c => ({ value: String(c.id), label: c.nombre }))
+                  ]}
+                />
               </div>
 
               <div className="grid-2-cols-gap-16">

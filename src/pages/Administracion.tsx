@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api, type Usuario, type LogActividad } from '../api';
 import { Edit2, UserX, UserCheck } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { CustomSelect } from '../components/CustomSelect';
 
 const Administracion: React.FC = () => {
   const { showSuccess, showError } = useToast();
@@ -221,16 +222,18 @@ const Administracion: React.FC = () => {
                 </div>
                 <div className="form-group">
                   <label>Rol</label>
-                  <select title="Rol" value={rol}
-                    onChange={e => setRol(e.target.value as 'ADMIN' | 'BODEGA' | 'VENTAS' | 'FINANZAS' | 'GERENCIA')}
-                    className="form-control"
-                  >
-                    <option value="VENTAS">Ventas / Cajero</option>
-                    <option value="BODEGA">Bodega / Almacén</option>
-                    <option value="FINANZAS">Finanzas / Contador</option>
-                    <option value="GERENCIA">Gerencia</option>
-                    <option value="ADMIN">Administrador</option>
-                  </select>
+                  <CustomSelect
+                    value={rol}
+                    onChange={val => setRol(val as 'ADMIN' | 'BODEGA' | 'VENTAS' | 'FINANZAS' | 'GERENCIA')}
+                    searchable={false}
+                    options={[
+                      { value: 'VENTAS', label: 'Ventas / Cajero' },
+                      { value: 'BODEGA', label: 'Bodega / Almacén' },
+                      { value: 'FINANZAS', label: 'Finanzas / Contador' },
+                      { value: 'GERENCIA', label: 'Gerencia' },
+                      { value: 'ADMIN', label: 'Administrador' }
+                    ]}
+                  />
                 </div>
                 {editingUsuario && (
                   <div className="form-group flex items-center gap-12">

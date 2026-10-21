@@ -3,6 +3,7 @@ import { useToast } from '../context/ToastContext';
 import { api, type CuentaContable, type ComprobanteContable, type DetalleComprobante, type BalanceGeneralReport, type EstadoResultadosReport, type LibroMayorRow } from '../api';
 import { PlusCircle, CheckCircle, XCircle, Search, FileText, ArrowRight, BookOpen, AlertCircle, TrendingUp, TrendingDown, Printer } from 'lucide-react';
 import { generarReporteTablaPDF } from '../utils/pdfGenerator';
+import { CustomSelect } from '../components/CustomSelect';
 
 export default function Contabilidad() {
   const { showSuccess, showError, showWarning } = useToast();
@@ -399,17 +400,16 @@ export default function Contabilidad() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
                 <div className="form-group m-0">
                   <label>Tipo de Comprobante</label>
-                  <select 
-                    title="Tipo de Comprobante"
-                    className="form-control"
-                    value={nuevoComp.tipo}
-                    onChange={e => setNuevoComp({...nuevoComp, tipo: e.target.value})}
-                    required
-                  >
-                    <option value="INGRESO">Ingreso</option>
-                    <option value="EGRESO">Egreso</option>
-                    <option value="TRASPASO">Traspaso</option>
-                  </select>
+                  <CustomSelect
+                    value={nuevoComp.tipo || 'INGRESO'}
+                    onChange={val => setNuevoComp({...nuevoComp, tipo: val as any})}
+                    searchable={false}
+                    options={[
+                      { value: 'INGRESO', label: 'Ingreso' },
+                      { value: 'EGRESO', label: 'Egreso' },
+                      { value: 'TRASPASO', label: 'Traspaso' }
+                    ]}
+                  />
                 </div>
                 <div className="form-group m-0">
                   <label>Fecha</label>
@@ -442,20 +442,21 @@ export default function Contabilidad() {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-12 items-end bg-darker p-14 sm:p-16 rounded-lg border border-gray-800/50">
                 <div className="form-group m-0 col-span-1 sm:col-span-2 md:col-span-4">
                   <label>Cuenta Contable</label>
-                  <select 
-                    title="Cuenta Contable"
-                    className="form-control"
-                    value={detalleForm.cuenta?.id || ''}
-                    onChange={e => {
-                      const c = cuentas.find(x => x.id === Number(e.target.value));
+                  <CustomSelect
+                    value={detalleForm.cuenta?.id ? String(detalleForm.cuenta.id) : ''}
+                    onChange={val => {
+                      const c = cuentas.find(x => String(x.id) === val);
                       setDetalleForm({...detalleForm, cuenta: c});
                     }}
-                  >
-                    <option value="">Seleccione cuenta...</option>
-                    {cuentas.filter(c => c.imputable).map(c => (
-                      <option key={c.id} value={c.id}>{c.codigo} - {c.nombre}</option>
-                    ))}
-                  </select>
+                    placeholder="Seleccione cuenta..."
+                    options={[
+                      { value: '', label: 'Seleccione cuenta...' },
+                      ...cuentas.filter(c => c.imputable).map(c => ({
+                        value: String(c.id),
+                        label: `${c.codigo} - ${c.nombre}`
+                      }))
+                    ]}
+                  />
                 </div>
                 <div className="form-group m-0 col-span-1 sm:col-span-2 md:col-span-3">
                   <label>Glosa Línea (Opcional)</label>
@@ -547,21 +548,21 @@ export default function Contabilidad() {
                 <BookOpen size={20} /> Libro Mayor
               </h2>
               <div className="form-group m-0 w-96">
-                <select 
-                  title="Cuenta Mayor"
-                  className="form-control"
-                  value={selectedCuentaMayor}
-                  onChange={e => {
-                    const val = e.target.value;
+                <CustomSelect
+                  value={selectedCuentaMayor ? String(selectedCuentaMayor) : ''}
+                  onChange={val => {
                     setSelectedCuentaMayor(val ? Number(val) : '');
                     if (val) loadMayor(Number(val));
                   }}
-                >
-                  <option value="">Seleccione una cuenta para analizar...</option>
-                  {cuentas.filter(c => c.imputable).map(c => (
-                    <option key={c.id} value={c.id}>{c.codigo} - {c.nombre}</option>
-                  ))}
-                </select>
+                  placeholder="Seleccione una cuenta para analizar..."
+                  options={[
+                    { value: '', label: 'Seleccione una cuenta para analizar...' },
+                    ...cuentas.filter(c => c.imputable).map(c => ({
+                      value: String(c.id),
+                      label: `${c.codigo} - ${c.nombre}`
+                    }))
+                  ]}
+                />
               </div>
             </div>
           </div>

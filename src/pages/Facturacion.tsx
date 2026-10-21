@@ -4,6 +4,7 @@ import { Plus, Trash2, ShoppingCart, User, CreditCard, Ban, FileText, Printer, P
 import { generarTicketPDF } from '../utils/pdfGenerator';
 import { useToast } from '../context/ToastContext';
 import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
+import { CustomSelect } from '../components/CustomSelect';
 
 interface CartItem {
   producto: Producto;
@@ -354,19 +355,20 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
             <div className="grid-add-product-row">
               <div className="form-group m-0">
                 <label htmlFor="producto-select-factura">Producto *</label>
-                <select 
+                <CustomSelect
                   id="producto-select-factura"
-                  value={selectedProductId} 
-                  onChange={(e) => setSelectedProductId(e.target.value)}
-                  className="form-control"
-                >
-                  <option value="">{productos.length === 0 ? 'Sin productos disponibles' : 'Seleccione producto...'}</option>
-                  {productos.map(p => (
-                    <option key={p.id} value={p.id}>
-                      {p.nombre} - ${Number(p.precioVenta).toLocaleString('es-CL')} (Stock: {p.stockActual}{Number(p.stockActual) <= 0 ? ' - Sin Stock' : ''})
-                    </option>
-                  ))}
-                </select>
+                  value={selectedProductId}
+                  onChange={(val) => setSelectedProductId(val)}
+                  placeholder={productos.length === 0 ? 'Sin productos disponibles' : 'Seleccione producto...'}
+                  options={[
+                    { value: '', label: productos.length === 0 ? 'Sin productos disponibles' : 'Seleccione producto...' },
+                    ...productos.map(p => ({
+                      value: String(p.id),
+                      label: `${p.nombre} - $${Number(p.precioVenta).toLocaleString('es-CL')} (Stock: ${p.stockActual}${Number(p.stockActual) <= 0 ? ' - Sin Stock' : ''})`,
+                      disabled: Number(p.stockActual) <= 0
+                    }))
+                  ]}
+                />
               </div>
 
               <div className="form-group m-0">
@@ -384,15 +386,16 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
 
               <div className="form-group-min-110">
                 <label htmlFor="tipo-desc-select-factura">Tipo Desc.</label>
-                <select 
+                <CustomSelect
                   id="tipo-desc-select-factura"
-                  value={addDiscountType} 
-                  onChange={(e) => setAddDiscountType(e.target.value as 'PESOS' | 'PORCENTAJE')} 
-                  className="form-control"
-                >
-                  <option value="PESOS">Pesos ($)</option>
-                  <option value="PORCENTAJE">Porc. (%)</option>
-                </select>
+                  value={addDiscountType}
+                  onChange={(val) => setAddDiscountType(val as 'PESOS' | 'PORCENTAJE')}
+                  options={[
+                    { value: 'PESOS', label: 'Pesos ($)' },
+                    { value: 'PORCENTAJE', label: 'Porc. (%)' }
+                  ]}
+                  searchable={false}
+                />
               </div>
 
               <div className="form-group m-0">
@@ -534,18 +537,20 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
               <label htmlFor="cliente-select-facturacion" className="flex-center-gap-4">
                 <User size={14} /> Cliente *
               </label>
-              <select 
+              <CustomSelect
                 id="cliente-select-facturacion"
                 required
-                value={selectedClienteId} 
-                onChange={(e) => setSelectedClienteId(e.target.value)}
-                className="form-control"
-              >
-                <option value="">Seleccione cliente...</option>
-                {clientes.map(c => (
-                  <option key={c.id} value={c.id}>{c.nombre} ({c.documentoIdentidad})</option>
-                ))}
-              </select>
+                value={selectedClienteId}
+                onChange={(val) => setSelectedClienteId(val)}
+                placeholder="Seleccione cliente..."
+                options={[
+                  { value: '', label: 'Seleccione cliente...' },
+                  ...clientes.map(c => ({
+                    value: String(c.id),
+                    label: `${c.nombre} (${c.documentoIdentidad})`
+                  }))
+                ]}
+              />
             </div>
 
             {/* Método de pago */}
@@ -553,17 +558,18 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
               <label htmlFor="metodo-pago-select-facturacion" className="flex-center-gap-4">
                 <CreditCard size={14} /> Método de Pago
               </label>
-              <select 
+              <CustomSelect
                 id="metodo-pago-select-facturacion"
-                value={metodoPago} 
-                onChange={(e) => setMetodoPago(e.target.value)}
-                className="form-control"
-              >
-                <option value="EFECTIVO">Efectivo</option>
-                <option value="TARJETA">Tarjeta de Crédito / Débito</option>
-                <option value="TRANSFERENCIA">Transferencia Bancaria</option>
-                <option value="CREDITO">Crédito Cliente (CxC)</option>
-              </select>
+                value={metodoPago}
+                onChange={(val) => setMetodoPago(val)}
+                searchable={false}
+                options={[
+                  { value: 'EFECTIVO', label: 'Efectivo' },
+                  { value: 'TARJETA', label: 'Tarjeta de Crédito / Débito' },
+                  { value: 'TRANSFERENCIA', label: 'Transferencia Bancaria' },
+                  { value: 'CREDITO', label: 'Crédito Cliente (CxC)' }
+                ]}
+              />
             </div>
 
 
@@ -585,18 +591,18 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
               <label htmlFor="descuento-global-select-facturacion" className="flex-center-gap-4">
                 <Percent size={14} /> Descuento Global / Promo
               </label>
-              <select 
+              <CustomSelect
                 id="descuento-global-select-facturacion"
-                value={globalDiscountType} 
-                onChange={(e) => setGlobalDiscountType(e.target.value)}
-                className="form-control"
-              >
-                <option value="NINGUNO">Sin Descuento Global</option>
-                <option value="MANUAL_PESOS">Descuento Manual ($)</option>
-                <option value="MANUAL_PORCENTAJE">Descuento Manual (%)</option>
-                <option value="PROMO_20K">Promo: Compra &gt; $20.000 (-10%)</option>
-                <option value="PROMO_50K">Promo: Compra &gt; $50.000 (-$5.000)</option>
-              </select>
+                value={globalDiscountType}
+                onChange={(val) => setGlobalDiscountType(val)}
+                options={[
+                  { value: 'NINGUNO', label: 'Sin Descuento Global' },
+                  { value: 'MANUAL_PESOS', label: 'Descuento Manual ($)' },
+                  { value: 'MANUAL_PORCENTAJE', label: 'Descuento Manual (%)' },
+                  { value: 'PROMO_20K', label: 'Promo: Compra > $20.000 (-10%)' },
+                  { value: 'PROMO_50K', label: 'Promo: Compra > $50.000 (-$5.000)' }
+                ]}
+              />
             </div>
 
             {(globalDiscountType === 'MANUAL_PESOS' || globalDiscountType === 'MANUAL_PORCENTAJE') && (

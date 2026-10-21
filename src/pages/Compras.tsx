@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useToast } from '../context/ToastContext';
 import { api, type Proveedor, type Producto, type Compra } from '../api';
 import { Plus, Trash2, Truck, FileText, Ban } from 'lucide-react';
+import { CustomSelect } from '../components/CustomSelect';
 
 interface PurchaseCartItem {
   producto: Producto;
@@ -166,19 +167,19 @@ export default function Compras() {
             <div className="grid-add-product-row">
               <div className="form-group m-0">
                 <label htmlFor="producto-select">Producto</label>
-                <select 
+                <CustomSelect
                   id="producto-select"
-                  value={selectedProductId} 
-                  onChange={(e) => handleProductSelect(e.target.value)}
-                  className="form-control"
-                >
-                  <option value="">Seleccione producto...</option>
-                  {productos.map(p => (
-                    <option key={p.id} value={p.id}>
-                      {p.nombre} (Stock: {p.stockActual} | Costo Actual: ${p.precioCompra.toFixed(0)})
-                    </option>
-                  ))}
-                </select>
+                  value={selectedProductId}
+                  onChange={(val) => handleProductSelect(val)}
+                  placeholder="Seleccione producto..."
+                  options={[
+                    { value: '', label: 'Seleccione producto...' },
+                    ...productos.map(p => ({
+                      value: String(p.id),
+                      label: `${p.nombre} (Stock: ${p.stockActual} | Costo: $${p.precioCompra.toFixed(0)})`
+                    }))
+                  ]}
+                />
               </div>
 
               <div className="form-group m-0">
@@ -298,18 +299,20 @@ export default function Compras() {
             {/* Proveedor */}
             <div className="form-group">
               <label htmlFor="proveedor-select">Proveedor *</label>
-              <select 
+              <CustomSelect
                 id="proveedor-select"
                 required
-                value={selectedProveedorId} 
-                onChange={(e) => setSelectedProveedorId(e.target.value)}
-                className="form-control"
-              >
-                <option value="">Seleccione proveedor...</option>
-                {proveedores.map(p => (
-                  <option key={p.id} value={p.id}>{p.nombre} ({p.documentoIdentidad})</option>
-                ))}
-              </select>
+                value={selectedProveedorId}
+                onChange={(val) => setSelectedProveedorId(val)}
+                placeholder="Seleccione proveedor..."
+                options={[
+                  { value: '', label: 'Seleccione proveedor...' },
+                  ...proveedores.map(p => ({
+                    value: String(p.id),
+                    label: `${p.nombre} (${p.documentoIdentidad})`
+                  }))
+                ]}
+              />
             </div>
 
             {/* Número Documento */}
@@ -329,17 +332,18 @@ export default function Compras() {
             {/* Método de pago */}
             <div className="form-group">
               <label htmlFor="metodo-pago-select-compra">Método de Pago</label>
-              <select 
+              <CustomSelect
                 id="metodo-pago-select-compra"
-                value={metodoPago} 
-                onChange={(e) => setMetodoPago(e.target.value)}
-                className="form-control"
-              >
-                <option value="EFECTIVO">Efectivo</option>
-                <option value="TARJETA">Tarjeta de Crédito / Débito</option>
-                <option value="TRANSFERENCIA">Transferencia Bancaria</option>
-                <option value="CREDITO">Crédito Proveedor (CxP)</option>
-              </select>
+                value={metodoPago}
+                onChange={(val) => setMetodoPago(val)}
+                searchable={false}
+                options={[
+                  { value: 'EFECTIVO', label: 'Efectivo' },
+                  { value: 'TARJETA', label: 'Tarjeta de Crédito / Débito' },
+                  { value: 'TRANSFERENCIA', label: 'Transferencia Bancaria' },
+                  { value: 'CREDITO', label: 'Crédito Proveedor (CxP)' }
+                ]}
+              />
             </div>
 
             {/* Notas */}

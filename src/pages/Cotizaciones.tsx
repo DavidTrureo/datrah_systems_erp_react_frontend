@@ -3,6 +3,7 @@ import { api, type Producto, type Cliente, type Cotizacion } from '../api';
 import { FileText, Trash2, Printer, Search, ArrowRight, MessageCircle } from 'lucide-react';
 import { generarCotizacionPDF } from '../utils/pdfGenerator';
 import { useToast } from '../context/ToastContext';
+import { CustomSelect } from '../components/CustomSelect';
 
 interface CartItem {
   producto: Producto;
@@ -329,12 +330,19 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
                             </td>
                             <td>${precio.toLocaleString()}</td>
                             <td>
-                              <div className="flex gap-8">
+                              <div className="flex gap-8 items-center">
                                 <input type="number" className="form-control w-24" value={item.descuentoUnitario || ''} onChange={e => updateCartItem(index, 'descuentoUnitario', Number(e.target.value))} placeholder="0" />
-                                <select aria-label="Tipo Descuento" className="form-control" value={item.tipoDescuento} onChange={e => updateCartItem(index, 'tipoDescuento', e.target.value)}>
-                                  <option value="PESOS">$</option>
-                                  <option value="PORCENTAJE">%</option>
-                                </select>
+                                <div className="w-[80px]">
+                                  <CustomSelect
+                                    value={item.tipoDescuento}
+                                    onChange={val => updateCartItem(index, 'tipoDescuento', val)}
+                                    options={[
+                                      { value: 'PESOS', label: '$' },
+                                      { value: 'PORCENTAJE', label: '%' }
+                                    ]}
+                                    searchable={false}
+                                  />
+                                </div>
                               </div>
                             </td>
                             <td className="font-bold">${subt.toLocaleString()}</td>
@@ -359,12 +367,20 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
             <div className="flex flex-col gap-24 h-full">
               <div className="data-card p-24">
                 <h2 className="text-secondary mb-16 text-xl">Datos del Cliente</h2>
-                <select aria-label="Seleccionar Cliente" className="form-control mb-16" value={clienteSeleccionado || ''} onChange={e => setClienteSeleccionado(e.target.value ? Number(e.target.value) : null)}>
-                  <option value="">Cliente General (Sin Especificar)</option>
-                  {clientes.map(c => (
-                    <option key={c.id} value={c.id}>{c.nombre} - {c.documentoIdentidad}</option>
-                  ))}
-                </select>
+                <div className="mb-16">
+                  <CustomSelect
+                    value={clienteSeleccionado !== null ? String(clienteSeleccionado) : ''}
+                    onChange={val => setClienteSeleccionado(val ? Number(val) : null)}
+                    placeholder="Cliente General (Sin Especificar)"
+                    options={[
+                      { value: '', label: 'Cliente General (Sin Especificar)' },
+                      ...clientes.map(c => ({
+                        value: String(c.id),
+                        label: `${c.nombre} - ${c.documentoIdentidad}`
+                      }))
+                    ]}
+                  />
+                </div>
                 <textarea className="form-control" rows={2} placeholder="Notas adicionales..." value={notas} onChange={e => setNotas(e.target.value)}></textarea>
               </div>
 
@@ -385,10 +401,17 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
                   </span>
                   <div className="flex items-center gap-8">
                     <input type="number" aria-label="Valor de descuento" className="form-control text-right w-[80px]" value={descuentoGlobalValor} onChange={e => setDescuentoGlobalValor(Number(e.target.value))} />
-                    <select aria-label="Tipo de descuento" className="form-control w-[70px] px-[8px]" value={descuentoGlobalTipo} onChange={e => setDescuentoGlobalTipo(e.target.value as 'PESOS' | 'PORCENTAJE')}>
-                      <option value="PESOS">$</option>
-                      <option value="PORCENTAJE">%</option>
-                    </select>
+                    <div className="w-[75px]">
+                      <CustomSelect
+                        value={descuentoGlobalTipo}
+                        onChange={val => setDescuentoGlobalTipo(val as 'PESOS' | 'PORCENTAJE')}
+                        options={[
+                          { value: 'PESOS', label: '$' },
+                          { value: 'PORCENTAJE', label: '%' }
+                        ]}
+                        searchable={false}
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-between mb-16">

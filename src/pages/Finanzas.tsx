@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useToast } from '../context/ToastContext';
 import { api, type Factura, type Compra, type FinanzasResumen, type TransaccionCaja } from '../api';
 import ConciliacionBancaria from '../components/ConciliacionBancaria';
+import { CustomSelect } from '../components/CustomSelect';
 import { 
   DollarSign, 
   TrendingUp, 
@@ -613,16 +614,17 @@ export default function Finanzas() {
 
               <div className="form-group">
                 <label htmlFor="abono-metodo-select">Método de Pago *</label>
-                <select 
+                <CustomSelect
                   id="abono-metodo-select"
                   value={abonoMetodo}
-                  onChange={(e) => setAbonoMetodo(e.target.value)}
-                  className="form-control"
-                >
-                  <option value="EFECTIVO">Efectivo</option>
-                  <option value="TARJETA">Tarjeta de Crédito / Débito</option>
-                  <option value="TRANSFERENCIA">Transferencia Bancaria</option>
-                </select>
+                  onChange={(val) => setAbonoMetodo(val)}
+                  searchable={false}
+                  options={[
+                    { value: 'EFECTIVO', label: 'Efectivo' },
+                    { value: 'TARJETA', label: 'Tarjeta de Crédito / Débito' },
+                    { value: 'TRANSFERENCIA', label: 'Transferencia Bancaria' }
+                  ]}
+                />
               </div>
 
               <div className="form-group">
