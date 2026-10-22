@@ -12,11 +12,14 @@
     "cap:build": "npm run cap:sync && cd android && ./gradlew assembleDebug && cd .. && cp android/app/build/outputs/apk/debug/app-debug.apk ./DatrahERP.apk",
     "cap:build:release": "npm run cap:sync && cd android && ./gradlew assembleRelease && cd .. && cp android/app/build/outputs/apk/release/app-release.apk ./DatrahERP-Release.apk && cp ./DatrahERP-Release.apk ./DatrahERP.apk && cp ./DatrahERP-Release.apk ./public/DatrahERP.apk",
     "cap:install": "adb install -r ./DatrahERP.apk",
-    "cap:install:release": "adb install -r ./DatrahERP-Release.apk"
+    "cap:install:release": "adb install -r ./DatrahERP-Release.apk",
+    "cap:sync:ios": "npm run build && npx cap sync ios",
+    "cap:open:ios": "npx cap open ios"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",
     "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
     "html5-qrcode": "^2.3.8",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
