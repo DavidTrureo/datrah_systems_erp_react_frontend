@@ -14,7 +14,8 @@
     "cap:install": "adb install -r ./DatrahERP.apk",
     "cap:install:release": "adb install -r ./DatrahERP-Release.apk",
     "cap:sync:ios": "npm run build && npx cap sync ios",
-    "cap:open:ios": "npx cap open ios"
+    "cap:open:ios": "npx cap open ios",
+    "cap:install:release:ios": "npm run cap:sync:ios && xcodebuild -project ios/App/App.xcodeproj -scheme App -destination id=00008132-000410A60CD9001C -configuration Release -allowProvisioningUpdates build && xcrun devicectl device install app --device 00008132-000410A60CD9001C $(find ~/Library/Developer/Xcode/DerivedData/App-*/Build/Products/Release-iphoneos -name 'App.app' | head -n 1)"
   },
   "dependencies": {
     "@capacitor/android": "^8.5.3",
