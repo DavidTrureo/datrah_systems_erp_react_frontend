@@ -715,7 +715,17 @@ select::-ms-expand {
     background: white !important;
     color: black !important;
   }
-  .sidebar, .content-header, .billing-grid, .data-card, .modal-overlay:not(.print-modal-overlay) {
+  .sidebar, 
+  .content-header, 
+  .billing-grid, 
+  .data-card, 
+  .header-alerts-container, 
+  .header-mobile-bar, 
+  .copilot-container, 
+  .copilot-bubble, 
+  .command-palette-backdrop,
+  .no-print,
+  .modal-overlay:not(.print-modal-overlay) {
     display: none !important;
   }
   .print-modal-overlay {
@@ -737,12 +747,14 @@ select::-ms-expand {
     border: none !important;
     box-shadow: none !important;
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 450px !important;
+    margin: 0 auto !important;
     padding: 0 !important;
-    margin: 0 !important;
   }
-  .no-print {
-    display: none !important;
+  .ticket-printable-card {
+    box-shadow: none !important;
+    padding: 10px !important;
+    border: none !important;
   }
   .main-content {
     margin-left: 0 !important;

@@ -39,9 +39,13 @@ export default function Facturacion() {
   const [globalDiscountType, setGlobalDiscountType] = useState<string>('NINGUNO');
   const [globalDiscountVal, setGlobalDiscountVal] = useState<number>(0);
 
-  // Print Invoice Handler
+  // Print Invoice States & Handler
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [invoiceToPrint, setInvoiceToPrint] = useState<Factura | null>(null);
+
   const handleOpenPrintModal = (fac: Factura) => {
-    generarTicketPDF(fac);
+    setInvoiceToPrint(fac);
+    setShowPrintModal(true);
   };
 
   useEffect(() => {
@@ -841,6 +845,164 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
           </table>
         </div>
       </div>
+
+      {/* MODAL DE IMPRESIÓN DE TICKET POS (TICKET TÉRMICO 80MM) */}
+      {showPrintModal && invoiceToPrint && (
+        <div className="modal-overlay print-modal-overlay">
+          <div className="modal-content print-modal-content max-w-md w-full bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden p-6 text-white">
+            
+            {/* Botones de acción superiores (no imprimibles) */}
+            <div className="no-print flex items-center justify-between pb-4 mb-4 border-b border-white/10">
+              <div className="flex items-center gap-2">
+                <Printer size={18} className="text-indigo-400" />
+                <span className="font-semibold text-sm">Vista Previa Ticket POS</span>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setShowPrintModal(false)}
+                className="text-white/60 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+                title="Cerrar"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Contenedor del Ticket Imprimible (Diseñado para papel térmico blanco y limpio) */}
+            <div className="ticket-printable-card bg-white text-slate-900 p-6 rounded-xl font-mono text-xs shadow-inner">
+              {/* Header */}
+              <div className="text-center border-b-2 border-dashed border-slate-400 pb-4 mb-4">
+                <h2 className="text-lg font-black tracking-tight text-slate-900 m-0">DATRAH SYSTEMS</h2>
+                <p className="text-[11px] text-slate-600 m-0 mt-1">RUT: 76.543.210-9</p>
+                <p className="text-[10px] text-slate-500 m-0">Av. Providencia 1234, Of. 506 • Santiago</p>
+                <p className="text-[10px] text-slate-500 m-0">Tel: +56 9 1234 5678 • contacto@datrah.cl</p>
+                <div className="inline-block mt-2 px-3 py-1 bg-slate-100 rounded text-[11px] font-bold text-slate-800">
+                  TICKET FACTURA N° {invoiceToPrint.numeroFactura}
+                </div>
+              </div>
+
+              {/* Metadatos */}
+              <div className="text-[11px] space-y-1 mb-4 border-b border-dashed border-slate-300 pb-3">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Fecha:</span>
+                  <span className="font-medium">{new Date(invoiceToPrint.fechaEmision).toLocaleString('es-CL')}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Cliente:</span>
+                  <span className="font-bold truncate max-w-[180px]">{invoiceToPrint.cliente?.nombre || 'Cliente General'}</span>
+                </div>
+                {invoiceToPrint.cliente?.documentoIdentidad && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">RUT Cliente:</span>
+                    <span>{invoiceToPrint.cliente.documentoIdentidad}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Método Pago:</span>
+                  <span className="font-semibold text-indigo-700">{invoiceToPrint.metodoPago}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Estado:</span>
+                  <span className={invoiceToPrint.estado === 'EMITIDA' ? 'text-emerald-700 font-bold' : 'text-rose-600 font-bold'}>
+                    {invoiceToPrint.estado}
+                  </span>
+                </div>
+              </div>
+
+              {/* Tabla de Items */}
+              <div className="mb-4">
+                <div className="flex justify-between text-[10px] font-bold text-slate-600 border-b border-slate-300 pb-1 mb-2">
+                  <span>CANT / DESCRIPCIÓN</span>
+                  <span>TOTAL</span>
+                </div>
+                <div className="space-y-2">
+                  {invoiceToPrint.detalles?.map((det) => (
+                    <div key={det.id} className="text-[11px]">
+                      <div className="flex justify-between font-medium">
+                        <span className="truncate pr-2">{det.producto?.nombre}</span>
+                        <span className="font-bold">${Number(det.subtotal).toLocaleString('es-CL')}</span>
+                      </div>
+                      <div className="flex justify-between text-[10px] text-slate-500">
+                        <span>{Number(det.cantidad)} un. x ${Number(det.precioUnitario).toLocaleString('es-CL')}</span>
+                        {Number(det.descuento) > 0 && (
+                          <span className="text-rose-600">Desc: -${Number(det.descuento).toLocaleString('es-CL')}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Totales */}
+              <div className="border-t-2 border-dashed border-slate-400 pt-3 space-y-1 text-[11px]">
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Subtotal Neto:</span>
+                  <span>${Number(invoiceToPrint.subtotal).toLocaleString('es-CL')}</span>
+                </div>
+                {invoiceToPrint.descuentoGlobal && Number(invoiceToPrint.descuentoGlobal) > 0 && (
+                  <div className="flex justify-between text-rose-600">
+                    <span>Descuento Global:</span>
+                    <span>-${Number(invoiceToPrint.descuentoGlobal).toLocaleString('es-CL')}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-slate-600">IVA ({invoiceToPrint.impuestoPorcentaje}%):</span>
+                  <span>${Number(invoiceToPrint.impuestoValor).toLocaleString('es-CL')}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm font-black text-slate-900 border-t border-slate-300 pt-2 mt-1">
+                  <span>TOTAL COBRADO:</span>
+                  <span className="text-base">${Number(invoiceToPrint.total).toLocaleString('es-CL')}</span>
+                </div>
+              </div>
+
+              {/* Observaciones */}
+              {invoiceToPrint.notas && (
+                <div className="mt-3 p-2 bg-slate-100 rounded text-[10px] text-slate-600 border-l-2 border-slate-400">
+                  <strong className="block text-slate-700">Notas:</strong>
+                  {invoiceToPrint.notas}
+                </div>
+              )}
+
+              {/* Pie de Ticket */}
+              <div className="text-center mt-5 pt-3 border-t border-dashed border-slate-300 text-[10px] text-slate-500 space-y-1">
+                <p className="font-semibold text-slate-700 m-0">¡Gracias por su preferencia!</p>
+                <p className="m-0">Datrah Systems ERP • Documento Tributario Electrónico</p>
+              </div>
+            </div>
+
+            {/* Barra de Acciones Inferior (No imprimible) */}
+            <div className="no-print mt-5 flex flex-col sm:flex-row gap-2">
+              <button 
+                type="button"
+                className="btn btn-primary flex-1 py-2.5 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-indigo-600/30"
+                onClick={() => window.print()}
+              >
+                <Printer size={15} /> Imprimir (AirPrint / Impresora)
+              </button>
+              <button 
+                type="button"
+                className="btn btn-secondary flex-1 py-2.5 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                onClick={async () => {
+                  try {
+                    await generarTicketPDF(invoiceToPrint);
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }}
+              >
+                <Download size={15} /> Guardar / Compartir PDF
+              </button>
+              <button 
+                type="button"
+                className="btn bg-white/10 hover:bg-white/15 text-white/80 py-2.5 px-4 text-xs font-semibold cursor-pointer rounded-xl transition-colors"
+                onClick={() => setShowPrintModal(false)}
+              >
+                Cerrar
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
       {/* Modal de Escaneo con Cámara para POS */}
       <BarcodeScannerModal

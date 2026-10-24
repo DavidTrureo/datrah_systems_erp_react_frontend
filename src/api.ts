@@ -327,13 +327,7 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}/facturas/${id}/pdf`, { headers });
     if (!response.ok) throw new Error('Error al descargar PDF');
     const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `factura_${id}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    await downloadOrShareBlob(blob, `Factura_${id}.pdf`);
   },
   descargarVentasExcel: async () => {
     const headers: Record<string, string> = {};

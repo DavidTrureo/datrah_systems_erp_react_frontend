@@ -1,6 +1,43 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { Cotizacion, Factura } from '../api';
+import { downloadOrShareBlob } from './excelExport';
+
+/**
+ * Muestra o descarga un PDF de manera multiplataforma.
+ * En iPad / iPhone abre la hoja nativa de compartir (Share Sheet) para imprimir vía AirPrint o guardar.
+ * En PC / Mac abre el visor de PDF en una nueva pestaña o lo descarga directamente.
+ */
+export async function displayOrSharePDF(doc: jsPDF, fileName: string): Promise<void> {
+  const blob = doc.output('blob');
+  const file = new File([blob], fileName, { type: 'application/pdf' });
+
+  // En dispositivos móviles (iPadOS, iOS, Android) con soporte de Web Share API
+  if (typeof navigator !== 'undefined' && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        files: [file],
+        title: fileName,
+        text: `Documento PDF: ${fileName}`
+      });
+      return;
+    } catch (shareErr: any) {
+      if (shareErr.name === 'AbortError') return;
+      console.warn('Share sheet no completado:', shareErr);
+    }
+  }
+
+  // En computadores de escritorio (Mac / Windows / Linux)
+  try {
+    const blobUrl = URL.createObjectURL(blob);
+    const newTab = window.open(blobUrl, '_blank');
+    if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+      await downloadOrShareBlob(blob, fileName);
+    }
+  } catch {
+    await downloadOrShareBlob(blob, fileName);
+  }
+}
 
 const companyInfo = {
   name: "Datrah Systems SpA",
@@ -11,7 +48,7 @@ const companyInfo = {
   email: "contacto@datrah.cl"
 };
 
-export const generarCotizacionPDF = (cotizacion: Cotizacion) => {
+export const generarCotizacionPDF = async (cotizacion: Cotizacion) => {
   const doc = new jsPDF();
   
   // Header
@@ -113,11 +150,11 @@ export const generarCotizacionPDF = (cotizacion: Cotizacion) => {
     doc.text(cotizacion.notas, 14, finalYNotes + 5, { maxWidth: 180 });
   }
 
-  // Open in new tab
-  window.open(doc.output('bloburl'), '_blank');
+  // Mostrar o compartir PDF de forma multiplataforma
+  await displayOrSharePDF(doc, `Cotizacion_${cotizacion.numeroCotizacion}.pdf`);
 };
 
-export const generarReporteTablaPDF = (titulo: string, subtitulo: string, columnas: string[], datos: any[][]) => {
+export const generarReporteTablaPDF = async (titulo: string, subtitulo: string, columnas: string[], datos: any[][]) => {
   const doc = new jsPDF();
   
   doc.setFontSize(18);
@@ -139,10 +176,10 @@ export const generarReporteTablaPDF = (titulo: string, subtitulo: string, column
     styles: { fontSize: 9 }
   });
 
-  window.open(doc.output('bloburl'), '_blank');
+  await displayOrSharePDF(doc, `${titulo.replace(/\s+/g, '_')}.pdf`);
 };
 
-export const generarTicketPDF = (factura: Factura) => {
+export const generarTicketPDF = async (factura: Factura) => {
   // Configurado para formato de ticket 80mm
   const doc = new jsPDF({
     orientation: 'portrait',
@@ -211,5 +248,5 @@ export const generarTicketPDF = (factura: Factura) => {
   doc.setFontSize(8);
   doc.text("¡Gracias por su compra!", c, y, { align: "center" });
 
-  window.open(doc.output('bloburl'), '_blank');
+  await displayOrSharePDF(doc, `Ticket_${factura.numeroFactura}.pdf`);
 };
