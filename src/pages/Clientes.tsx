@@ -1,13 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../context/ToastContext';
 import { api, type Cliente } from '../api';
-import { Plus, Search, Edit3, Trash2, Users } from 'lucide-react';
+import { Plus, Search, Edit3, Trash2, Users, Download } from 'lucide-react';
+import { exportJsonToExcel } from '../utils/excelExport';
 
 export default function Clientes() {
   const { showSuccess, showError } = useToast();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  const handleExportExcel = async () => {
+    if (clientes.length === 0) {
+      showError('No hay clientes para exportar.');
+      return;
+    }
+    try {
+      const data = clientes.map(c => ({
+        'ID': c.id,
+        'RUT / Documento': c.documentoIdentidad,
+        'Razón Social / Nombre': c.nombre,
+        'Email': c.email || '',
+        'Teléfono': c.telefono || '',
+        'Dirección': c.direccion || '',
+        'Estado': c.activo !== false ? 'Activo' : 'Inactivo'
+      }));
+      await exportJsonToExcel(data, `Clientes_Datrah_${new Date().toISOString().slice(0, 10)}`, 'Clientes');
+      showSuccess('Listado de clientes exportado a Excel.');
+    } catch (err: any) {
+      showError('Error al exportar clientes: ' + err.message);
+    }
+  };
   
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -112,9 +135,14 @@ export default function Clientes() {
           <h1>Directorio de Clientes</h1>
           <p className="text-muted mt-2">Registra y administra los perfiles y datos de contacto de tus clientes.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => handleOpenModal()}>
-          <Plus size={18} /> Nuevo Cliente
-        </button>
+        <div className="flex gap-8">
+          <button className="btn btn-secondary flex-center-gap-6 text-emerald-400 hover:text-white" onClick={handleExportExcel} title="Exportar directorio de clientes a Excel">
+            <Download size={16} /> Exportar Excel
+          </button>
+          <button className="btn btn-primary" onClick={() => handleOpenModal()}>
+            <Plus size={18} /> Nuevo Cliente
+          </button>
+        </div>
       </div>
 
       {/* Buscador */}

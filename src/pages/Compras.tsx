@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../context/ToastContext';
 import { api, type Proveedor, type Producto, type Compra } from '../api';
-import { Plus, Trash2, Truck, FileText, Ban } from 'lucide-react';
+import { Plus, Trash2, Truck, FileText, Ban, Download } from 'lucide-react';
+import { exportJsonToExcel } from '../utils/excelExport';
 import { CustomSelect } from '../components/CustomSelect';
 
 interface PurchaseCartItem {
@@ -16,6 +17,30 @@ export default function Compras() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [compras, setCompras] = useState<Compra[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleExportExcel = async () => {
+    if (compras.length === 0) {
+      showWarning('No hay compras registradas para exportar.');
+      return;
+    }
+    try {
+      const data = compras.map(c => ({
+        'N° Documento': c.numeroDocumento,
+        'Fecha': new Date(c.fechaCompra).toLocaleDateString(),
+        'Proveedor': c.proveedor?.nombre || 'Desconocido',
+        'RUT Proveedor': c.proveedor?.documentoIdentidad || '',
+        'Método Pago': c.metodoPago || 'EFECTIVO',
+        'Total ($)': c.total,
+        'Monto Pagado ($)': c.montoPagado || c.total,
+        'Estado': c.estado,
+        'Notas': c.notas || ''
+      }));
+      await exportJsonToExcel(data, `Compras_Datrah_${new Date().toISOString().slice(0, 10)}`, 'Compras');
+      showSuccess('Historial de compras exportado a Excel.');
+    } catch (err: any) {
+      showError('Error al exportar compras: ' + err.message);
+    }
+  };
 
   // Cart State
   const [selectedProveedorId, setSelectedProveedorId] = useState('');
@@ -383,6 +408,9 @@ export default function Compras() {
            <h2 className="flex-center-gap-8">
              <FileText size={20} className="text-cyan" /> Historial de Compras Recibidas
            </h2>
+           <button className="btn btn-secondary btn-sm flex-center-gap-6 text-emerald-400 hover:text-white" onClick={handleExportExcel}>
+             <Download size={15} /> Exportar Excel
+           </button>
         </div>
         {/* Vista Móvil: Tarjetas de Compras */}
         <div className="mobile-only-cards block md:hidden">

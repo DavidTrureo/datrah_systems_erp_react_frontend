@@ -1,3 +1,5 @@
+import { downloadOrShareBlob } from './utils/excelExport';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api';
 
 export interface Categoria {
@@ -345,13 +347,8 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}/facturas/excel`, { headers });
     if (!response.ok) throw new Error('Error al descargar Excel');
     const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ventas.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    const fileName = `Ventas_Datrah_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    await downloadOrShareBlob(blob, fileName);
   },
 
   // Reportes

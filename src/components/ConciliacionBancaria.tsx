@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import * as XLSX from 'xlsx';
+import { exportJsonToExcel } from '../utils/excelExport';
 import { useToast } from '../context/ToastContext';
 import { api, type Factura, type Compra } from '../api';
 import { CustomSelect } from './CustomSelect';
@@ -448,28 +449,29 @@ export default function ConciliacionBancaria({ cxcList, cxpList, onRefreshFinanz
   };
 
   // Exportar reporte de conciliación a Excel
-  const handleExportarExcel = () => {
+  const handleExportarExcel = async () => {
     if (movimientos.length === 0) {
       showWarning('No hay movimientos para exportar.');
       return;
     }
 
-    const data = movimientos.map(m => ({
-      'Fecha': m.fecha,
-      'Descripción / Glosa': m.descripcion,
-      'Tipo': m.tipo,
-      'Monto ($)': m.monto,
-      'Estado': m.estado,
-      'Documento Conciliado': m.conciliadoCon ? `${m.conciliadoCon.tipo} #${m.conciliadoCon.docNumero || ''}` : '-',
-      'Entidad Asociada': m.conciliadoCon?.entidadNombre || '-',
-      'Fecha Conciliación': m.conciliadoCon ? new Date(m.conciliadoCon.fechaConciliacion).toLocaleString('es-CL') : '-'
-    }));
+    try {
+      const data = movimientos.map(m => ({
+        'Fecha': m.fecha,
+        'Descripción / Glosa': m.descripcion,
+        'Tipo': m.tipo,
+        'Monto ($)': m.monto,
+        'Estado': m.estado,
+        'Documento Conciliado': m.conciliadoCon ? `${m.conciliadoCon.tipo} #${m.conciliadoCon.docNumero || ''}` : '-',
+        'Entidad Asociada': m.conciliadoCon?.entidadNombre || '-',
+        'Fecha Conciliación': m.conciliadoCon ? new Date(m.conciliadoCon.fechaConciliacion).toLocaleString('es-CL') : '-'
+      }));
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Conciliación Bancaria');
-    XLSX.writeFile(workbook, `Conciliacion_${banco}_${new Date().toISOString().slice(0, 10)}.xlsx`);
-    showSuccess('Informe de conciliación exportado a Excel.');
+      await exportJsonToExcel(data, `Conciliacion_${banco}_${new Date().toISOString().slice(0, 10)}`, 'Conciliación Bancaria');
+      showSuccess('Informe de conciliación exportado a Excel.');
+    } catch (err: any) {
+      showError('Error al exportar conciliación: ' + err.message);
+    }
   };
 
   // Métricas calculadas

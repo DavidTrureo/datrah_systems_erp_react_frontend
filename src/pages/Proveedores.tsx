@@ -1,13 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '../context/ToastContext';
 import { api, type Proveedor } from '../api';
-import { Plus, Search, Edit3, Trash2, Truck } from 'lucide-react';
+import { Plus, Search, Edit3, Trash2, Truck, Download } from 'lucide-react';
+import { exportJsonToExcel } from '../utils/excelExport';
 
 export default function Proveedores() {
   const { showSuccess, showError } = useToast();
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  const handleExportExcel = async () => {
+    if (proveedores.length === 0) {
+      showError('No hay proveedores para exportar.');
+      return;
+    }
+    try {
+      const data = proveedores.map(p => ({
+        'ID': p.id,
+        'RUT / Documento': p.documentoIdentidad,
+        'Razón Social / Proveedor': p.nombre,
+        'Email': p.email || '',
+        'Teléfono': p.telefono || '',
+        'Dirección': p.direccion || '',
+        'Estado': p.activo !== false ? 'Activo' : 'Inactivo'
+      }));
+      await exportJsonToExcel(data, `Proveedores_Datrah_${new Date().toISOString().slice(0, 10)}`, 'Proveedores');
+      showSuccess('Listado de proveedores exportado a Excel.');
+    } catch (err: any) {
+      showError('Error al exportar proveedores: ' + err.message);
+    }
+  };
   
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -112,9 +135,14 @@ export default function Proveedores() {
           <h1>Directorio de Proveedores</h1>
           <p className="text-muted mt-2">Registra y administra las empresas proveedoras de tu mercancía y servicios.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => handleOpenModal()}>
-          <Plus size={18} /> Nuevo Proveedor
-        </button>
+        <div className="flex gap-8">
+          <button className="btn btn-secondary flex-center-gap-6 text-emerald-400 hover:text-white" onClick={handleExportExcel} title="Exportar directorio de proveedores a Excel">
+            <Download size={16} /> Exportar Excel
+          </button>
+          <button className="btn btn-primary" onClick={() => handleOpenModal()}>
+            <Plus size={18} /> Nuevo Proveedor
+          </button>
+        </div>
       </div>
 
       {/* Buscador */}

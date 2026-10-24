@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api, type Producto, type Cliente, type Cotizacion } from '../api';
-import { FileText, Trash2, Printer, Search, ArrowRight, MessageCircle } from 'lucide-react';
+import { FileText, Trash2, Printer, Search, ArrowRight, MessageCircle, Download } from 'lucide-react';
+import { exportJsonToExcel } from '../utils/excelExport';
 import { generarCotizacionPDF } from '../utils/pdfGenerator';
 import { useToast } from '../context/ToastContext';
 import { CustomSelect } from '../components/CustomSelect';
@@ -19,6 +20,31 @@ const Cotizaciones: React.FC = () => {
   // Historial
   const [cotizaciones, setCotizaciones] = useState<Cotizacion[]>([]);
   const [filtroCotizacion, setFiltroCotizacion] = useState('');
+
+  const handleExportExcel = async () => {
+    if (cotizaciones.length === 0) {
+      showWarning('No hay cotizaciones para exportar.');
+      return;
+    }
+    try {
+      const data = cotizaciones.map(c => ({
+        'N° Cotización': c.numeroCotizacion,
+        'Fecha': new Date(c.fechaEmision).toLocaleDateString(),
+        'Cliente': c.cliente?.nombre || 'General',
+        'RUT Cliente': c.cliente?.documentoIdentidad || '',
+        'Subtotal ($)': c.subtotal,
+        'IVA ($)': c.impuestoValor,
+        'Total ($)': c.total,
+        'Estado': c.estado,
+        'Validez (Días)': c.validezDias,
+        'Notas': c.notas || ''
+      }));
+      await exportJsonToExcel(data, `Cotizaciones_Datrah_${new Date().toISOString().slice(0, 10)}`, 'Cotizaciones');
+      showSuccess('Cotizaciones exportadas a Excel con éxito.');
+    } catch (err: any) {
+      showError('Error al exportar cotizaciones: ' + err.message);
+    }
+  };
 
   // Nueva Cotización
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -443,7 +469,7 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
 
         {activeTab === 'historial' && (
           <div className="data-card p-24">
-            <div className="flex justify-between items-center mb-24">
+            <div className="flex flex-wrap justify-between items-center gap-12 mb-24">
               <div className="relative w-64">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary pointer-events-none" size={18} />
                 <input
@@ -454,6 +480,12 @@ Quedamos a su disposición para cualquier consulta o para confirmar su pedido.
                   onChange={e => setFiltroCotizacion(e.target.value)}
                 />
               </div>
+              <button 
+                className="btn btn-secondary btn-sm flex-center-gap-6 text-emerald-400 hover:text-white"
+                onClick={handleExportExcel}
+              >
+                <Download size={15} /> Exportar Excel
+              </button>
             </div>
 
             {/* Vista Móvil: Tarjetas de Cotizaciones */}

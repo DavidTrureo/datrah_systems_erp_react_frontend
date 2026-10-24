@@ -5,6 +5,7 @@ import { useToast } from '../context/ToastContext';
 import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
 import { CustomSelect } from '../components/CustomSelect';
 import * as XLSX from 'xlsx';
+import { exportJsonToExcel } from '../utils/excelExport';
 
 export default function Inventario() {
   const { showSuccess, showError, showWarning } = useToast();
@@ -65,8 +66,12 @@ export default function Inventario() {
     }
   }
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     try {
+      if (productos.length === 0) {
+        showWarning('No hay productos registrados para exportar.');
+        return;
+      }
       const data = productos.map((p) => ({
         'ID': p.id,
         'Código Barras': p.codigoBarras || '',
@@ -80,11 +85,8 @@ export default function Inventario() {
         'Estado': p.activo ? 'Activo' : 'Inactivo',
       }));
 
-      const worksheet = XLSX.utils.json_to_sheet(data);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventario');
-      XLSX.writeFile(workbook, `Inventario_Datrah_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      showSuccess('Archivo Excel generado y descargado correctamente', 'Exportación Exitosa');
+      await exportJsonToExcel(data, `Inventario_Datrah_${new Date().toISOString().slice(0, 10)}`, 'Inventario');
+      showSuccess('Archivo Excel generado y exportado correctamente', 'Exportación Exitosa');
     } catch (err: any) {
       showError('Error al exportar inventario a Excel: ' + err.message);
     }

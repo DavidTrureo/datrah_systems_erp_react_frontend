@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api, type Cliente, type Producto, type Factura } from '../api';
-import { Plus, Trash2, ShoppingCart, User, CreditCard, Ban, FileText, Printer, Percent, Camera, MessageCircle } from 'lucide-react';
+import { Plus, Trash2, ShoppingCart, User, CreditCard, Ban, FileText, Printer, Percent, Camera, MessageCircle, Download } from 'lucide-react';
 import { generarTicketPDF } from '../utils/pdfGenerator';
 import { useToast } from '../context/ToastContext';
 import { BarcodeScannerModal } from '../components/BarcodeScannerModal';
@@ -685,14 +685,15 @@ ${itemsList ? `*Detalle de Productos:*\n${itemsList}\n\n` : ''}💳 *Método de 
           <h2 className="flex-center-gap-8">
             <FileText size={20} className="text-cyan" /> Historial de Facturas Emitidas
           </h2>
-          <button className="btn btn-primary btn-sm flex-center-gap-4" onClick={async () => {
+          <button className="btn btn-secondary btn-sm flex-center-gap-6 text-emerald-400 hover:text-white" onClick={async () => {
             try {
               await api.descargarVentasExcel();
+              showSuccess("Reporte de facturación exportado exitosamente a Excel.", "Exportación Exitosa");
             } catch (err) {
               showError("Error al descargar Excel: " + (err as Error).message);
             }
           }}>
-            Exportar Excel
+            <Download size={15} /> Exportar Excel
           </button>
         </div>
         {/* Vista Móvil: Tarjetas de Facturas */}
